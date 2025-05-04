@@ -437,7 +437,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
           const deadline = new Date(data.startups[0].deadline);
           const currentDate = new Date();
           const timeDifference = deadline.getTime() - currentDate.getTime();
-          const daysLeft = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+          const daysLeft = 0
 
           setDaysRemaining(daysLeft);
         }
@@ -1669,7 +1669,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
                         AI Risk Assessment
                       </h4>
                       <p className="text-gray-300 text-sm mt-1">
-                        Optimus AI has analyzed this project and assigned it a
+                        OnlyFounders has analyzed this project and assigned it a
                         low risk score based on team credentials, code quality,
                         and tokenomics model.
                       </p>

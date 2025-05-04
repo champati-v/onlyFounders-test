@@ -131,6 +131,7 @@ export default function NetworkPage() {
   const [selectedFounderCategory, setSelectedFounderCategory] = useState<string>("");
   const [selectedInvestorCategory, setSelectedInvestorCategory] = useState<string>("");
   const [selectedServiceProviderCategory, setSelectedServiceProviderCategory] = useState<string>("");
+  const [searchItem, setSearchItem] = useState<string>("");
   const { user, isLoading } = useUser();
   const {toast} = useToast();
   const [loading, setLoading] = useState(false);
@@ -477,6 +478,9 @@ export default function NetworkPage() {
     }
   }, [activeTab]);
 
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchItem(e.target.value);
+  }
 
   //filter founders based on selected category
   const filteredFounders = 
@@ -566,29 +570,31 @@ export default function NetworkPage() {
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          <TabsList className="bg-gray-900 border border-gray-800 p-1">
-            <TabsTrigger
-              value="founders"
-              className="data-[state=active]:bg-gray-800 data-[state=active]:text-white text-gray-400"
-            >
-              <Users className="mr-2 h-4 w-4" />
-              Founders
-            </TabsTrigger>
-            <TabsTrigger
-              value="investors"
-              className="data-[state=active]:bg-gray-800 data-[state=active]:text-white text-gray-400"
-            >
-              <DollarSign className="mr-2 h-4 w-4" />
-              Investors
-            </TabsTrigger>
-            <TabsTrigger
-              value="serviceProviders"
-              className="data-[state=active]:bg-gray-800 data-[state=active]:text-white text-gray-400"
-            >
-              <Briefcase className="mr-2 h-4 w-4" />
-              Service Providers
-            </TabsTrigger>
-          </TabsList>
+          <div className="px-1 flex items-center justify-center">
+            <TabsList className="bg-gray-900 border border-gray-800 p-1">
+              <TabsTrigger
+                value="founders"
+                className="data-[state=active]:bg-gray-800 data-[state=active]:text-white text-gray-400"
+              >
+                <Users className="mr-2 h-4 w-4" />
+                Founders
+              </TabsTrigger>
+              <TabsTrigger
+                value="investors"
+                className="data-[state=active]:bg-gray-800 data-[state=active]:text-white text-gray-400"
+              >
+                <DollarSign className="mr-2 h-4 w-4" />
+                Investors
+              </TabsTrigger>
+              <TabsTrigger
+                value="serviceProviders"
+                className="data-[state=active]:bg-gray-800 data-[state=active]:text-white text-gray-400"
+              >
+                <Briefcase className="mr-2 h-4 w-4" />
+                Service Providers
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
 
           <TabsContent value="founders" className="space-y-6">
@@ -598,6 +604,8 @@ export default function NetworkPage() {
                 <Input
                   placeholder="Search Founders by name, skills, or location..."
                   className="pl-9 bg-gray-900 border-gray-700 text-white"
+                  value={searchItem}
+                  onChange={(e) => handleSearch(e)}
                 />
               </div>
               <Select value={selectedFounderCategory} onValueChange={(value) => setSelectedFounderCategory(value)}>
@@ -633,7 +641,16 @@ export default function NetworkPage() {
               ):
               (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredFounders.map((member) => (
+                {filteredFounders.filter((member) => 
+                  member.username.toLowerCase().includes(searchItem.toLowerCase()) ||
+                  member.location?.toLowerCase().includes(searchItem.toLowerCase()) ||
+                  member.founderData?.companyName?.toLowerCase().includes(searchItem.toLowerCase()) ||
+                  member.founderData?.skills.some((skill) => 
+                    skill.toLowerCase().includes(searchItem.toLowerCase())
+                  )
+                )
+                    .sort((a,b) => (a.status === 'verified' ? -1 : 1))
+                    .map((member) => (
                 <Card
                 key={member._id}
                 className="bg-gray-900 border-gray-800 hover:border-blue-600 transition-colors flex flex-col justify-between"
@@ -661,9 +678,8 @@ export default function NetworkPage() {
                                  Verified
                               </Badge>
                              ): (
-                               <Badge className="ml-2 bg-amber-800/50 text-amber-300 border-amber-700">
-                                 Unverified
-                               </Badge>
+                              <>
+                              </>
                              )}
                           </div>
                           <div className="flex flex-wrap gap-2 mt-1">
@@ -671,7 +687,7 @@ export default function NetworkPage() {
                               variant="outline"
                               className="bg-gray-800/50 text-gray-300 border-gray-700"
                             >
-                              {member.role}
+                              Founder
                             </Badge>
                           </div>
                         </div>
@@ -735,6 +751,8 @@ export default function NetworkPage() {
                 <Input
                   placeholder="Search investors..."
                   className="pl-9 bg-gray-900 border-gray-700 text-white"
+                  value={searchItem}
+                  onChange={(e) => handleSearch(e)}
                 />
               </div>
               <Select value={selectedInvestorCategory} onValueChange={(value) => setSelectedInvestorCategory(value)}> 
@@ -759,7 +777,15 @@ export default function NetworkPage() {
               </div>
             ):(
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredInvestors.map((member) => (
+            {filteredInvestors.
+            filter((member) => 
+              member.username.toLowerCase().includes(searchItem.toLowerCase()) ||
+              member.location?.toLowerCase().includes(searchItem.toLowerCase()) ||
+              member.investorData?.investmentInterest?.some((investmentInterest) => 
+                investmentInterest.toLowerCase().includes(searchItem.toLowerCase())
+              )
+            )
+            .sort((a,b) => (a.status === 'verified' ? -1 : 1)).map((member) => (
                <Card
                key={member._id}
                className="bg-gray-900 border-gray-800 hover:border-blue-600 transition-colors flex flex-col justify-between"
@@ -787,9 +813,8 @@ export default function NetworkPage() {
                                 Verified
                              </Badge>
                             ): (
-                              <Badge className="ml-2 bg-amber-800/50 text-amber-300 border-amber-700">
-                                Unverified
-                              </Badge>
+                              <>
+                              </>
                             )}
                          </div>
                          <div className="flex flex-wrap gap-2 mt-1">
@@ -797,7 +822,7 @@ export default function NetworkPage() {
                              variant="outline"
                              className="bg-gray-800/50 text-gray-300 border-gray-700"
                            >
-                             {member.role}
+                             Investor
                            </Badge>
                          </div>
                        </div>
@@ -857,6 +882,8 @@ export default function NetworkPage() {
                 <Input
                   placeholder="Search service providers..."
                   className="pl-9 bg-gray-900 border-gray-700 text-white"
+                  value={searchItem}
+                  onChange={(e) => handleSearch(e)}
                 />
               </div>
               <Select value={selectedServiceProviderCategory}>
@@ -881,7 +908,12 @@ export default function NetworkPage() {
               </div>
             ):(
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredServiceProviders.map((member) => (
+            {filteredServiceProviders.
+            filter((member) => 
+              member.username.toLowerCase().includes(searchItem.toLowerCase()) ||
+              member.location?.toLowerCase().includes(searchItem.toLowerCase())
+            )
+            .sort((a,b) => (a.status === 'verified' ? -1 : 1)).map((member) => (
                <Card
                key={member._id}
                className="bg-gray-900 border-gray-800 hover:border-blue-600 transition-colors flex flex-col justify-between"
@@ -909,9 +941,8 @@ export default function NetworkPage() {
                                 Verified
                              </Badge>
                             ): (
-                              <Badge className="ml-2 bg-amber-800/50 text-amber-300 border-amber-700">
-                                Unverified
-                              </Badge>
+                              <>
+                              </>
                             )}
                          </div>
                          <div className="flex flex-wrap gap-2 mt-1">
@@ -919,7 +950,7 @@ export default function NetworkPage() {
                              variant="outline"
                              className="bg-gray-800/50 text-gray-300 border-gray-700"
                            >
-                             {member.role}
+                             Service Provider
                            </Badge>
                          </div>
                        </div>

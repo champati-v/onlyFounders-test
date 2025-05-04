@@ -1,12 +1,27 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { format } from "date-fns"
-import { CalendarIcon, Trash2, Upload, Plus, AlertCircle, X, ChevronDown, ChevronUp, Edit, Link } from "lucide-react"
+import {
+  CalendarIcon,
+  Trash2,
+  Upload,
+  Plus,
+  AlertCircle,
+  X,
+  ChevronDown,
+  ChevronUp,
+  Edit,
+  Link,
+  Camera,
+  Loader2,
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -22,6 +37,7 @@ import { Badge } from "@/components/ui/badge"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { useUser } from "@auth0/nextjs-auth0/client"
 import { toast } from "@/components/ui/use-toast"
+import { useAccount } from "wagmi"
 
 // Define types for startup data
 interface StartupData {
@@ -204,13 +220,17 @@ export default function CreateCampaignPage() {
   const [startupData, setStartupData] = useState<StartupData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [faqs, setFaqs] = useState<FAQ[]>([{ id: "1", question: "", answer: "" }])
-  const [faqErrors, setFaqErrors] = useState<{ [key: string]: { question?: string; answer?: string } } | null>(null)
+  const [faqErrors, setFaqErrors] = useState<{
+    [key: string]: { question?: string; answer?: string }
+  } | null>(null)
 
   // Milestone states
   const [predefinedMilestones, setPredefinedMilestones] = useState<Milestone[]>([])
   const [userMilestones, setUserMilestones] = useState<Milestone[]>([])
   const [isFetchingMilestones, setIsFetchingMilestones] = useState(false)
-  const [milestoneErrors, setMilestoneErrors] = useState<{ [key: string]: { [field: string]: string } } | null>(null)
+  const [milestoneErrors, setMilestoneErrors] = useState<{
+    [key: string]: { [field: string]: string }
+  } | null>(null)
   const [expandedMilestone, setExpandedMilestone] = useState<string | null>(null)
   const [editingMilestone, setEditingMilestone] = useState<string | null>(null)
 
@@ -218,6 +238,16 @@ export default function CreateCampaignPage() {
   const [projectId, setProjectId] = useState<string | null>(null)
   const [campaignId, setCampaignId] = useState<string | null>(null)
   const { user } = useUser()
+  const [submitLoading, setSubmitLoading] = useState(false)
+  const [logoPreview, setLogoPreview] = useState<string | null>(null)
+  const [bannerPreview, setBannerPreview] = useState<string | null>(null)
+  const [bannerSrc, setBannerSrc] = useState<string>("/placeholder.svg?height=300&width=1000")
+  const [bannerFile, setBannerFile] = useState<File | null>(null)
+  const [defaultBannerFile, setDefaultBannerFile] = useState<File | null>(null)
+  const [headerSrc, setHeaderSrc] = useState<string>("/placeholder.svg?height=300&width=1000")
+  const [headerFile, setHeaderFile] = useState<File | null>(null)
+  const [hasCreatedCampaign, setHasCreatedCampaign] = useState(false)
+  const {address} = useAccount()
 
   // Initialize form with default values
   const form = useForm<z.infer<typeof formSchema>>({
@@ -260,18 +290,17 @@ export default function CreateCampaignPage() {
   useEffect(() => {
     const fetchProjectId = async () => {
       try {
+        if (!user) return // Wait until user is fully loaded
+        const userId = user?.sub?.substring(14)
 
-        if (!user) return; // Wait until user is fully loaded
-        const userId = user?.sub?.substring(14);
-  
         if (!userId) {
           toast({
             title: "Authentication error",
             description: "Please sign in again to continue.",
             variant: "destructive",
-          });
-          router.push("/api/auth/login");
-          return;
+          })
+          router.push("/api/auth/login")
+          return
         }
 
         const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/get-projectId", {
@@ -298,23 +327,41 @@ export default function CreateCampaignPage() {
     }
   }, [user])
 
+  // 2. Add a function to fetch the image file from a URL
+  const fetchImageAsFile = async (url: string, fileName: string): Promise<File | null> => {
+    try {
+      const response = await fetch(url)
+      if (!response.ok) {
+        console.error("Failed to fetch image:", response.statusText)
+        return null
+      }
+
+      const blob = await response.blob()
+      // Create a File object from the blob
+      return new File([blob], fileName, { type: blob.type })
+    } catch (error) {
+      console.error("Error fetching image as file:", error)
+      return null
+    }
+  }
+
   // Fetch startup data from API
   useEffect(() => {
     const fetchStartupData = async () => {
       setIsLoading(true)
       try {
         if (!projectId) return
-        if (!user) return; // Wait until user is fully loaded
-        const userId = user?.sub?.substring(14);
-  
+        if (!user) return // Wait until user is fully loaded
+        const userId = user?.sub?.substring(14)
+
         if (!userId) {
           toast({
             title: "Authentication error",
             description: "Please sign in again to continue.",
             variant: "destructive",
-          });
-          router.push("/api/auth/login");
-          return;
+          })
+          router.push("/api/auth/login")
+          return
         }
 
         const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/view-startup", {
@@ -339,7 +386,7 @@ export default function CreateCampaignPage() {
           form.setValue("logo", startup.startupLogo.file_url)
           form.setValue("banner", startup.bannerImage.file_url)
           form.setValue("website", startup.socialLinks.website || "")
-          form.setValue("twitter", startup.socialLinks.Twitter || "")
+          form.setValue("twitter", startup.socialLinks.twitter || "")
           form.setValue("github", startup.socialLinks.github || "")
           form.setValue("discord", startup.socialLinks.discord || "")
           form.setValue("medium", startup.socialLinks.medium || "")
@@ -351,7 +398,19 @@ export default function CreateCampaignPage() {
           form.setValue("headerImage", startup.bannerImage.file_url)
 
           // Set default fundraising wallet (this would typically come from the user's wallet)
-          form.setValue("fundraisingWallet", "0x1234567890123456789012345678901234567890")
+          form.setValue("fundraisingWallet", address || "0x123hsokf3o45odinfv")
+
+          if (startup.bannerImage.file_url) {
+            setBannerSrc(startup.bannerImage.file_url)
+
+            // Fetch the banner image as a file
+            const fileName = startup.bannerImage.file_name || "banner.jpg"
+            const bannerFile = await fetchImageAsFile(startup.bannerImage.file_url, fileName)
+            if (bannerFile) {
+              setDefaultBannerFile(bannerFile)
+            }
+          }
+
         } else {
           console.error("Failed to fetch startup data")
         }
@@ -422,6 +481,41 @@ export default function CreateCampaignPage() {
       })
     } finally {
       setIsFetchingMilestones(false)
+    }
+  }
+
+  // Add a handler for banner image change
+  const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      // Save file for upload
+      setBannerFile(file)
+
+      // Preview image
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          setBannerSrc(e.target.result as string)
+        }
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleFundingHeaderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      // Save file for upload
+      setHeaderFile(file)
+
+      // Preview image
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          setHeaderSrc(e.target.result as string)
+        }
+      }
+      reader.readAsDataURL(file)
     }
   }
 
@@ -517,59 +611,72 @@ export default function CreateCampaignPage() {
 
       const userId = user.sub?.substring(14)
 
+      // 1. First, modify the onSubmit function to properly handle the banner file upload
+      // Find the section in onSubmit for Step 1 and update it to include the uploaded banner file
+
+      // In the onSubmit function, replace the existing Step 1 submission code with this:
       if (currentStep === 1) {
         // Step 1: Submit basic campaign details
         try {
-          if (!user) return; // Wait until user is fully loaded
-        const userId = user?.sub?.substring(14);
-  
-        if (!userId) {
-          toast({
-            title: "Authentication error",
-            description: "Please sign in again to continue.",
-            variant: "destructive",
-          });
-          router.push("/api/auth/login");
-          return;
-        }
-          // Get the banner image value from the form
-          // Use the form value directly instead of relying on startupData which might be null
-          const bannerImageValue = values.banner
-  
-          // Make sure we have a banner image before submitting
-          if (!bannerImageValue) {
+          if (!user) return
+          const userId = user?.sub?.substring(14)
+
+          setSubmitLoading(true)
+
+          if (!userId) {
             toast({
-              title: "Error",
-              description: "Banner image is required. Please try again.",
+              title: "Authentication error",
+              description: "Please sign in again to continue.",
               variant: "destructive",
             })
+            router.push("/api/auth/login")
             return
           }
 
-          console.log(typeof(bannerImageValue))
-  
+          // If we already have a campaignId, don't create a new one
+          // if (hasCreatedCampaign && campaignId) {
+          //   setCurrentStep(currentStep + 1)
+          //   return
+          // }
+
+          // Create FormData to properly handle file uploads
+          const formData = new FormData()
+          formData.append("campaignOverview", "Campaign")
+          formData.append("stage", form.getValues("startupStage") || startupData?.stage || "")
+
+          if (campaignId) {
+            formData.append("campaign_id", campaignId)
+          }
+
+          // Add the banner file if it exists
+          if (bannerFile) {
+            formData.append("bannerImage", bannerFile)
+          }
+
           const response = await fetch(
-            "https://onlyfounders.azurewebsites.net/api/startup/submit-basic-campaign-details",
+            "https://ofStaging.azurewebsites.net/api/startup/submit-basic-campaign-details",
             {
               method: "POST",
               headers: {
-                "Content-Type": "application/json",
                 user_id: userId || "",
               },
-              body: JSON.stringify({
-                campaignOverview: "Campaign",
-                // Use the banner value directly from the form
-                bannerImage: bannerImageValue,
-                campaign_id: campaignId || undefined, // Only include if we have a campaign ID
-              }),
+              body: formData,
             },
           )
-  
+
           if (response.ok) {
             const data = await response.json()
-            if (!campaignId && data.campaign_id) {
+            // if (!campaignId && data.campaign_id) {
+            //   setCampaignId(data.campaign_id)
+            // }
+
+            if(hasCreatedCampaign){
+              setCampaignId(campaignId)
+            }else{
               setCampaignId(data.campaign_id)
             }
+
+            setHasCreatedCampaign(true) // Mark that we've created a campaign
             setCurrentStep(currentStep + 1)
           } else {
             toast({
@@ -586,6 +693,7 @@ export default function CreateCampaignPage() {
             variant: "destructive",
           })
         }
+        setSubmitLoading(false)
         return
       }
 
@@ -600,26 +708,32 @@ export default function CreateCampaignPage() {
           return
         }
 
+        setSubmitLoading(true)
+
+        const formData = new FormData()
+        formData.append("campaign_id", campaignId)
+        formData.append("fundingTarget", values.fundraisingTarget)
+        formData.append("fundraisingWallet", values.fundraisingWallet)
+        formData.append("acceptedCurrencyType", values.acceptedCurrencyType)
+        formData.append("fullyDilutedValuation", values.fullyDilutedValuation)
+        formData.append("initialMarketCap", values.initialMarketCap)
+        formData.append("vestingSummary", values.vestingSummary)
+        formData.append("deadline", values.fundingDeadline.toISOString())
+        formData.append("dealName", values.dealName)
+        formData.append("dealRound", values.dealRound)
+
+        if(headerFile) {
+          formData.append("fundingHeaderImage", headerFile)
+        }
+
         const response = await fetch(
-          "https://onlyfounders.azurewebsites.net/api/startup/submit-campaign-financial-details",
+          "https://ofStaging.azurewebsites.net/api/startup/submit-campaign-financial-details",
           {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
               user_id: userId || "",
             },
-            body: JSON.stringify({
-              campaign_id: campaignId,
-              fundingTarget: Number(values.fundraisingTarget),
-              fundraisingWallet: values.fundraisingWallet,
-              acceptedCurrencyType: values.acceptedCurrencyType,
-              fullyDilutedValuation: Number(values.fullyDilutedValuation),
-              initialMarketCap: Number(values.initialMarketCap),
-              vestingSummary: values.vestingSummary,
-              deadline: values.fundingDeadline.toISOString(),
-              dealName: values.dealName,
-              dealRound: values.dealRound,
-            }),
+            body: formData,
           },
         )
 
@@ -632,6 +746,7 @@ export default function CreateCampaignPage() {
             variant: "destructive",
           })
         }
+        setSubmitLoading(false)
         return
       }
 
@@ -640,6 +755,8 @@ export default function CreateCampaignPage() {
         if (!validateFaqs()) {
           return
         }
+
+        setSubmitLoading(true)
 
         // Update the form values with the current FAQs
         form.setValue("faqs", faqs)
@@ -659,7 +776,7 @@ export default function CreateCampaignPage() {
           answer: faq.answer,
         }))
 
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/add-faqs", {
+        const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/add-faqs", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -680,6 +797,7 @@ export default function CreateCampaignPage() {
             variant: "destructive",
           })
         }
+        setSubmitLoading(false)
         return
       }
 
@@ -689,6 +807,7 @@ export default function CreateCampaignPage() {
           return
         }
 
+        setSubmitLoading(true)
         // Update the form values with the current milestones
         form.setValue("userMilestones", userMilestones)
 
@@ -702,7 +821,7 @@ export default function CreateCampaignPage() {
         }
 
         // Step 4: Submit milestones
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/submit-milestones", {
+        const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/submit-milestones", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -719,7 +838,7 @@ export default function CreateCampaignPage() {
             title: "Success",
             description: "Campaign created successfully!",
           })
-          router.push("/campaigns")
+          router.push('/campaign')
         } else {
           toast({
             title: "Error",
@@ -727,6 +846,7 @@ export default function CreateCampaignPage() {
             variant: "destructive",
           })
         }
+        setSubmitLoading(false)
         return
       }
     } catch (error) {
@@ -887,9 +1007,10 @@ export default function CreateCampaignPage() {
     form.setValue("userMilestones", updatedMilestones)
 
     // Clear error for this field if it exists
-    if (milestoneErrors && milestoneErrors[milestoneId] && milestoneErrors[milestoneId][field]) {
+    const fieldKey = `${field}`
+    if (milestoneErrors && milestoneErrors[milestoneId] && milestoneErrors[milestoneId][fieldKey]) {
       const newErrors = { ...milestoneErrors }
-      delete newErrors[milestoneId][field]
+      delete newErrors[milestoneId][fieldKey]
 
       if (Object.keys(newErrors[milestoneId]).length === 0) {
         delete newErrors[milestoneId]
@@ -900,20 +1021,22 @@ export default function CreateCampaignPage() {
   }
 
   // Update requirement field
-  const updateRequirementField = (milestoneId: string, reqId: string, field: string, value: string) => {
+  const updateRequirementField = (milestoneId: string, reqId: string, field: string, value: any) => {
     const updatedMilestones = userMilestones.map((milestone) => {
       if (milestone.milestoneId === milestoneId) {
+        const updatedRequirements = milestone.requirements.map((req) => {
+          if ((req.id || req._id) === reqId) {
+            return {
+              ...req,
+              [field]: value,
+            }
+          }
+          return req
+        })
+
         return {
           ...milestone,
-          requirements: milestone.requirements.map((req) => {
-            if ((req.id || req._id) === reqId) {
-              return {
-                ...req,
-                [field]: value,
-              }
-            }
-            return req
-          }),
+          requirements: updatedRequirements,
         }
       }
       return milestone
@@ -954,19 +1077,19 @@ export default function CreateCampaignPage() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg">Loading...</p>
-      </div>
-    )
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex items-center justify-center min-h-screen">
+  //       <p className="text-lg">Loading...</p>
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className="min-h-screen bg-[#0a0b14] text-white p-6">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl font-bold mb-1">Create New Campaign</h1>
-        <p className="text-gray-400 mb-6">
+        <h1 className="text-2xl text-center md:text-left font-bold mb-1">Create New Campaign</h1>
+        <p className="text-gray-400 text-center md:text-left mb-6">
           {currentStep === 1
             ? "Enter basic information about your campaign"
             : currentStep === 2
@@ -977,7 +1100,7 @@ export default function CreateCampaignPage() {
         </p>
 
         {/* Step indicators */}
-        <div className="flex items-center mb-8">
+        <div className="flex items-center justify-center md:justify-start mb-8">
           <div
             className={`rounded-full w-8 h-8 flex items-center justify-center ${
               currentStep >= 1 ? "bg-blue-600" : "bg-gray-700"
@@ -1009,7 +1132,7 @@ export default function CreateCampaignPage() {
           >
             4
           </div>
-          <div className="ml-auto">Step {currentStep} of 4</div>
+          <div className="hidden md:block ml-auto">Step {currentStep} of 4</div>
         </div>
 
         <Form {...form}>
@@ -1075,12 +1198,10 @@ export default function CreateCampaignPage() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent className="bg-[#1a1b2e] border-[#2e2f45] text-white">
-                            <SelectItem value="idea">Idea</SelectItem>
-                            <SelectItem value="mvp">MVP</SelectItem>
-                            <SelectItem value="pre-seed">Pre-Seed</SelectItem>
-                            <SelectItem value="seed">Seed</SelectItem>
-                            <SelectItem value="series-a">Series A</SelectItem>
-                            <SelectItem value="growth">Growth</SelectItem>
+                            <SelectItem value="Ideation">Ideation</SelectItem>
+                            <SelectItem value="Prototype">Prototype</SelectItem>
+                            <SelectItem value="MVP">MVP</SelectItem>
+                            <SelectItem value="Public Beta">Public Beta</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -1090,6 +1211,8 @@ export default function CreateCampaignPage() {
 
                   <h2 className="text-xl font-semibold pt-4">Media & Branding</h2>
 
+                  {/* 2. Modify the FormField for logo to add upload functionality */}
+                  {/* Replace the existing logo FormField with this updated version */}
                   <FormField
                     control={form.control}
                     name="logo"
@@ -1098,21 +1221,13 @@ export default function CreateCampaignPage() {
                         <FormLabel>Startup Logo (Fetched from Startup page)</FormLabel>
                         <FormControl>
                           <div className="border border-dashed border-[#2e2f45] rounded-md p-6 flex flex-col items-center justify-center bg-[#1a1b2e]">
-                            {field.value ? (
-                              <div className="relative w-full">
-                                <img
-                                  src={field.value || "/placeholder.svg"}
-                                  alt="Logo"
-                                  className="mx-auto h-20 w-20 object-contain"
-                                />
-                              </div>
-                            ) : (
-                              <div className="flex flex-col items-center justify-center text-gray-400">
-                                <Upload className="h-10 w-10 mb-2" />
-                                <p>Upload your campaign logo</p>
-                                <p className="text-xs mt-1">PNG, JPG, SVG up to 5MB</p>
-                              </div>
-                            )}
+                            <div className="relative w-full">
+                              <img
+                                src={logoPreview || field.value || "/placeholder.svg" || "/placeholder.svg"}
+                                alt="Logo"
+                                className="mx-auto h-20 w-20 object-contain"
+                              />
+                            </div>
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -1120,6 +1235,8 @@ export default function CreateCampaignPage() {
                     )}
                   />
 
+                  {/* 3. Modify the FormField for banner to add upload functionality */}
+                  {/* Replace the existing banner FormField with this updated version */}
                   <FormField
                     control={form.control}
                     name="banner"
@@ -1128,18 +1245,32 @@ export default function CreateCampaignPage() {
                         <FormLabel>Startup Banner (Fetched from Startup page)</FormLabel>
                         <FormControl>
                           <div className="border border-dashed border-[#2e2f45] rounded-md p-6 flex flex-col items-center justify-center bg-[#1a1b2e]">
-                            {value ? (
-                              <div className="w-full">
+                            {value || bannerSrc ? (
+                              <div className="relative w-full h-32 bg-gray-800 rounded-lg overflow-hidden mb-2">
                                 <img
-                                  src={value || "/placeholder.svg"}
+                                  src={bannerSrc || "/placeholder.svg"}
                                   alt="Banner"
-                                  className="mx-auto h-32 w-full object-cover rounded-md"
+                                  className="w-full h-full object-cover"
+                                />
+                                <label
+                                  htmlFor="banner-upload"
+                                  className="absolute bottom-2 right-2 p-1 rounded-full bg-gray-800 border border-gray-700 cursor-pointer"
+                                >
+                                  <Camera className="h-4 w-4 text-gray-400" />
+                                  <span className="sr-only">Upload banner</span>
+                                </label>
+                                <input
+                                  id="banner-upload"
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={handleBannerChange}
                                 />
                               </div>
                             ) : (
                               <div className="flex flex-col items-center justify-center text-gray-400">
                                 <p>Banner image will be loaded from your startup profile</p>
-                                <p className="text-xs mt-1">Contact support if you need to update your banner</p>
+                                <p className="text-xs mt-1">Click upload to change your banner</p>
                               </div>
                             )}
                           </div>
@@ -1500,44 +1631,32 @@ export default function CreateCampaignPage() {
                         <FormLabel>Header Image</FormLabel>
                         <FormControl>
                           <div className="border border-dashed border-[#2e2f45] rounded-md p-6 flex flex-col items-center justify-center bg-[#1a1b2e]">
-                            {value ? (
-                              <div className="relative w-full">
-                                <img
-                                  src={value || "/placeholder.svg"}
-                                  alt="Header"
-                                  className="mx-auto h-32 w-full object-cover rounded-md"
-                                />
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  className="absolute top-2 right-2 bg-black/50 hover:bg-black/70"
-                                  onClick={() => {
-                                    // Open file picker
-                                    const input = document.createElement("input")
-                                    input.type = "file"
-                                    input.accept = "image/*"
-                                    input.onchange = (e) => {
-                                      const file = (e.target as HTMLInputElement).files?.[0]
-                                      if (file) {
-                                        // In a real app, you'd upload this file to your server/storage
-                                        // For demo purposes, we'll create a local URL
-                                        const url = URL.createObjectURL(file)
-                                        onChange(url)
-                                      }
-                                    }
-                                    input.click()
-                                  }}
-                                >
-                                  Change
-                                </Button>
-                              </div>
+                            {value || headerSrc ? (
+                              <div className="relative w-full h-32 bg-gray-800 rounded-lg overflow-hidden mb-2">
+                              <img
+                                src={headerSrc || "/placeholder.svg"}
+                                alt="Banner"
+                                className="w-full h-full object-cover"
+                              />
+                              <label
+                                htmlFor="banner-upload"
+                                className="absolute bottom-2 right-2 p-1 rounded-full bg-gray-800 border border-gray-700 cursor-pointer"
+                              >
+                                <Camera className="h-4 w-4 text-gray-400" />
+                                <span className="sr-only">Upload Header Image</span>
+                              </label>
+                              <input
+                                id="banner-upload"
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleFundingHeaderChange}
+                              />
+                            </div>
                             ) : (
                               <div className="flex flex-col items-center justify-center text-gray-400">
-                                <Upload className="h-10 w-10 mb-2" />
-                                <p>Upload your header image</p>
-                                <p className="text-xs mt-1">Recommended size: 1200×400px</p>
-                              </div>
+                              <p className="text-xs mt-1">Click upload to change your Header Image</p>
+                            </div>
                             )}
                           </div>
                         </FormControl>
@@ -2199,8 +2318,8 @@ export default function CreateCampaignPage() {
                 <div></div>
               )}
 
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-                {currentStep === 4 ? "Create Campaign" : "Next"}
+              <Button type="submit" className="bg-blue-600 hover:bg-blue-700" >
+                {currentStep === 4 ? "Create Campaign" : "Next"} {submitLoading && <Loader2 className="animate-spin h-4 w-4 ml-2" />}
               </Button>
             </div>
           </form>
@@ -2209,4 +2328,3 @@ export default function CreateCampaignPage() {
     </div>
   )
 }
-

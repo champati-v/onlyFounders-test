@@ -477,7 +477,7 @@ export default function ServiceProviderProfilePage() {
                   className="text-white font-bold text-2xl bg-[#1e1a3c] border-none"
                 />
               ) : (
-                <h1 className="text-white font-bold text-2xl">{displayName}</h1>
+                <h1 className="text-white font-bold text-lg">{displayName}</h1>
               )}
               <div className="flex items-center gap-2">
                 {isEditing ? (

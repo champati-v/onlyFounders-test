@@ -43,13 +43,14 @@ export default function MarketplacePage() {
   const [startups, setStartups] = useState<Startup[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [userRole, setUserRole] = useState<UserRole>(null)
+  const [userRole, setUserRole] = useState<string[]>()
   const [isRoleLoading, setIsRoleLoading] = useState(false)
   const { user, isLoading: isUserLoading } = useUser()
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [hasUpvoted, setHasUpvoted] = useState(false);
   const [hasStartup, setHasStartup] = useState(false);
   const [startupLoading, setStartupLoading] = useState(false)
+  const [searchItem, setSearchItem] = useState<string>("")
   const { toast } = useToast()
   const router = useRouter()
 
@@ -73,7 +74,7 @@ export default function MarketplacePage() {
 
         if(!user || isUserLoading) return
         const userID = user.sub?.substring(14)
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/check-startup", {
+        const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/check-startup", {
           method: "GET",
           headers: {
             user_id: userID,
@@ -109,7 +110,7 @@ export default function MarketplacePage() {
         setIsRoleLoading(true)
         const userID = user.sub?.substring(14)
 
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/profile/get-onboarding-status", {
+        const response = await fetch("https://ofStaging.azurewebsites.net/api/profile/get-onboarding-status", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -122,15 +123,16 @@ export default function MarketplacePage() {
         // }
 
         const data = await response.json()
-
+        console.log("current user role is:", data)
         // Set user role from API response
         if (data.status && data.role) {
-          setUserRole(data.role as UserRole)
+          const rolesArray = Array.isArray(data.role) ? data.role : [data.role]
+          setUserRole(rolesArray)
         }
       } catch (err) {
         console.error("Error fetching user role:", err)
         // Fallback: show bookmark button if role can't be determined
-        setUserRole(null)
+        setUserRole([""])
       } finally {
         setIsRoleLoading(false)
       }
@@ -144,7 +146,7 @@ export default function MarketplacePage() {
     const fetchStartups = async () => {
       try {
         setIsLoading(true)
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/get-startup-listing")
+        const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/get-startup-listing")
 
         // if (!response.ok) {
         //   throw new Error(`API error: ${response.status}`)
@@ -169,7 +171,7 @@ export default function MarketplacePage() {
     if (isRoleLoading) return true
 
     // Hide bookmark for Founders and Service Providers
-    return userRole !== "Founder" && userRole !== "serviceProvider"
+    return userRole?.includes("Investor")   
   }
 
   const handleCreateStartup = () => {
@@ -252,7 +254,7 @@ export default function MarketplacePage() {
           <div className="gap-4">
             <Button 
               onClick={() => handleCreateStartup()} 
-              className={` ${userRole != 'Founder' ? 'hidden' : 'block'} bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white`} >
+              className={` ${userRole?.includes('Founder') ? 'block' : 'hidden'} bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white`} >
               {hasStartup? "Edit your Startup" : "Create a Startup"}
             </Button>
           </div>  
@@ -492,7 +494,7 @@ export default function MarketplacePage() {
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
-                <Input placeholder="Search projects..." className="pl-9 bg-gray-900 border-gray-700 text-white" />
+                <Input placeholder="Search projects..." className="pl-9 bg-gray-900 border-gray-700 text-white" value={searchItem} onChange={(e) => setSearchItem(e.target.value)} />
               </div>
             </div>
 
@@ -535,7 +537,10 @@ export default function MarketplacePage() {
 
               <TabsContent value={activeTab} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {filteredStartups.map((startup, index) => (
+                  {filteredStartups.filter((startup) => 
+                    startup.startupName.toLowerCase().includes(searchItem.toLowerCase()) ||
+                    startup.category?.toLowerCase().includes(searchItem.toLowerCase())
+                    ).map((startup, index) => (
                     <Card
                       key={index}
                       className="bg-gray-900 border-gray-800 overflow-hidden hover:border-blue-600 transition-colors"

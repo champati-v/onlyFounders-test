@@ -107,7 +107,7 @@ export default function TokenomicsForm({ data, updateData, onSubmit }: Tokenomic
         console.log("The project id is", JSON.stringify({ projectId }));
   
         const response = await axios.post(
-          "https://onlyfounders.azurewebsites.net/api/startup/view-startup",
+          "https://ofStaging.azurewebsites.net/api/startup/view-startup",
           requestBody, // ✅ Correct JSON format
           {
             headers: {
@@ -279,7 +279,7 @@ export default function TokenomicsForm({ data, updateData, onSubmit }: Tokenomic
       }
 
       // Send data to API
-      const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/submit-tokenomics-details", {
+      const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/submit-tokenomics-details", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

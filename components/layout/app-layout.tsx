@@ -39,7 +39,7 @@ import {
   Info,
   CircleUserIcon,
 } from "lucide-react";
-
+import { HiOutlineSpeakerphone } from "react-icons/hi";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi"
@@ -242,9 +242,9 @@ export function AppLayout({
     { href: "/", label: "Home", icon: Home },
     { href: "/about", label: "About", icon: Info },
     { href: "/marketplace", label: "Marketplace", icon: Store },
+    { href: "/", label: "Campaigns", icon: HiOutlineSpeakerphone },
     { href: "/network", label: "Network", icon: Users },
     { href: "/resources", label: "Resources", icon: BookOpen },
-    // { href: "/", label: "Blog", icon: FileText },
     { href: "/quests", label: "Quests", icon: Trophy },
   ];
 
@@ -275,63 +275,46 @@ export function AppLayout({
     return (
       <>
         <div className="hidden md:flex items-center gap-2">
-          {/* {user && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="relative border-gray-700 text-gray-400 hover:text-white"
-                >
-                  <Bell className="h-5 w-5" />
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-blue-600">
-                    3
-                  </Badge>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-80 bg-gray-900 border-gray-800 text-white">
-                <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-                <DropdownMenuSeparator className="bg-gray-800" />
-                <div className="max-h-80 overflow-auto">
-                  {[1, 2, 3].map((i) => (
-                    <DropdownMenuItem key={i} className="py-3 cursor-pointer">
-                      <div className="flex items-start gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src="/placeholder.svg?height=32&width=32" />
-                          <AvatarFallback>AI</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium text-sm">New Investment Opportunity</p>
-                          <p className="text-xs text-gray-400">
-                            Project "MetaCanvas" matches your investment preferences
-                          </p>
-                          <p className="text-xs text-gray-500 mt-1">2 hours ago</p>
-                        </div>
-                      </div>
-                    </DropdownMenuItem>
-                  ))}
-                </div>
-                <DropdownMenuSeparator className="bg-gray-800" />
-                <DropdownMenuItem className="justify-center text-blue-400 cursor-pointer">
-                  View all notifications
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )} */}
-
+        {user ? (
+          <ConnectButton.Custom>
+          {({ account, openConnectModal, openAccountModal, mounted }) => {
+            const connected = mounted && account;
+            return (
+              <button
+                onClick={
+                  connected ? openAccountModal : openConnectModal
+                }
+                className="flex items-center justify-center rounded-md w-full bg-gradient-to-r px-2 py-1.5 from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+              >
+                <Wallet className="mr-2 h-4 w-4" />
+                <span className="block md:hidden">
+                  {connected
+                    ? `${address?.slice(0, 6)}...${address?.slice(-4)}`
+                    : "Connect"}
+                </span>
+                <span className="hidden md:block">
+                  {connected
+                    ? `${address?.slice(0, 6)}...${address?.slice(-4)}`
+                    : "Connect Wallet"}
+                </span>
+              </button>
+            );
+          }}
+        </ConnectButton.Custom>
+        ) : null}
+        
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-gray-700 text-white gap-2"
+                  className="border-gray-700 text-white rounded-full h-10 w-10"
                 >
-                  <Avatar className="h-6 w-6">
+                  <Avatar className="h-8 w-8">
                     <AvatarImage src={(user as any).picture} />
                     <AvatarFallback>U</AvatarFallback>
                   </Avatar>
-                  <span>{(user as any).given_name}</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-56 bg-gray-900 border-gray-800 text-white">
@@ -349,25 +332,6 @@ export function AppLayout({
                     )}
                   </div>
                 </DropdownMenuItem>
-                {/* <DropdownMenuItem asChild className="cursor-pointer">
-                  <Link href="/">
-                    <Wallet className="mr-2 h-4 w-4" />
-                    Investor Dashboard
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="cursor-pointer">
-                  <Link href="/">
-                    <Building className="mr-2 h-4 w-4" />
-                    Founder Dashboard
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild className="cursor-pointer">
-                  <Link href="/settings">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-gray-800" /> */}
                 <a href="/api/auth/logout">
                   <DropdownMenuItem className="cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
@@ -397,34 +361,6 @@ export function AppLayout({
             </div>
           )}
         </div>
-
-        {user ? (
-          <ConnectButton.Custom>
-          {({ account, openConnectModal, openAccountModal, mounted }) => {
-            const connected = mounted && account;
-            return (
-              <button
-                onClick={
-                  connected ? openAccountModal : openConnectModal
-                }
-                className="flex items-center justify-center rounded-md w-full bg-gradient-to-r px-2 py-1.5 from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-              >
-                <Wallet className="mr-2 h-4 w-4" />
-                <span className="block md:hidden">
-                  {connected
-                    ? `${address?.slice(0, 6)}...${address?.slice(-4)}`
-                    : "Connect"}
-                </span>
-                <span className="hidden md:block">
-                  {connected
-                    ? `${address?.slice(0, 6)}...${address?.slice(-4)}`
-                    : "Connect Wallet"}
-                </span>
-              </button>
-            );
-          }}
-        </ConnectButton.Custom>
-        ) : null}
       </>
     );
   };
@@ -468,12 +404,12 @@ export function AppLayout({
               ))} */}
 
               <NavigationMenu>
-                <NavigationMenuList className="flex gap-4">
+                <NavigationMenuList className="flex gap-2">
                   <NavigationMenuItem>
                     <NavigationMenuLink className="bg-transparent" asChild>
                       <a
                         href="/about"
-                        className="py-2.5 px-3 rounded-md hover:cursor-pointer hover:bg-gray-800"
+                        className="py-2.5 px-3 text-[15px] rounded-md hover:cursor-pointer hover:bg-gray-800"
                       >
                         About
                       </a>
@@ -523,6 +459,17 @@ export function AppLayout({
                         </a>
                       </div>
                     </NavigationMenuContent>
+                  </NavigationMenuItem>
+
+                  <NavigationMenuItem>
+                    <NavigationMenuLink className="bg-transparent" asChild>
+                      <a
+                        href="/"
+                        className="py-2.5 px-3 text-[15px] rounded-md hover:cursor-pointer hover:bg-gray-800"
+                      >
+                        Campaigns
+                      </a>
+                    </NavigationMenuLink>
                   </NavigationMenuItem>
 
                   <NavigationMenuItem>
@@ -605,7 +552,7 @@ export function AppLayout({
                     <NavigationMenuLink className="bg-transparent" asChild>
                       <a
                         href="/quests"
-                        className="py-2.5 px-3 rounded-md hover:cursor-pointer hover:bg-gray-800"
+                        className="py-2.5 px-3 text-[15px] rounded-md hover:cursor-pointer hover:bg-gray-800"
                       >
                         Quests
                       </a>
@@ -646,7 +593,7 @@ export function AppLayout({
 
                   {authState.isAuthenticated ? (
                     <p>
-                      You are logged in! {JSON.stringify(ocAuth.getAuthState())}
+                      Connected! {JSON.stringify(ocAuth.getAuthState())}
                     </p>
                   ) : (
                     <LoginButton />
@@ -707,7 +654,7 @@ export function AppLayout({
 
                       {authState.isAuthenticated ? (
                         <p>
-                          You are logged in!{" "}
+                          Connected!{" "}
                           {JSON.stringify(ocAuth.getAuthState())}
                         </p>
                       ) : (
@@ -721,7 +668,7 @@ export function AppLayout({
                       <>
                         <div className="px-3 mb-2">
                           <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                            Dashboards
+                            Account
                           </h4>
                         </div>
                         <div className="grid gap-1 px-2">
@@ -739,7 +686,7 @@ export function AppLayout({
                     <div className="grid gap-1 px-2"></div>
                   </div>
 
-                  <div className="p-4 border-t border-gray-800">
+                  <div className="flex flex-col gap-3 p-4 border-t border-gray-800">
                     {!authReady ? (
                       <Skeleton className="h-10 w-full rounded-md" />
                     ) : user ? (

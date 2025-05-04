@@ -492,7 +492,7 @@ export default function InvestorProfileSetupPage({params, }: { params: { id: num
           if(roleCount < userRole.length) {
             const nextRole = userRole[roleCount]
 
-            if (nextRole === "founder") {
+            if (nextRole === "Founder") {
               toast({
                 title: "Profile submitted successfully",
                 description: "Your investor profile has been saved.",
@@ -500,7 +500,7 @@ export default function InvestorProfileSetupPage({params, }: { params: { id: num
               router.push(`/profile/setup/founder/${roleCount}`)
             }
       
-            else if (nextRole === "service-provider") {
+            else if (nextRole === "ServiceProvider") {
               toast({
                 title: "Profile submitted successfully",
                 description: "Your investor profile has been saved.",

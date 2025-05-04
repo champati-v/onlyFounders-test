@@ -167,7 +167,7 @@ export default function TractionMetricsForm({ data, updateData, onNext, userId }
           return
         }
         const response = await axios.post(
-          "https://onlyfounders.azurewebsites.net/api/startup/view-startup",
+          "https://ofStaging.azurewebsites.net/api/startup/view-startup",
           requestBody,
           {
             headers: {
@@ -292,7 +292,7 @@ export default function TractionMetricsForm({ data, updateData, onNext, userId }
       }
 
       // Send data to API
-      const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/submit-traction-details", {
+      const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/submit-traction-details", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -31,7 +31,7 @@ export default function LoginButton() {
         alt="OCID Logo"
         className="w-5 h-5"
       />
-      {isConnected ? '' : 'OCID Connect'}
+      {isConnected ? '' : 'OCID'}
     </button>
   );
 }

@@ -376,7 +376,7 @@ export default function InvestorProfilePage() {
                   className="text-white font-bold text-2xl bg-[#1e1a3c] border-none"
                 />
               ) : (
-                <h1 className="text-white font-bold text-2xl">
+                <h1 className="text-white font-bold text-lg">
                   {profile.username}
                 </h1>
               )}
