@@ -402,6 +402,7 @@ export default function CreateCampaignPage() {
 
           if (startup.bannerImage.file_url) {
             setBannerSrc(startup.bannerImage.file_url)
+            setHeaderSrc(startup.bannerImage.file_url)
 
             // Fetch the banner image as a file
             const fileName = startup.bannerImage.file_name || "banner.jpg"
@@ -833,7 +834,7 @@ export default function CreateCampaignPage() {
           }),
         })
 
-        if (response.ok) {
+        if (response.status === 204) {
           toast({
             title: "Success",
             description: "Campaign created successfully!",
@@ -1084,6 +1085,9 @@ export default function CreateCampaignPage() {
   //     </div>
   //   )
   // }
+  if(!user) {
+    router.push("/api/auth/login")
+  }
 
   return (
     <div className="min-h-screen bg-[#0a0b14] text-white p-6">
