@@ -101,7 +101,7 @@ export function AppLayout({
       const userID = user.sub?.substring(14);
 
       const response = await fetch(
-        "https://onlyfounders.azurewebsites.net/api/profile/get-onboarding-status",
+        "https://ofStaging.azurewebsites.net/api/profile/get-onboarding-status",
         {
           method: "GET",
           headers: {
@@ -154,7 +154,7 @@ export function AppLayout({
           const userID = user.sub?.substring(14);
 
           const response = await axios.post(
-            "https://onlyfounders.azurewebsites.net/api/profile/add-walletAddress",
+            "https://ofStaging.azurewebsites.net/api/profile/add-walletAddress",
             { walletAddress: address },
             {
               headers: {
@@ -190,7 +190,7 @@ export function AppLayout({
           setIsSent(true);
 
           const response = await fetch(
-            "https://onlyfounders.azurewebsites.net/api/auth/register-user",
+            "https://ofStaging.azurewebsites.net/api/auth/register-user",
             {
               method: "POST",
               headers: {

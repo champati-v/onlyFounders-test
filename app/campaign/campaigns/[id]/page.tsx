@@ -1,11 +1,12 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
+import { useUser } from "@auth0/nextjs-auth0/client"
 
-import { getCampaignDetails, isOwnedCampaign } from "@/lib/data"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CampaignHeader } from "../../components/campaign-header"
 import { FundingSidebar } from "../../components/funding-sidebar"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { OverviewTab } from "./tabs/overview-tab"
 import { FundingDetailsTab } from "./tabs/funding-details-tab"
 import { MilestonesTab } from "./tabs/milestones-tab"
@@ -14,17 +15,183 @@ import { TokenomicsTab } from "./tabs/tokenomics-tab"
 import { FaqTab } from "./tabs/faq-tab"
 import { UpdatesTab } from "./tabs/updates-tab"
 
+// Define the campaign interface based on the API response
+interface Milestone {
+  milestoneId: string
+  name: string
+  fundPercentage: number
+  description: string
+  requirements: {
+    name: string
+    description: string
+    status: string
+    _id: string
+  }[]
+  verificationProof: string
+  milestoneStatus: string
+  adminApprovalStatus: string
+  rejectionReason: null | string
+  _id: string
+}
+
+interface FAQ {
+  question: string
+  answer: string
+  _id: string
+}
+
+interface FileInfo {
+  file_name: string
+  file_url: string
+  _id: string
+}
+
+interface SocialLinks {
+  website: string
+  twitter: string
+  github: string
+  telegram: string
+  discord: string
+  medium: string
+}
+
+interface Campaign {
+  _id: string
+  user_id: string
+  project_id: string
+  campaignOverview: string
+  campaignName: string
+  tagline: string
+  description: string
+  category: string
+  stage: string
+  logo: FileInfo
+  banner: FileInfo
+  socialLinks: SocialLinks
+  whitePaperUrl: string
+  pitchDeckUrl: string
+  pitchDemoVideoUrl: string
+  totalRaisedOnPlatform: number
+  fullyDilutedValuation: number
+  initialMarketCap: number
+  verifiedStatus: boolean
+  campaignCompletionStatus: boolean
+  visibility: string
+  campaignStatus: string
+  faqs: FAQ[]
+  milestones: Milestone[]
+  acceptedCurrencyType: string
+  deadline: string
+  dealName: string
+  dealRound: string
+  fundingHeaderImage: FileInfo
+  fundingTarget: number
+  fundraisingWallet: string
+  vestingSummary: string
+  tokenPrice: number
+}
+
 export default function CampaignDetailPage() {
   const params = useParams()
   const campaignId = params.id as string
+  const [campaign, setCampaign] = useState<Campaign | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const { user, isLoading: isUserLoading } = useUser()
+  const [isOwner, setIsOwner] = useState(false)
 
-  // Get campaign details
-  const campaignDetails = getCampaignDetails(campaignId)
-  const isOwner = isOwnedCampaign(campaignId)
+  // Fetch campaign details from API
+  useEffect(() => {
+    const fetchCampaignDetails = async () => {
+      setIsLoading(true)
+      try {
+        if (!campaignId) {
+          throw new Error("Campaign ID is required")
+        }
+
+        // Get user ID for the API request header
+        const userId = user?.sub?.substring(14) || "guest-user"
+
+        const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/get-campaign", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            user_id: userId,
+          },
+          body: JSON.stringify({ campaignId }),
+        })
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch campaign details: ${response.status}`)
+        }
+
+        const data = await response.json()
+        setCampaign(data.campaign)
+
+        // Check if the current user is the owner of the campaign
+        setIsOwner(data.campaign.user_id === userId)
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch campaign details")
+        console.error("Error fetching campaign details:", err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    if (!isUserLoading) {
+      fetchCampaignDetails()
+    }
+  }, [campaignId, user, isUserLoading])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#050914] text-white flex items-center justify-center">
+        <div className="text-center">
+          <div
+            className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-[#4361ff] border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+            role="status"
+          >
+            <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+              Loading...
+            </span>
+          </div>
+          <p className="mt-4 text-gray-400">Loading campaign details...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !campaign) {
+    return (
+      <div className="min-h-screen bg-[#050914] text-white">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center py-12 bg-[#0c1425] rounded-lg">
+            <h3 className="text-xl font-bold mb-2 text-red-500">Error loading campaign</h3>
+            <p className="text-gray-400 mb-6">{error || "Campaign not found"}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-[#4361ff] hover:bg-[#4361ff]/90 text-white py-2 px-4 rounded-md"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Format campaign data for the components
+  const formattedCampaign = {
+    ...campaign,
+    milestones: {
+      completed: campaign.milestones.filter((m) => m.milestoneStatus === "complete").length,
+      total: campaign.milestones.length,
+    },
+  }
 
   return (
     <div className="min-h-screen bg-[#050914] text-white">
-      <CampaignHeader campaign={{ ...campaignDetails, milestones: { completed: campaignDetails.milestones.length, total: campaignDetails.milestones.length } }} />
+      <CampaignHeader campaign={formattedCampaign} />
 
       <div className="max-w-[1800px] mx-auto px-4 md:px-8 lg:px-16 xl:px-16 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -43,37 +210,37 @@ export default function CampaignDetailPage() {
               </div>
 
               <TabsContent value="overview">
-                <OverviewTab campaign={campaignDetails} />
+                <OverviewTab campaign={campaign} />
               </TabsContent>
 
               <TabsContent value="funding-details">
-                <FundingDetailsTab campaign={campaignDetails} />
+                <FundingDetailsTab campaign={campaign} />
               </TabsContent>
 
               <TabsContent value="milestones">
-                <MilestonesTab campaign={campaignDetails} isOwner={isOwner} campaignId={campaignId} />
+                <MilestonesTab campaign={campaign} isOwner={isOwner} campaignId={campaignId} />
               </TabsContent>
 
               <TabsContent value="team">
-                <TeamTab campaign={campaignDetails} />
+                <TeamTab campaign={campaign} />
               </TabsContent>
 
               <TabsContent value="tokenomics">
-                <TokenomicsTab campaign={campaignDetails} />
+                <TokenomicsTab campaign={campaign} />
               </TabsContent>
 
               <TabsContent value="faq">
-                <FaqTab campaign={campaignDetails} />
+                <FaqTab campaign={campaign} />
               </TabsContent>
 
               <TabsContent value="updates">
-                <UpdatesTab campaign={campaignDetails} />
+                <UpdatesTab campaign={campaign} />
               </TabsContent>
             </Tabs>
           </div>
 
           <div className="lg:col-span-1 order-first lg:order-last">
-            <FundingSidebar campaign={{ ...campaignDetails, milestones: { completed: campaignDetails.milestones.length, total: campaignDetails.milestones.length } }} />
+            <FundingSidebar campaign={formattedCampaign} />
           </div>
         </div>
       </div>

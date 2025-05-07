@@ -1,120 +1,139 @@
-import Image from "next/image"
 import Link from "next/link"
-import { Calendar, Users } from "lucide-react"
-
-import type { Campaign } from "@/lib/types"
-import { formatCurrency } from "@/lib/utils"
+import Image from "next/image"
+import { Calendar, CheckCircle, Users } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 
-interface CampaignCardProps {
-  campaign: Campaign
+// Define the campaign type based on what the component expects
+interface Category {
+  name: string
 }
 
-export function CampaignCard({ campaign }: CampaignCardProps) {
-  const progressPercentage = (campaign.raised / campaign.goal) * 100
+interface CampaignProps {
+  campaign: {
+    id: string
+    name: string
+    description: string
+    image: string
+    logo: string
+    categories: Category[]
+    fundingGoal: number
+    fundingRaised: number
+    deadline: Date | null
+    status: string
+    isOwner: boolean
+    totalMilestones: number
+    milestonesCompleted: number
+    numberOfInvestors: number
+  }
+}
+
+export function CampaignCard({ campaign }: CampaignProps) {
+  // Calculate funding progress percentage
+  const progressPercentage = (campaign.fundingRaised / campaign.fundingGoal) * 100
+
+  // Format date to display in a readable format
+  const formatDate = (date: Date | null) => {
+    if (!date) return "N/A"
+    return new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    }).format(date)
+  }
+
+  // Format currency
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 0,
+    }).format(amount)
+  }
 
   return (
-    <div className="bg-[#0c1425] rounded-lg overflow-hidden border border-[#1e293b] transition-all duration-300 hover:shadow-lg hover:shadow-[#39e7f5]/10 hover:border-[#39e7f5]/30">
-      {/* Campaign Banner */}
-      <div className="relative h-48 bg-gradient-to-b from-gray-600 to-[#0c1425]">
-        <div className="absolute top-3 right-3 z-10">
-          <span className="bg-[#10b981] text-white text-xs px-3 py-1 rounded-full font-medium">
-            {campaign.status === "active" ? "Active" : campaign.status === "completed" ? "Completed" : "Upcoming"}
-          </span>
-        </div>
+    <Card className="overflow-hidden border-0 bg-[#0c1425] hover:bg-[#131e32] transition-colors duration-300 h-full">
+      <div className="relative h-48 w-full">
+        <Image
+          src={campaign.image || "/placeholder.svg?height=192&width=384&query=blockchain project"}
+          alt={campaign.name}
+          fill
+          className="object-cover"
+        />
+        {campaign.status === "Active" && (
+          <Badge className="absolute top-3 right-3 bg-green-500 text-white border-0">Active</Badge>
+        )}
+        {campaign.status === "Completed" && (
+          <Badge className="absolute top-3 right-3 bg-blue-500 text-white border-0">Completed</Badge>
+        )}
+        {campaign.status === "Pending" && (
+          <Badge className="absolute top-3 right-3 bg-yellow-500 text-white border-0">Pending</Badge>
+        )}
+        {campaign.isOwner && (
+          <Badge className="absolute top-3 left-3 bg-[#4361ff] text-white border-0">My Campaign</Badge>
+        )}
       </div>
-
-      {/* Campaign Info */}
-      <div className="p-4">
-        <div className="flex items-start gap-3 mb-3">
-          {/* Logo */}
-          <div className="bg-[#131e32] p-2 rounded-lg shrink-0">
-            <Image src={campaign.logo || "/placeholder.svg"} alt="Logo" width={32} height={32} className="rounded" />
+      <CardContent className="p-5">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="relative h-10 w-10 rounded-full overflow-hidden bg-[#1e293b]">
+            <Image
+              src={campaign.logo || "/placeholder.svg?height=40&width=40&query=logo"}
+              alt={`${campaign.name} logo`}
+              fill
+              className="object-cover"
+            />
           </div>
+          <h3 className="font-bold text-lg line-clamp-1">{campaign.name}</h3>
+        </div>
 
-          {/* Title and Categories */}
+        <p className="text-gray-400 mb-4 line-clamp-2 h-12">{campaign.description}</p>
+
+        <div className="flex flex-wrap gap-2 mb-4">
+          {campaign.categories.map((category, index) => (
+            <Badge key={index} className="bg-[#1e293b] text-gray-300 hover:bg-[#1e293b] border-0">
+              {category.name}
+            </Badge>
+          ))}
+        </div>
+
+        <div className="space-y-4">
           <div>
-            <h3 className="text-xl font-bold">{campaign.name}</h3>
-            <div className="flex flex-wrap gap-2 mt-1">
-              {campaign.categories.map((category, index) => (
-                <span key={index} className={`${category.color} text-white text-xs px-3 py-1 rounded-full`}>
-                  {category.name}
-                </span>
-              ))}
+            <div className="flex justify-between text-sm mb-1">
+              <span className="text-gray-400">Raised</span>
+              <span className="font-medium">
+                {formatCurrency(campaign.fundingRaised)} / {formatCurrency(campaign.fundingGoal)}
+              </span>
             </div>
+            <Progress value={progressPercentage} className="h-2 bg-[#1e293b]" indicatorClassName="bg-[#39e7f5]" />
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 text-sm text-gray-400">
+            <div className="flex items-center gap-1">
+              <Calendar size={14} />
+              <span>{formatDate(campaign.deadline)}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <Users size={14} />
+              <span>{campaign.numberOfInvestors} Investors</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <CheckCircle size={14} />
+              <span>
+                {campaign.milestonesCompleted}/{campaign.totalMilestones} Milestones
+              </span>
+            </div>
+          </div>
+
+          {/* View Campaign Button */}
+          <div className="pt-4">
+            <Link href={`/campaign/campaigns/${campaign.id}`} className="w-full block">
+              <Button className="w-full bg-[#4361ff] hover:bg-[#4361ff]/90 text-white">View Campaign</Button>
+            </Link>
           </div>
         </div>
-
-        <p className="text-gray-400 text-sm mb-4">{campaign.description}</p>
-
-        {/* Funding Progress */}
-        <div className="mb-4">
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-gray-400">Raised</span>
-            <span>
-              {formatCurrency(campaign.raised)} / {formatCurrency(campaign.goal)}
-            </span>
-          </div>
-          <Progress
-            value={progressPercentage}
-            className="h-2"
-            indicatorClassName="bg-gradient-to-r from-[#3b82f6] to-[#39e7f5]"
-          />
-        </div>
-
-        {/* Campaign Details - 2x2 Grid */}
-        <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
-          <div className="flex items-center gap-2">
-            <Calendar size={16} className="text-[#39e7f5]" />
-            <div>
-              <div className="text-gray-400">Deadline</div>
-              <div>{campaign.deadline}</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Users size={16} className="text-[#39e7f5]" />
-            <div>
-              <div className="text-gray-400">Investors</div>
-              <div>{campaign.investors}</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 col-span-1">
-            <div className="text-[#39e7f5]">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M8 2v4" />
-                <path d="M16 2v4" />
-                <rect width="18" height="18" x="3" y="4" rx="2" />
-                <path d="M3 10h18" />
-                <path d="m8 14 2 2 4-4" />
-              </svg>
-            </div>
-            <div>
-              <div className="text-gray-400">Milestones</div>
-              <div>
-                {campaign.milestones.completed}/{campaign.milestones.total}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Button - Full width */}
-        <Link
-          href={`/campaign/campaigns/${campaign.id}`}
-          className="block w-full bg-[#4361ff] hover:bg-[#4361ff]/90 text-white py-2 rounded-md font-medium text-center"
-        >
-          {campaign.isOwner ? "Manage Campaign" : "View Campaign"}
-        </Link>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   )
 }

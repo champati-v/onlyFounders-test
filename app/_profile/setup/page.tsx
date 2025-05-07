@@ -35,7 +35,7 @@ export default function ProfileSetupPage() {
         return
       }
 
-      const response = await fetch("https://onlyfounders.azurewebsites.net/api/profile/submit-role", {
+      const response = await fetch("https://ofStaging.azurewebsites.net/api/profile/submit-role", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

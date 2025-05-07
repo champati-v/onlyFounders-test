@@ -2,12 +2,11 @@ import Image from "next/image"
 import Link from "next/link"
 import { ChevronLeft, ThumbsUp } from "lucide-react"
 
-import type { Campaign } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
 interface CampaignHeaderProps {
-  campaign: Campaign
+  campaign: any // Using any for now as the full type is defined in the parent component
 }
 
 export function CampaignHeader({ campaign }: CampaignHeaderProps) {
@@ -20,7 +19,7 @@ export function CampaignHeader({ campaign }: CampaignHeaderProps) {
           className="bg-[#5b5bf8] hover:bg-[#5b5bf8]/90 text-white flex items-center gap-1 rounded-md"
           asChild
         >
-          <Link href="/campaigns">
+          <Link href="/campaign/campaigns">
             <ChevronLeft size={16} />
             <span>Back to Campaigns</span>
           </Link>
@@ -39,7 +38,7 @@ export function CampaignHeader({ campaign }: CampaignHeaderProps) {
       {/* Hero Banner */}
       <div className="relative h-64 w-full overflow-hidden">
         <Image
-          src="/rolling-fields-harvest.png"
+          src={campaign.banner?.file_url || "/placeholder.svg?height=300&width=1200&query=blockchain banner"}
           alt="Campaign Banner"
           width={1200}
           height={300}
@@ -50,21 +49,41 @@ export function CampaignHeader({ campaign }: CampaignHeaderProps) {
       {/* Project Info */}
       <div className="px-6 py-4 flex items-start gap-4 absolute bottom-0 left-0 right-0 z-10">
         <div className="bg-[#0c1425] p-2 rounded-lg">
-          <Image src="/abstract-geometric-logo.png" alt="Project Logo" width={60} height={60} className="rounded" />
+          <Image
+            src={campaign.logo?.file_url || "/placeholder.svg?height=60&width=60&query=logo"}
+            alt="Project Logo"
+            width={60}
+            height={60}
+            className="rounded"
+          />
         </div>
         <div>
           <div className="flex items-center gap-2 mb-1">
-            {campaign.categories.map((badge, index) => (
-              <Badge key={index} className={`${badge.color} text-white rounded-full text-xs px-3 py-0.5`}>
-                {badge.name}
+            <Badge className="bg-[#5b5bf8] text-white rounded-full text-xs px-3 py-0.5">
+              {campaign.category || "DeFi"}
+            </Badge>
+            <Badge className="bg-[#10b981] text-white rounded-full text-xs px-3 py-0.5">
+              {campaign.stage || "Prototype"}
+            </Badge>
+            {campaign.campaignStatus && (
+              <Badge
+                className={`${
+                  campaign.campaignStatus === "Active"
+                    ? "bg-green-500"
+                    : campaign.campaignStatus === "Completed"
+                      ? "bg-blue-500"
+                      : "bg-yellow-500"
+                } text-white rounded-full text-xs px-3 py-0.5`}
+              >
+                {campaign.campaignStatus}
               </Badge>
-            ))}
+            )}
           </div>
-          <h2 className="text-2xl font-bold">{campaign.name}</h2>
-          <p className="text-gray-300 text-sm">{campaign.description}</p>
+          <h2 className="text-2xl font-bold">{campaign.campaignName}</h2>
+          <p className="text-gray-300 text-sm">{campaign.tagline}</p>
           <div className="flex items-center gap-1 text-sm text-gray-400 mt-1">
             <span>Founder:</span>
-            <Link href="#" className="text-[#39e7f5]">
+            <Link href={`/public-profile/founder/${campaign.project_id}`} className="text-[#39e7f5]">
               {campaign.isOwner ? "You" : "NewUser"}
             </Link>
           </div>

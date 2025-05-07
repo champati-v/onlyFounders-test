@@ -78,7 +78,7 @@ export default function ProfilePage() {
           return;
         }
   
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/profile/get-profile", {
+        const response = await fetch("https://ofStaging.azurewebsites.net/api/profile/get-profile", {
           headers: {
             user_id: userId,
           },

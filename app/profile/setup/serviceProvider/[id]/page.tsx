@@ -325,7 +325,7 @@ export default function ServiceProviderProfileSetupPage({ params }: { params: { 
         if (!user || isLoading) return // Wait until user is fully loaded
         const userId = user?.sub?.substring(14)
 
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/profile/get-profile", {
+        const response = await fetch("https://ofStaging.azurewebsites.net/api/profile/get-profile", {
           method: "GET",
           headers: {
             user_id: userId,

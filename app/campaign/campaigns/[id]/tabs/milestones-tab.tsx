@@ -8,14 +8,29 @@ interface MilestonesTabProps {
 
 export function MilestonesTab({ campaign, isOwner, campaignId }: MilestonesTabProps) {
   // Calculate total completed tasks
-  const totalTasks = campaign.milestones.reduce((acc: number, milestone: any) => acc + milestone.tasks.length, 0)
+  const totalTasks = campaign.milestones.reduce((acc: number, milestone: any) => acc + milestone.requirements.length, 0)
+
   const completedTasks = campaign.milestones.reduce(
-    (acc: number, milestone: any) => acc + milestone.tasks.filter((task: any) => task.status === "completed").length,
+    (acc: number, milestone: any) =>
+      acc + milestone.requirements.filter((req: any) => req.status === "complete" || req.status === "completed").length,
     0,
   )
 
   // Calculate overall progress percentage
-  const overallProgress = Math.round((completedTasks / totalTasks) * 100)
+  const overallProgress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
+
+  // Calculate average fund percentage per milestone
+  const avgFundPercentage =
+    campaign.milestones.length > 0
+      ? Math.round(
+          campaign.milestones.reduce((sum: number, m: any) => sum + m.fundPercentage, 0) / campaign.milestones.length,
+        )
+      : 0
+
+  // Calculate release amount based on funding target and fund percentage
+  const calculateReleaseAmount = (fundPercentage: number) => {
+    return fundPercentage// fundPercentage is in basis points (e.g., 2000 = 20%)
+  }
 
   return (
     <div className="bg-[#0c1425] rounded-lg p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)] mb-6">
@@ -38,7 +53,8 @@ export function MilestonesTab({ campaign, isOwner, campaignId }: MilestonesTabPr
             {completedTasks} of {totalTasks} tasks completed
           </span>
           <span className="text-sm text-[#39e7f5]">
-            {Math.round(campaign.milestones[0]?.releaseAmount || 0).toLocaleString()} USDC per milestone
+            {Math.round(calculateReleaseAmount(avgFundPercentage)).toLocaleString()}{" "}
+            {campaign.acceptedCurrencyType?.toUpperCase() || "USDC"} per milestone
           </span>
         </div>
       </div>
@@ -67,10 +83,72 @@ export function MilestonesTab({ campaign, isOwner, campaignId }: MilestonesTabPr
       </div>
 
       <div>
-        {campaign.milestones.map((milestone: any) => (
-          <MilestoneCard key={milestone.id} {...milestone} campaignId={campaignId} isOwner={isOwner} />
-        ))}
+        {campaign.milestones.map((milestone: any, index: number) => {
+          // Calculate milestone progress
+          const totalReqs = milestone.requirements.length
+          const completedReqs = milestone.requirements.filter(
+            (req: any) => req.status === "complete" || req.status === "completed",
+          ).length
+          const progress = totalReqs > 0 ? (completedReqs / totalReqs) * 100 : 0
+
+          // Map milestone status to expected status in MilestoneCard
+          let status: "completed" | "in-progress" | "upcoming" = "upcoming"
+          if (milestone.milestoneStatus === "complete" || milestone.milestoneStatus === "completed") {
+            status = "completed"
+          } else if (
+            milestone.milestoneStatus === "in-progress" ||
+            milestone.milestoneStatus === "incomplete" ||
+            progress > 0
+          ) {
+            status = "in-progress"
+          }
+
+          // Map requirements to tasks
+          const tasks = milestone.requirements.map((req: any) => ({
+            id: req._id,
+            title: req.name,
+            description: req.description,
+            status: mapStatusForTask(req.status),
+            rejectionReason: milestone.rejectionReason || undefined,
+            submissionCount: 1, // Default value
+            submissionDate: new Date().toISOString(), // Default value
+          }))
+
+          return (
+            <MilestoneCard
+              key={milestone.milestoneId}
+              id={milestone.milestoneId}
+              number={index + 1}
+              title={milestone.name}
+              description={milestone.description}
+              tasks={tasks}
+              releaseAmount={milestone.fundPercentage}
+              fundingPercentage={milestone.fundPercentage / 100} // Convert basis points to percentage
+              progress={progress}
+              status={status}
+              campaignId={campaignId}
+              isOwner={isOwner}
+            />
+          )
+        })}
       </div>
     </div>
   )
+}
+
+// Helper function to map API status to MilestoneCard task status
+function mapStatusForTask(status: string): "pending" | "completed" | "rejected" | "review_pending" {
+  switch (status.toLowerCase()) {
+    case "complete":
+    case "completed":
+      return "completed"
+    case "rejected":
+      return "rejected"
+    case "review":
+    case "review_pending":
+    case "pending_review":
+      return "review_pending"
+    default:
+      return "pending"
+  }
 }
