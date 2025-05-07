@@ -82,7 +82,7 @@ export default function InvestorProfilePage() {
         }
 
         const response = await fetch(
-          "https://onlyfounders.azurewebsites.net/api/profile/get-profile",
+          "https://ofStaging.azurewebsites.net/api/profile/get-profile",
           {
             method: "GET",
             headers: {

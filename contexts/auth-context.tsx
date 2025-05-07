@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const userId = getUserId()
 
       // Fetch onboarding status
-      const response = await fetch("https://onlyfounders.azurewebsites.net/api/profile/get-onboarding-status", {
+      const response = await fetch("https://ofStaging.azurewebsites.net/api/profile/get-onboarding-status", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -181,7 +181,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const userId = getUserId()
 
           await axios.post(
-            "https://onlyfounders.azurewebsites.net/api/profile/add-walletAddress",
+            "https://ofStaging.azurewebsites.net/api/profile/add-walletAddress",
             { walletAddress: address },
             {
               headers: {

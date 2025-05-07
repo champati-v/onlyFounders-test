@@ -25,13 +25,12 @@ function FaqItem({ question, answer, isOpen, toggleOpen }: FaqItemProps) {
         aria-expanded={isOpen}
       >
         <h3 className="font-medium text-base sm:text-lg pr-2">{question}</h3>
-        {/* <ChevronDown
+        <ChevronDown
           size={18}
-          sm:size={20}
           className={`text-[#39e7f5] transition-transform duration-300 ease-in-out flex-shrink-0 ${
             isOpen ? "transform rotate-180" : ""
           }`}
-        /> */}
+        />
       </button>
       <div
         className={`transition-all duration-500 ease-in-out ${
@@ -65,7 +64,7 @@ export function FaqTab({ campaign }: FaqTabProps) {
   return (
     <div className="bg-[#0c1425] rounded-lg p-4 sm:p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
       <h2 className="text-xl sm:text-2xl font-bold mb-1">Frequently Asked Questions</h2>
-      <p className="text-gray-400 text-xs sm:text-sm mb-4 sm:mb-6">Common questions about {campaign.name}</p>
+      <p className="text-gray-400 text-xs sm:text-sm mb-4 sm:mb-6">Common questions about {campaign.campaignName}</p>
 
       <div className="space-y-3 sm:space-y-4">
         {faqs.map((faq, index) => (

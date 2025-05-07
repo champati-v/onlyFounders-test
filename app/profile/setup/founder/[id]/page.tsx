@@ -309,7 +309,7 @@ export default function FounderProfileSetupPage({params, }: { params: { id: numb
       if (!user) return
 
       try {
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/profile/get-profile", {
+        const response = await fetch("https://ofStaging.azurewebsites.net/api/profile/get-profile", {
           method: "GET",
           headers: {
             user_id: user?.sub?.substring(14),

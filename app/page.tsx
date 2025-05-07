@@ -56,7 +56,7 @@ export default function HomePage() {
           const userID = user.sub?.substring(14);
     
           const response = await fetch(
-            "https://onlyfounders.azurewebsites.net/api/profile/get-onboarding-status",
+            "https://ofStaging.azurewebsites.net/api/profile/get-onboarding-status",
             {
               method: "GET",
               headers: {

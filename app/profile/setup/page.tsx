@@ -76,7 +76,7 @@ export default function ProfileSetupPage() {
 
     
       const sendWallet = await axios.post(
-        "https://onlyfounders.azurewebsites.net/api/profile/add-walletAddress",
+        "https://ofStaging.azurewebsites.net/api/profile/add-walletAddress",
         { walletAddress: address },
         {
           headers: {

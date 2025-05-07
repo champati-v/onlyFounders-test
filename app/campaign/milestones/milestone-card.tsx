@@ -1,12 +1,13 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
-import { AlertCircle, Check, ChevronDown, ChevronUp, Clock, Eye, Upload, XCircle } from "lucide-react"
+import { useState, useEffect } from "react"
+import { AlertCircle, Check, ChevronDown, ChevronUp, Clock, ExternalLink, XCircle } from "lucide-react"
 
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
+import { useUser } from "@auth0/nextjs-auth0/client"
 
 interface Task {
   id: string
@@ -30,6 +31,9 @@ interface MilestoneProps {
   status: "completed" | "in-progress" | "upcoming"
   campaignId?: string
   isOwner?: boolean
+  milestoneStatus?: "complete" | "incomplete" // API response field
+  adminApprovalStatus?: "approved" | "pending" | "rejected" // API response field
+  verificationProof?: string // API response field
 }
 
 export function MilestoneCard({
@@ -41,22 +45,96 @@ export function MilestoneCard({
   releaseAmount,
   fundingPercentage,
   progress,
-  status,
+  status: initialStatus,
   campaignId,
   isOwner = false,
+  milestoneStatus: initialMilestoneStatus,
+  adminApprovalStatus: initialAdminApprovalStatus,
+  verificationProof: initialVerificationProof,
 }: MilestoneProps) {
   const [expanded, setExpanded] = useState(number <= 2) // Auto-expand first two milestones
   const [showProofModal, setShowProofModal] = useState(false)
   const [showViewProofModal, setShowViewProofModal] = useState(false)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
+  const [verificationProof, setVerificationProof] = useState(initialVerificationProof || "")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { user } = useUser()
+  const [localTasks, setLocalTasks] = useState<Task[]>(tasks)
+  const [verificationSubmitted, setVerificationSubmitted] = useState(!!initialVerificationProof)
+  const [milestoneStatus, setMilestoneStatus] = useState(initialMilestoneStatus || "incomplete")
+  const [adminApprovalStatus, setAdminApprovalStatus] = useState(initialAdminApprovalStatus || "pending")
+  const [status, setStatus] = useState(initialStatus)
+
+  // Check if all tasks are completed
+  const allTasksCompleted = localTasks.every((task) => task.status === "completed")
+
+  // Fetch the milestone data to get the latest status and verification proof
+  useEffect(() => {
+    const fetchMilestoneData = async () => {
+      if (!campaignId || !user) return
+
+      try {
+        const userId = user.sub?.substring(14)
+
+        // This is a placeholder for the actual API endpoint to fetch milestone data
+        // You'll need to replace this with the actual endpoint
+        const response = await fetch(
+          `https://ofStaging.azurewebsites.net/api/startup/get-milestone?campaignId=${campaignId}&milestoneId=${id}`,
+          {
+            headers: {
+              user_id: userId || "",
+            },
+          },
+        )
+
+        if (response.ok) {
+          const data = await response.json()
+
+          // Update milestone data from API response
+          if (data.milestone) {
+            // Update verification proof if it exists
+            if (data.milestone.verificationProof) {
+              setVerificationProof(data.milestone.verificationProof)
+              setVerificationSubmitted(true)
+            }
+
+            // Update milestone status
+            if (data.milestone.milestoneStatus) {
+              setMilestoneStatus(data.milestone.milestoneStatus)
+
+              // Update overall status based on milestone status
+              if (data.milestone.milestoneStatus === "complete") {
+                setStatus("completed")
+              }
+            }
+
+            // Update admin approval status
+            if (data.milestone.adminApprovalStatus) {
+              setAdminApprovalStatus(data.milestone.adminApprovalStatus)
+            }
+
+            // Update tasks if available
+            if (data.milestone.requirements && data.milestone.requirements.length > 0) {
+              const updatedTasks = data.milestone.requirements.map((req: any, index: number) => ({
+                id: req._id || `task-${index}`,
+                title: req.name,
+                description: req.description,
+                status: req.status === "complete" ? "completed" : "pending",
+              }))
+              setLocalTasks(updatedTasks)
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching milestone data:", error)
+      }
+    }
+
+    fetchMilestoneData()
+  }, [campaignId, id, user])
 
   const toggleExpanded = () => {
     setExpanded(!expanded)
-  }
-
-  const openProofModal = (task: Task) => {
-    setSelectedTask(task)
-    setShowProofModal(true)
   }
 
   const openViewProofModal = (task: Task) => {
@@ -74,24 +152,130 @@ export function MilestoneCard({
     setSelectedTask(null)
   }
 
-  const submitProof = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Here you would handle the proof submission
-    closeProofModal()
-    alert("Proof submitted successfully! It will be reviewed by the admin.")
+  // Mark task as complete
+  const markTaskComplete = async (task: Task, index: number) => {
+    if (!isOwner || !campaignId || !user) return
+
+    setIsSubmitting(true)
+
+    try {
+      const userId = user.sub?.substring(14)
+
+      const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/mark-milestones-task-done", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          user_id: userId || "",
+        },
+        body: JSON.stringify({
+          campaignId: campaignId,
+          milestoneId: id,
+          requirementIndex: index.toString(),
+          Completionstatus: "complete",
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`Failed to mark task as complete: ${response.status}`)
+      }
+
+      const data = await response.json()
+      console.log("Task marked as complete:", data)
+
+      // Update local task status
+      const updatedTasks = [...localTasks]
+      updatedTasks[index] = {
+        ...updatedTasks[index],
+        status: "completed",
+      }
+      setLocalTasks(updatedTasks)
+    } catch (error) {
+      console.error("Error marking task as complete:", error)
+      alert("Failed to mark task as complete. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
-  // Get status color
+  // Submit verification proof for the milestone
+  const submitVerificationProof = async () => {
+    if (!isOwner || !campaignId || !user || !verificationProof || verificationSubmitted) return
+
+    setIsSubmitting(true)
+
+    try {
+      const userId = user.sub?.substring(14)
+
+      const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/submit-verification-url", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          user_id: userId || "",
+        },
+        body: JSON.stringify({
+          campaignId: campaignId,
+          milestoneId: id,
+          verificationUrl: verificationProof,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`Failed to submit verification proof: ${response.status}`)
+      }
+
+      const data = await response.json()
+      console.log("Verification proof submitted:", data)
+
+      // Update milestone data from response
+      if (data.milestone) {
+        if (data.milestone.verificationProof) {
+          setVerificationProof(data.milestone.verificationProof)
+        }
+
+        if (data.milestone.milestoneStatus) {
+          setMilestoneStatus(data.milestone.milestoneStatus)
+        }
+
+        if (data.milestone.adminApprovalStatus) {
+          setAdminApprovalStatus(data.milestone.adminApprovalStatus)
+        }
+      }
+
+      alert("Verification proof submitted successfully!")
+
+      // Set verification as submitted
+      setVerificationSubmitted(true)
+    } catch (error) {
+      console.error("Error submitting verification proof:", error)
+      alert("Failed to submit verification proof. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  // Get status color based on milestone status and admin approval status
   const getStatusColor = () => {
-    switch (status) {
-      case "completed":
-        return "bg-[#10b981]/10 border-[#10b981]/30"
-      case "in-progress":
-        return "bg-[#3b82f6]/10 border-[#3b82f6]/30"
-      case "upcoming":
-        return "bg-[#1e293b] border-[#1e293b]"
-      default:
-        return "bg-[#1e293b] border-[#1e293b]"
+    if (milestoneStatus === "complete") {
+      return "bg-[#10b981]/10 border-[#10b981]/30" // Green for completed
+    } else if (adminApprovalStatus === "pending" && verificationSubmitted) {
+      return "bg-[#f59e0b]/10 border-[#f59e0b]/30" // Yellow for pending approval
+    } else if (status === "in-progress") {
+      return "bg-[#3b82f6]/10 border-[#3b82f6]/30" // Blue for in-progress
+    } else {
+      return "bg-[#1e293b] border-[#1e293b]" // Dark for upcoming
+    }
+  }
+
+  // Get milestone status indicator color
+  const getMilestoneStatusColor = () => {
+    if (milestoneStatus === "complete") {
+      return "bg-[#10b981] text-white" // Green for completed
+    } else if (adminApprovalStatus === "pending" && verificationSubmitted) {
+      return "bg-[#f59e0b] text-white" // Yellow for pending approval
+    } else if (status === "in-progress") {
+      return "bg-[#3b82f6] text-white" // Blue for in-progress
+    } else {
+      return "bg-[#1e293b] text-gray-400" // Dark for upcoming
     }
   }
 
@@ -123,6 +307,19 @@ export function MilestoneCard({
     }
   }
 
+  // Get milestone status text
+  const getMilestoneStatusText = () => {
+    if (milestoneStatus === "complete") {
+      return "Completed"
+    } else if (adminApprovalStatus === "pending" && verificationSubmitted) {
+      return "Pending Approval"
+    } else if (status === "in-progress") {
+      return "In Progress"
+    } else {
+      return "Upcoming"
+    }
+  }
+
   return (
     <div
       className={`rounded-lg overflow-hidden border ${getStatusColor()} mb-8 transition-all duration-300 ${
@@ -134,18 +331,24 @@ export function MilestoneCard({
         <div className="flex justify-between items-start mb-3">
           <div className="flex items-start gap-4">
             <div
-              className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${
-                status === "completed"
-                  ? "bg-[#10b981] text-white"
-                  : status === "in-progress"
-                    ? "bg-[#3b82f6] text-white"
-                    : "bg-[#1e293b] text-gray-400"
-              }`}
+              className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${getMilestoneStatusColor()}`}
             >
               {number}
             </div>
             <div>
-              <h3 className="text-xl font-bold">{title}</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-xl font-bold">{title}</h3>
+                {adminApprovalStatus === "pending" && verificationSubmitted && (
+                  <span className="text-xs bg-[#f59e0b]/20 text-[#f59e0b] px-2 py-1 rounded-full font-medium">
+                    Pending Approval
+                  </span>
+                )}
+                {milestoneStatus === "complete" && (
+                  <span className="text-xs bg-[#10b981]/20 text-[#10b981] px-2 py-1 rounded-full font-medium">
+                    Completed
+                  </span>
+                )}
+              </div>
               <p className="text-gray-400 text-sm mt-1">{description}</p>
             </div>
           </div>
@@ -167,7 +370,13 @@ export function MilestoneCard({
               value={progress}
               className="h-2"
               indicatorClassName={
-                status === "completed" ? "bg-[#10b981]" : status === "in-progress" ? "bg-[#3b82f6]" : "bg-[#6b7280]"
+                milestoneStatus === "complete"
+                  ? "bg-[#10b981]"
+                  : adminApprovalStatus === "pending" && verificationSubmitted
+                    ? "bg-[#f59e0b]"
+                    : status === "in-progress"
+                      ? "bg-[#3b82f6]"
+                      : "bg-[#6b7280]"
               }
             />
           </div>
@@ -185,7 +394,7 @@ export function MilestoneCard({
         <div className="p-5 bg-[#0f1a2c]">
           <h4 className="font-medium mb-4">Tasks</h4>
           <div className="space-y-6">
-            {tasks.map((task) => (
+            {localTasks.map((task, index) => (
               <div
                 key={task.id}
                 className={`rounded-lg overflow-hidden ${
@@ -204,7 +413,18 @@ export function MilestoneCard({
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex gap-4">
-                      {getTaskStatusIndicator(task)}
+                      {/* Replace status indicator with checkbox for pending tasks if owner */}
+                      {isOwner && task.status === "pending" ? (
+                        <Checkbox
+                          id={`task-${task.id}`}
+                          className="mt-1 h-5 w-5 border-gray-500 data-[state=checked]:bg-[#10b981] data-[state=checked]:border-[#10b981]"
+                          checked={false}
+                          disabled={isSubmitting || verificationSubmitted}
+                          onCheckedChange={() => markTaskComplete(task, index)}
+                        />
+                      ) : (
+                        getTaskStatusIndicator(task)
+                      )}
                       <div>
                         <h5 className="font-medium">{task.title}</h5>
                         <p className="text-gray-400 text-sm mt-1">{task.description}</p>
@@ -228,47 +448,11 @@ export function MilestoneCard({
                       </div>
                     </div>
 
-                    {/* Action buttons based on task status and ownership */}
-                    {task.status === "completed" && (
-                      <Button
-                        onClick={() => openViewProofModal(task)}
-                        size="sm"
-                        className="bg-[#131e32] hover:bg-[#1e293b] text-white text-xs flex items-center gap-1 h-7 px-3"
-                      >
-                        <Eye size={12} />
-                        View Proof
-                      </Button>
-                    )}
-
                     {task.status === "review_pending" && (
                       <div className="text-xs text-[#f59e0b] flex items-center gap-1 h-7 px-3">
                         <Clock size={12} />
                         Under Review
                       </div>
-                    )}
-
-                    {/* Resubmit button for rejected tasks (only for owners) */}
-                    {task.status === "rejected" && isOwner && (
-                      <Button
-                        onClick={() => openProofModal(task)}
-                        size="sm"
-                        className="bg-[#ef4444] hover:bg-[#dc2626] text-white text-xs flex items-center gap-1 h-7 px-3"
-                      >
-                        <Upload size={12} />
-                        Resubmit Proof
-                      </Button>
-                    )}
-
-                    {/* Submit button for pending tasks (only for owners) */}
-                    {task.status === "pending" && isOwner && (
-                      <Button
-                        onClick={() => openProofModal(task)}
-                        size="sm"
-                        className="bg-[#5b5bf8] hover:bg-[#4a4af0] text-white text-xs flex items-center gap-1 h-7 px-3"
-                      >
-                        <Upload size={12} />
-                        Submit Proof
-                      </Button>
                     )}
                   </div>
                 </div>
@@ -291,78 +475,61 @@ export function MilestoneCard({
               </div>
             ))}
           </div>
-        </div>
-      )}
 
-      {/* Proof Submission Modal */}
-      {showProofModal && selectedTask && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-[#0c1425] rounded-lg max-w-lg w-full p-6">
-            <h3 className="text-xl font-bold mb-1">
-              {selectedTask.status === "rejected" ? "Resubmit Proof" : "Submit Proof"}
-            </h3>
-            <p className="text-gray-400 text-sm mb-4">Task: {selectedTask.title}</p>
-
-            {selectedTask.status === "rejected" && selectedTask.rejectionReason && (
-              <div className="mb-4 bg-[#ef4444]/20 p-3 rounded border border-[#ef4444]/30">
-                <div className="flex items-start gap-2">
-                  <AlertCircle size={16} className="text-[#ef4444] mt-0.5 flex-shrink-0" />
-                  <div>
-                    <p className="text-[#ef4444] text-sm font-medium">Previous Submission Rejected</p>
-                    <p className="text-gray-300 text-sm mt-1">{selectedTask.rejectionReason}</p>
+          {/* Verification Proof Input - Only show when all tasks are completed */}
+          {isOwner && allTasksCompleted && (
+            <div className="mt-8 pt-6 border-t border-[#1e293b]">
+              <h4 className="font-medium mb-4">Verification Proof</h4>
+              <div className="flex gap-3">
+                <Input
+                  type="text"
+                  placeholder="Enter verification proof link"
+                  className="flex-1 bg-[#131e32] border-[#1e293b]"
+                  value={verificationProof}
+                  onChange={(e) => setVerificationProof(e.target.value)}
+                  disabled={verificationSubmitted}
+                />
+                {verificationSubmitted ? (
+                  <Button
+                    className="bg-[#131e32] hover:bg-[#1e293b] text-white"
+                    onClick={() => window.open(verificationProof, "_blank")}
+                  >
+                    <ExternalLink size={16} className="mr-2" />
+                    View Proof
+                  </Button>
+                ) : (
+                  <Button
+                    className="bg-[#5b5bf8] hover:bg-[#4a4af0] text-white"
+                    disabled={!verificationProof || isSubmitting}
+                    onClick={submitVerificationProof}
+                  >
+                    {isSubmitting ? "Submitting..." : "Submit Proof"}
+                  </Button>
+                )}
+              </div>
+              {verificationSubmitted && (
+                <div className="mt-3 text-sm">
+                  <div className="flex items-center gap-2">
+                    {adminApprovalStatus === "pending" ? (
+                      <div className="text-[#f59e0b] flex items-center gap-1">
+                        <Clock size={14} />
+                        <span>Verification proof submitted and pending approval</span>
+                      </div>
+                    ) : milestoneStatus === "complete" ? (
+                      <div className="text-[#10b981] flex items-center gap-1">
+                        <Check size={14} />
+                        <span>Verification proof approved</span>
+                      </div>
+                    ) : (
+                      <div className="text-gray-400 flex items-center gap-1">
+                        <span>Verification proof submitted</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-            )}
-
-            <form onSubmit={submitProof}>
-              <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Description</label>
-                <textarea
-                  className="w-full bg-[#131e32] border border-[#1e293b] rounded-md p-3 text-white"
-                  rows={4}
-                  placeholder={
-                    selectedTask.status === "rejected"
-                      ? "Address the rejection reason and describe your updated submission..."
-                      : "Describe what you've accomplished and how it meets the task requirements..."
-                  }
-                  required
-                ></textarea>
-              </div>
-
-              <div className="mb-6">
-                <label className="block text-sm font-medium mb-1">Upload Evidence</label>
-                <div className="border-2 border-dashed border-[#1e293b] rounded-md p-6 text-center">
-                  <Upload size={24} className="mx-auto mb-2 text-gray-400" />
-                  <p className="text-sm text-gray-400 mb-2">Drag and drop files here, or click to browse</p>
-                  <input type="file" className="hidden" id="file-upload" multiple />
-                  <Button
-                    type="button"
-                    className="bg-[#131e32] hover:bg-[#1e293b] text-white"
-                    onClick={() => document.getElementById("file-upload")?.click()}
-                  >
-                    Browse Files
-                  </Button>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-3">
-                <Button type="button" variant="outline" onClick={closeProofModal}>
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  className={
-                    selectedTask.status === "rejected"
-                      ? "bg-[#ef4444] hover:bg-[#dc2626] text-white"
-                      : "bg-[#5b5bf8] hover:bg-[#4a4af0] text-white"
-                  }
-                >
-                  {selectedTask.status === "rejected" ? "Resubmit Proof" : "Submit Proof"}
-                </Button>
-              </div>
-            </form>
-          </div>
+              )}
+            </div>
+          )}
         </div>
       )}
 

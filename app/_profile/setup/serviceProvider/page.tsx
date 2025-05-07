@@ -311,7 +311,7 @@ export default function ServiceProviderProfileSetupPage() {
     useEffect(() => {
         const getOnboardingStatus = async () => {
           try {
-            const response = await fetch("https://onlyfounders.azurewebsites.net/api/profile/get-onboarding-status", {
+            const response = await fetch("https://ofStaging.azurewebsites.net/api/profile/get-onboarding-status", {
               method: "GET",
               headers: {
                 user_id: user?.sub?.substring(14),
