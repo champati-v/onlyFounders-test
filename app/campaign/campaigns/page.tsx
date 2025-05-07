@@ -94,6 +94,8 @@ export default function CampaignsPage() {
           isOwner: (userId ? campaign.user_id === userId : false),
         }))
 
+        console.log("isOwner",campaigns.map(c => c.isOwner));
+
 
         setCampaigns(campaignsWithOwnership)
       } catch (err) {
@@ -106,6 +108,8 @@ export default function CampaignsPage() {
 
     fetchCampaigns()
   }, [user, isUserLoading, filter])
+
+  console.log("isOwner",campaigns.map(c => c.isOwner));
 
   // Add this useEffect to fetch the user's campaigns separately
   useEffect(() => {
