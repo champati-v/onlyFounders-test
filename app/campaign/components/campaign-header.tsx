@@ -83,7 +83,7 @@ export function CampaignHeader({ campaign }: CampaignHeaderProps) {
           <p className="text-gray-300 text-sm">{campaign.tagline}</p>
           <div className="flex items-center gap-1 text-sm text-gray-400 mt-1">
             <span>Founder:</span>
-            <Link href="#" className="text-[#39e7f5]">
+            <Link href={`/public-profile/founder/${campaign.project_id}`} className="text-[#39e7f5]">
               {campaign.isOwner ? "You" : "NewUser"}
             </Link>
           </div>

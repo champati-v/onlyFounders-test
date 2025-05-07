@@ -80,9 +80,9 @@
   font-style: normal;
 }
 
-body{
+/* body{
   font-family: 'masked-hero';
-}
+} */
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;

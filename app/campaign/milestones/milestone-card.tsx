@@ -384,7 +384,7 @@ export function MilestoneCard({
           <div className="text-right">
             <div className="text-sm text-gray-400">Release Amount</div>
             <div className="font-bold">{Math.round(releaseAmount).toLocaleString()} USDC</div>
-            <div className="text-xs text-[#39e7f5]">{Math.round(fundingPercentage)}% of total funding</div>
+            {/* <div className="text-xs text-[#39e7f5]">{Math.round(fundingPercentage)}% of total funding</div> */}
           </div>
         </div>
       </div>

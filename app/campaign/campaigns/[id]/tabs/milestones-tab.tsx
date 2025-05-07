@@ -122,7 +122,7 @@ export function MilestonesTab({ campaign, isOwner, campaignId }: MilestonesTabPr
               title={milestone.name}
               description={milestone.description}
               tasks={tasks}
-              releaseAmount={calculateReleaseAmount(milestone.fundPercentage)}
+              releaseAmount={milestone.fundPercentage}
               fundingPercentage={milestone.fundPercentage / 100} // Convert basis points to percentage
               progress={progress}
               status={status}

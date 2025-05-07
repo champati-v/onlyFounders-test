@@ -82,7 +82,7 @@ export default function FounderProfilePage({
         }
 
         const response = await fetch(
-          "https://onlyfounders.azurewebsites.net/api/startup/view-founder",
+          "https://ofStaging.azurewebsites.net/api/startup/view-founder",
           {
             method: "POST",
             headers: {

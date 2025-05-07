@@ -79,6 +79,7 @@ export function MilestoneCard({
 
   // Mark task as complete
   const markTaskComplete = async (task: Task, index: number) => {
+    console.log("isOwner",isOwner);
     if (!isOwner || !campaignId || !user) return
 
     setIsSubmitting(true)
@@ -264,6 +265,7 @@ export function MilestoneCard({
                   <div className="flex justify-between items-start">
                     <div className="flex gap-4">
                       {/* Replace status indicator with checkbox for pending tasks if owner */}
+                      console.log("isowner",isOwner);
                       {isOwner && task.status === "pending" ? (
                         <Checkbox
                           id={`task-${task.id}`}

@@ -75,7 +75,7 @@ export function FundingDetailsTab({ campaign }: FundingDetailsTabProps) {
               <h3 className="font-medium text-sm sm:text-base">Fundraising Target</h3>
             </div>
             <div className="pl-8 sm:pl-10">
-              <p className="text-lg sm:text-xl font-bold text-white">Maximum cap: {fundingDetails.maxCap} {fundingDetails.acceptedCurrencyType}</p>
+              <p className="text-lg sm:text-xl font-bold text-white">Maximum cap: {fundingDetails.maxCap} {fundingDetails.acceptedCurrencyType?.toUpperCase()}</p>
               {/* <p className="text-gray-400 text-xs sm:text-sm mt-1">
                 Minimum investment: {fundingDetails.minInvestment}
               </p> */}
@@ -113,7 +113,7 @@ export function FundingDetailsTab({ campaign }: FundingDetailsTabProps) {
             <div className="bg-[#0f1a2c] rounded-lg p-4 sm:p-5">
               <h3 className="font-medium mb-2 text-sm sm:text-base">Fully Diluted Valuation</h3>
               <p className="text-lg sm:text-xl font-bold text-white">
-                {fundingDetails.fullyDilutedValuation} {fundingDetails.acceptedCurrencyType}
+                {fundingDetails.fullyDilutedValuation} USD
               </p>
 
               <p className="text-gray-400 text-xs sm:text-sm mt-1">Based on total token supply</p>
@@ -121,7 +121,7 @@ export function FundingDetailsTab({ campaign }: FundingDetailsTabProps) {
 
             <div className="bg-[#0f1a2c] rounded-lg p-4 sm:p-5">
               <h3 className="font-medium mb-2 text-sm sm:text-base">Initial Market Cap</h3>
-              <p className="text-lg sm:text-xl font-bold text-white">{fundingDetails.initialMarketCap} {fundingDetails.acceptedCurrencyType}</p>
+              <p className="text-lg sm:text-xl font-bold text-white">{fundingDetails.initialMarketCap} USD</p>
               <p className="text-gray-400 text-xs sm:text-sm mt-1">At token generation event</p>
             </div>
           </div>
@@ -171,7 +171,7 @@ export function FundingDetailsTab({ campaign }: FundingDetailsTabProps) {
 
           <div className="bg-[#0f1a2c] rounded-lg p-4 sm:p-5">
             <h3 className="text-gray-400 text-xs sm:text-sm mb-1">Token Price</h3>
-            <p className="text-lg sm:text-xl font-bold">{fundingDetails.tokenPrice}</p>
+            <p className="text-lg sm:text-xl font-bold">${fundingDetails.tokenPrice}</p>
             {/* <p className="text-[#39e7f5] text-xs sm:text-sm mt-1">{fundingDetails.tokenRatio}</p> */}
           </div>
         </div>

@@ -11,6 +11,7 @@ import { CampaignCard } from "../components/campaign-card"
 // Define the campaign type based on the API response
 interface Campaign {
   campaignName: string
+  user_id: string
   campaignId: string
   tagline: string
   category: string
@@ -90,8 +91,9 @@ export default function CampaignsPage() {
         // For "my" campaigns, all are owned by the user
         const campaignsWithOwnership = data.campaigns.map((campaign: Campaign) => ({
           ...campaign,
-          isOwner: filter === "my" ? true : campaign.isOwner || false,
+          isOwner: (userId ? campaign.user_id === userId : false),
         }))
+
 
         setCampaigns(campaignsWithOwnership)
       } catch (err) {
@@ -125,8 +127,15 @@ export default function CampaignsPage() {
 
         const data = await response.json()
 
-        if (data.campaigns && data.campaigns.length > 0) {
-          setCurrentUserCampaign(data.campaigns[0])
+        // Find the first campaign with status "Active"
+        const activeCampaign = data.campaigns.find(
+          (campaign: Campaign) => campaign.campaignStatus === "Active"
+        )
+
+        if (activeCampaign) {
+          setCurrentUserCampaign(activeCampaign)
+        } else {
+          setCurrentUserCampaign(null) // Optional: clear it if none found
         }
       } catch (err) {
         console.error("Error fetching user campaigns:", err)
@@ -146,7 +155,7 @@ export default function CampaignsPage() {
       campaign.tagline.toLowerCase().includes(searchQuery.toLowerCase()) ||
       campaign.category.toLowerCase().includes(searchQuery.toLowerCase())
 
-    const matchesFilter = filter === "all" || (filter === "my" && campaign.isOwner)
+    const matchesFilter = true
 
     return matchesSearch && matchesFilter
   })
