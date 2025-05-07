@@ -126,6 +126,7 @@ export function MilestonesTab({ campaign, isOwner, campaignId }: MilestonesTabPr
               fundingPercentage={milestone.fundPercentage / 100} // Convert basis points to percentage
               progress={progress}
               status={status}
+              approvalStatus={milestone.adminApprovalStatus}
               campaignId={campaignId}
               isOwner={isOwner}
             />

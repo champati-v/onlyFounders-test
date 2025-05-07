@@ -32,7 +32,7 @@ interface MilestoneProps {
   campaignId?: string
   isOwner?: boolean
   milestoneStatus?: "complete" | "incomplete" // API response field
-  adminApprovalStatus?: "approved" | "pending" | "rejected" // API response field
+  approvalStatus?: "approved" | "pending" | "rejected" // API response field
   verificationProof?: string // API response field
 }
 
@@ -49,8 +49,8 @@ export function MilestoneCard({
   campaignId,
   isOwner = false,
   milestoneStatus: initialMilestoneStatus,
-  adminApprovalStatus: initialAdminApprovalStatus,
   verificationProof: initialVerificationProof,
+  approvalStatus
 }: MilestoneProps) {
   const [expanded, setExpanded] = useState(number <= 2) // Auto-expand first two milestones
   const [showProofModal, setShowProofModal] = useState(false)
@@ -62,7 +62,7 @@ export function MilestoneCard({
   const [localTasks, setLocalTasks] = useState<Task[]>(tasks)
   const [verificationSubmitted, setVerificationSubmitted] = useState(!!initialVerificationProof)
   const [milestoneStatus, setMilestoneStatus] = useState(initialMilestoneStatus || "incomplete")
-  const [adminApprovalStatus, setAdminApprovalStatus] = useState(initialAdminApprovalStatus || "pending")
+  // const [adminApprovalStatus, setAdminApprovalStatus] = useState(initialAdminApprovalStatus || "pending")
   const [status, setStatus] = useState(initialStatus)
 
   // Check if all tasks are completed
@@ -109,9 +109,9 @@ export function MilestoneCard({
             }
 
             // Update admin approval status
-            if (data.milestone.adminApprovalStatus) {
-              setAdminApprovalStatus(data.milestone.adminApprovalStatus)
-            }
+            // if (data.milestone.adminApprovalStatus) {
+            //   setAdminApprovalStatus(data.milestone.adminApprovalStatus)
+            // }
 
             // Update tasks if available
             if (data.milestone.requirements && data.milestone.requirements.length > 0) {
@@ -236,9 +236,9 @@ export function MilestoneCard({
           setMilestoneStatus(data.milestone.milestoneStatus)
         }
 
-        if (data.milestone.adminApprovalStatus) {
-          setAdminApprovalStatus(data.milestone.adminApprovalStatus)
-        }
+        // if (data.milestone.adminApprovalStatus) {
+        //   setAdminApprovalStatus(data.milestone.adminApprovalStatus)
+        // }
       }
 
       alert("Verification proof submitted successfully!")
@@ -257,7 +257,7 @@ export function MilestoneCard({
   const getStatusColor = () => {
     if (milestoneStatus === "complete") {
       return "bg-[#10b981]/10 border-[#10b981]/30" // Green for completed
-    } else if (adminApprovalStatus === "pending" && verificationSubmitted) {
+    } else if (approvalStatus === "pending" && verificationSubmitted) {
       return "bg-[#f59e0b]/10 border-[#f59e0b]/30" // Yellow for pending approval
     } else if (status === "in-progress") {
       return "bg-[#3b82f6]/10 border-[#3b82f6]/30" // Blue for in-progress
@@ -270,7 +270,7 @@ export function MilestoneCard({
   const getMilestoneStatusColor = () => {
     if (milestoneStatus === "complete") {
       return "bg-[#10b981] text-white" // Green for completed
-    } else if (adminApprovalStatus === "pending" && verificationSubmitted) {
+    } else if (approvalStatus === "pending" && verificationSubmitted) {
       return "bg-[#f59e0b] text-white" // Yellow for pending approval
     } else if (status === "in-progress") {
       return "bg-[#3b82f6] text-white" // Blue for in-progress
@@ -311,7 +311,7 @@ export function MilestoneCard({
   const getMilestoneStatusText = () => {
     if (milestoneStatus === "complete") {
       return "Completed"
-    } else if (adminApprovalStatus === "pending" && verificationSubmitted) {
+    } else if (approvalStatus === "pending" && verificationSubmitted) {
       return "Pending Approval"
     } else if (status === "in-progress") {
       return "In Progress"
@@ -338,7 +338,7 @@ export function MilestoneCard({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-xl font-bold">{title}</h3>
-                {adminApprovalStatus === "pending" && verificationSubmitted && (
+                {approvalStatus === "pending" && verificationSubmitted && (
                   <span className="text-xs bg-[#f59e0b]/20 text-[#f59e0b] px-2 py-1 rounded-full font-medium">
                     Pending Approval
                   </span>
@@ -372,7 +372,7 @@ export function MilestoneCard({
               indicatorClassName={
                 milestoneStatus === "complete"
                   ? "bg-[#10b981]"
-                  : adminApprovalStatus === "pending" && verificationSubmitted
+                  : approvalStatus === "pending" && verificationSubmitted
                     ? "bg-[#f59e0b]"
                     : status === "in-progress"
                       ? "bg-[#3b82f6]"
@@ -507,10 +507,10 @@ export function MilestoneCard({
                   </Button>
                 )}
               </div>
-              {verificationSubmitted && (
+              {/* {verificationSubmitted && ( */}
                 <div className="mt-3 text-sm">
                   <div className="flex items-center gap-2">
-                    {adminApprovalStatus === "pending" ? (
+                    {approvalStatus === "pending" ? (
                       <div className="text-[#f59e0b] flex items-center gap-1">
                         <Clock size={14} />
                         <span>Verification proof submitted and pending approval</span>
@@ -527,7 +527,7 @@ export function MilestoneCard({
                     )}
                   </div>
                 </div>
-              )}
+              {/* )} */}
             </div>
           )}
         </div>
