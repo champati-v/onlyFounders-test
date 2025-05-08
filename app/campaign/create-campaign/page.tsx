@@ -1094,7 +1094,7 @@ export default function CreateCampaignPage() {
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl md:text-left font-bold mb-1">Create New Campaign</h1>
-          <Button className="bg-[#4361ff] hover:bg-[#4361ff]/90 text-white py-2 px-4 rounded-md font-medium" >Back</Button>
+          <Button onClick={() => router.push("/campaign/campaigns")} className="bg-[#4361ff] hover:bg-[#4361ff]/90 text-white py-2 px-4 rounded-md font-medium" >Back</Button>
         </div>
         <p className="text-gray-400 md:text-left mb-6">
           {currentStep === 1
