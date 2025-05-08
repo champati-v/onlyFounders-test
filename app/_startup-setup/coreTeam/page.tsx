@@ -158,7 +158,7 @@ export default function CoreTeamForm({ data, updateData, onNext }: CoreTeamFormP
         }
 
         // Send data to API
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/add-team-member", {
+        const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/add-team-member", {
           method: "POST",
           headers: {
             user_id: userId,

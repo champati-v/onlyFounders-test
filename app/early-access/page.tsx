@@ -52,7 +52,7 @@ export default function Home() {
       console.log("FormDATA here 0000 ", formData.name, formData.email);
 
       const saveData = await fetch(
-        "https://onlyfounders.azurewebsites.net/api/auth/store-early-access-user",
+        "https://ofstaging.azurewebsites.net/api/auth/store-early-access-user",
         {
           method: "POST",
           headers: {

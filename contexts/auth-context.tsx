@@ -142,7 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           setIsDataSent(true)
 
-          const response = await fetch("https://onlyfounders.azurewebsites.net/api/auth/register-user", {
+          const response = await fetch("https://ofstaging.azurewebsites.net/api/auth/register-user", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

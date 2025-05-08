@@ -127,7 +127,7 @@ export default function TractionMetricsForm({ data, updateData, onNext, userId }
       try {
         if (!user) return
         const userId = user?.sub?.substring(14)
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/get-projectId", {
+        const response = await fetch("https://ofstaging.azurewebsites.net/api/startup/get-projectId", {
           method: "GET",
           headers: {
             user_id: userId,

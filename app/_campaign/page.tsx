@@ -70,7 +70,7 @@ export default function FundraisingCampaigns() {
 
         const userID = user?.sub?.substring(14)
 
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/list-campaigns", {
+        const response = await fetch("https://ofstaging.azurewebsites.net/api/startup/list-campaigns", {
           headers: {
             user_id: userID,
           },

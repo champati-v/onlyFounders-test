@@ -192,7 +192,7 @@ export default function ServiceProviderProfilePage() {
                        // Append founderData as JSON string
                       formData.append("founderData", JSON.stringify(serviceProviderData))
 
-      const response = await fetch("https://onlyfounders.azurewebsites.net/api/profile/submit-personal-details", {
+      const response = await fetch("https://ofstaging.azurewebsites.net/api/profile/submit-personal-details", {
         method: "POST",
         headers: {
           user_id: String(userId),

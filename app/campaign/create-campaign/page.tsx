@@ -303,7 +303,7 @@ export default function CreateCampaignPage() {
           return
         }
 
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/get-projectId", {
+        const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/get-projectId", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -364,7 +364,7 @@ export default function CreateCampaignPage() {
           return
         }
 
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/view-startup", {
+        const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/view-startup", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -440,7 +440,7 @@ export default function CreateCampaignPage() {
 
     setIsFetchingMilestones(true)
     try {
-      const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/fetch-predefined-milestones", {
+      const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/fetch-predefined-milestones", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

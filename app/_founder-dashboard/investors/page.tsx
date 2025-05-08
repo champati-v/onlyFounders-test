@@ -61,7 +61,7 @@ export default function InvestorsPage() {
           return
         }
 
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/profile/get-founder-projectStats", {
+        const response = await fetch("https://ofstaging.azurewebsites.net/api/profile/get-founder-projectStats", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -169,7 +169,7 @@ export default function BasicInfoForm({ data, updateData, onNext, userId }: Basi
       formData.append("pitchDemoVideo", values.demoVideo)
 
       // Send data to API
-      const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/submit-basic-startup-details", {
+      const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/submit-basic-startup-details", {
         method: "POST",
         headers: {
           // Ensure user_id is inside headers correctly

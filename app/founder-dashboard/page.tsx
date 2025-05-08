@@ -107,7 +107,7 @@ export default function FounderDashboardPage() {
           router.push("/login")
           return
         }
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/profile/get-founder-projectStats", {
+        const response = await fetch("https://ofstaging.azurewebsites.net/api/profile/get-founder-projectStats", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -155,7 +155,7 @@ export default function FounderDashboardPage() {
           return
         }
 
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/profile/get-upcoming-milestones", {
+        const response = await fetch("https://ofstaging.azurewebsites.net/api/profile/get-upcoming-milestones", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

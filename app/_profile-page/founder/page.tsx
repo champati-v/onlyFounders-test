@@ -157,7 +157,7 @@ export default function FounderProfilePage() {
            // Append founderData as JSON string
            formData.append("founderData", JSON.stringify(founderData))
 
-      const response = await fetch("https://onlyfounders.azurewebsites.net/api/profile/submit-personal-details", {
+      const response = await fetch("https://ofstaging.azurewebsites.net/api/profile/submit-personal-details", {
         method: "POST",
         headers: {
           user_id: userId,

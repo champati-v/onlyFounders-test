@@ -30,7 +30,7 @@ export function EarlyAccessEntries() {
   useEffect(() => {
     const fetchEntries = async () => {
       try {
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/admin/get-early-access-users?userId=62684")
+        const response = await fetch("https://ofstaging.azurewebsites.net/api/admin/get-early-access-users?userId=62684")
         const data: EarlyAccessEntry[] = await response.json()
         setEntries(data)
       } catch (error) {

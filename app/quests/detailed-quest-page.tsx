@@ -656,7 +656,7 @@ export default function DetailedQuestPage({ questId }) {
 
         const userId = user?.user?.sub?.substring(14)
 
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/nft/submit-quest-score", {
+        const response = await fetch("https://ofstaging.azurewebsites.net/api/nft/submit-quest-score", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -697,7 +697,7 @@ export default function DetailedQuestPage({ questId }) {
 
       const userId = user?.user?.sub?.substring(14)
 
-      // const walletConnect = await fetch("https://onlyfounders.azurewebsites.net/api/profile/get-walletconnect-status", {
+      // const walletConnect = await fetch("https://ofstaging.azurewebsites.net/api/profile/get-walletconnect-status", {
       //   method:"GET",
       //   headers:{
       //     user_id: userId,
@@ -715,7 +715,7 @@ export default function DetailedQuestPage({ questId }) {
         }
 
         else{
-          const response = await fetch("https://onlyfounders.azurewebsites.net/api/nft/mint-nft", {
+          const response = await fetch("https://ofstaging.azurewebsites.net/api/nft/mint-nft", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",

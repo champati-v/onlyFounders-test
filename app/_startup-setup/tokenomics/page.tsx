@@ -165,7 +165,7 @@ export default function TokenomicsForm({
 
       // Send data to API
       const response = await fetch(
-        "https://onlyfounders.azurewebsites.net/api/startup/submit-tokenomics-details",
+        "https://ofStaging.azurewebsites.net/api/startup/submit-tokenomics-details",
         {
           method: "POST",
           headers: {

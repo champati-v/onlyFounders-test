@@ -88,7 +88,7 @@ export default function QuestsPage() {
       try {
         const userID = user.sub?.substring(14);
         const response = await axios.get(
-          "https://onlyfounders.azurewebsites.net/api/nft/quest-status",
+          "https://ofstaging.azurewebsites.net/api/nft/quest-status",
           {
             method: "GET",
             headers: {

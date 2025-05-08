@@ -95,7 +95,7 @@ export default function HomePage() {
       setIsLoading(true);
       try {
         const response = await fetch(
-          "https://onlyfounders.azurewebsites.net/api/startup/get-featured-projects"
+          "https://ofstaging.azurewebsites.net/api/startup/get-featured-projects"
         );
 
         // if (!response.ok) {

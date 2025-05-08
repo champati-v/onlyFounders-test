@@ -56,7 +56,7 @@ export default function BlogDetail() {
       try {
         setIsBlogLoading(true)
 
-        const response = await fetch(`https://onlyfounders.azurewebsites.net/api/blog/get-blog-by-id/${blogId}`)
+        const response = await fetch(`https://ofstaging.azurewebsites.net/api/blog/get-blog-by-id/${blogId}`)
 
         const data: ApiResponse = await response.json()
         setBlog(data.blog)
@@ -88,7 +88,7 @@ export default function BlogDetail() {
 
 
       
-      const response = await fetch(`https://onlyfounders.azurewebsites.net/api/blog/upvote-blog/${blogId}`, {
+      const response = await fetch(`https://ofstaging.azurewebsites.net/api/blog/upvote-blog/${blogId}`, {
         method: "POST",
         headers: {
           user_id: userId,

@@ -97,7 +97,7 @@ export default function ResourcesPage() {
     const fetchBlogs = async () => {
       try {
         const response = await fetch(
-          "https://onlyfounders.azurewebsites.net/api/blog/get-all-blogs"
+          "https://ofstaging.azurewebsites.net/api/blog/get-all-blogs"
         );
 
         if (response.status === 200) {

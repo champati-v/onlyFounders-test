@@ -366,7 +366,7 @@ export default function InvestorProfileSetupPage() {
       formData.append("socialLinks", JSON.stringify(socialLinks))
 
       // Make API call
-      const response = await fetch("https://onlyfounders.azurewebsites.net/api/profile/submit-personal-details", {
+      const response = await fetch("https://ofstaging.azurewebsites.net/api/profile/submit-personal-details", {
         method: "POST",
         headers: {
           user_id: userId,

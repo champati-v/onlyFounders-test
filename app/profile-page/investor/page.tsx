@@ -163,7 +163,7 @@ export default function InvestorProfilePage() {
       formData.append("founderData", JSON.stringify(investorData));
 
       const response = await fetch(
-        "https://onlyfounders.azurewebsites.net/api/profile/submit-personal-details",
+        "https://ofstaging.azurewebsites.net/api/profile/submit-personal-details",
         {
           method: "POST",
           headers: {
