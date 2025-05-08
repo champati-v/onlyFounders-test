@@ -68,43 +68,43 @@ export function TeamTab({ campaign }: TeamTabProps) {
   }, [campaign._id, user])
 
   // Placeholder team members if API returns empty or fails
-  const placeholderTeam = [
-    {
-      _id: "1",
-      fullName: "Alex Johnson",
-      title: "Founder & CEO",
-      shortBio: "Experienced blockchain professional with a passion for decentralized technologies.",
-      profilePicture: {
-        file_url: "/diverse-person.png",
-        file_name: "person1.png",
-        _id: "1",
-      },
-      socialLinks: {
-        twitter: "#",
-        linkedin: "#",
-        github: "#",
-      },
-    },
-    {
-      _id: "2",
-      fullName: "Sarah Chen",
-      title: "CTO",
-      shortBio: "Blockchain architect with 8+ years of experience in smart contract development.",
-      profilePicture: {
-        file_url: "/diverse-group-two.png",
-        file_name: "person2.png",
-        _id: "2",
-      },
-      socialLinks: {
-        twitter: "#",
-        linkedin: "#",
-        github: "#",
-      },
-    },
-  ]
+  // const placeholderTeam = [
+  //   {
+  //     _id: "1",
+  //     fullName: "Alex Johnson",
+  //     title: "Founder & CEO",
+  //     shortBio: "Experienced blockchain professional with a passion for decentralized technologies.",
+  //     profilePicture: {
+  //       file_url: "/diverse-person.png",
+  //       file_name: "person1.png",
+  //       _id: "1",
+  //     },
+  //     socialLinks: {
+  //       twitter: "#",
+  //       linkedin: "#",
+  //       github: "#",
+  //     },
+  //   },
+  //   {
+  //     _id: "2",
+  //     fullName: "Sarah Chen",
+  //     title: "CTO",
+  //     shortBio: "Blockchain architect with 8+ years of experience in smart contract development.",
+  //     profilePicture: {
+  //       file_url: "/diverse-group-two.png",
+  //       file_name: "person2.png",
+  //       _id: "2",
+  //     },
+  //     socialLinks: {
+  //       twitter: "#",
+  //       linkedin: "#",
+  //       github: "#",
+  //     },
+  //   },
+  // ]
 
   // Use API data if available, otherwise use placeholder
-  const displayTeam = teamMembers.length > 0 ? teamMembers : placeholderTeam
+  const displayTeam = teamMembers.length > 0 ? teamMembers : []
 
   return (
     <div className="bg-[#0c1425] rounded-lg p-4 sm:p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
