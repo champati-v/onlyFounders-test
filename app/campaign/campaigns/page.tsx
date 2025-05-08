@@ -177,13 +177,18 @@ export default function CampaignsPage() {
             <h1 className="text-3xl sm:text-4xl font-bold mb-1">Campaigns</h1>
             <p className="text-gray-400">Explore and support innovative blockchain projects</p>
           </div>
-          {currentCampaignId && (
-            <Link href={`/campaign/campaigns/${currentCampaignId}`}>
-              <Button className="bg-[#4361ff] hover:bg-[#4361ff]/90 text-white py-2 px-4 rounded-md font-medium w-full sm:w-auto">
-                View Current Campaign
-              </Button>
-            </Link>
-          )}
+            <div className="flex gap-2 flex-col md:flex-row mt-4 sm:mt-0">
+              {currentCampaignId && (
+                <Link href={`/campaign/campaigns/${currentCampaignId}`}>
+                  <Button className="bg-[#4361ff] hover:bg-[#4361ff]/90 text-white py-2 px-4 rounded-md font-medium w-full sm:w-auto">
+                    View Current Campaign
+                  </Button>
+                </Link>
+              )}
+              <Link href="/campaign/create-campaign">
+                <Button className="bg-[#4361ff] hover:bg-[#4361ff]/90 text-white py-2 px-4 rounded-md font-medium w-full sm:w-auto">Create Campaign</Button>
+              </Link>
+            </div>
         </div>
 
         {/* Full-width Search Bar */}
