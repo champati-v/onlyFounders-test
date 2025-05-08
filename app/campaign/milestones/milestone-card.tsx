@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { AlertCircle, Check, ChevronDown, ChevronUp, Clock, ExternalLink, XCircle } from "lucide-react"
-
+import { toast } from "@/hooks/use-toast"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -67,6 +67,12 @@ export function MilestoneCard({
 
   // Check if all tasks are completed
   const allTasksCompleted = localTasks.every((task) => task.status === "completed")
+
+  const isValidProofLink = (link: string): boolean => {
+    const googleDriveRegex = /^https:\/\/(drive\.google\.com|docs\.google\.com)\//;
+    const notionRegex = /^https:\/\/(www\.)?notion\.so\//;
+    return googleDriveRegex.test(link) || notionRegex.test(link);
+  };
 
   // Fetch the milestone data to get the latest status and verification proof
   useEffect(() => {
@@ -200,6 +206,17 @@ export function MilestoneCard({
   // Submit verification proof for the milestone
   const submitVerificationProof = async () => {
     if (!isOwner || !campaignId || !user || !verificationProof || verificationSubmitted) return
+
+    if (!isValidProofLink(verificationProof)) {
+      console.log("Invalid link:", verificationProof);
+      toast({
+        title: "Error",
+        description: "Please enter a valid Google Drive or Notion link.",
+        variant: "destructive",
+      });
+      return;
+    }
+  
 
     setIsSubmitting(true)
 
