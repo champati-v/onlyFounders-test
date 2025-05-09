@@ -226,7 +226,7 @@ export default function CreateCampaignPage() {
   // API integration states
   const [projectId, setProjectId] = useState<string | null>(null)
   const [campaignId, setCampaignId] = useState<string | null>(null)
-  const { user } = useUser()
+  const { user, isLoading: isUserLoading } = useUser()
   const [submitLoading, setSubmitLoading] = useState(false)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
   const [bannerPreview, setBannerPreview] = useState<string | null>(null)
@@ -1061,7 +1061,7 @@ export default function CreateCampaignPage() {
             onClick={() => router.push("/campaign/campaigns")}
             className="bg-[#4361ff] hover:bg-[#4361ff]/90 text-white py-2 px-4 rounded-md font-medium"
           >
-            Back
+            Back to Campaigns
           </Button>
         </div>
         <p className="text-gray-400 md:text-left mb-6">
@@ -2311,7 +2311,7 @@ export default function CreateCampaignPage() {
                 <div></div>
               )}
 
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
+              <Button type="submit" disabled={isUserLoading} className="bg-blue-600 hover:bg-blue-700">
                 {currentStep === 4 ? "Create Campaign" : "Next"}{" "}
                 {submitLoading && <Loader2 className="animate-spin h-4 w-4 ml-2" />}
               </Button>

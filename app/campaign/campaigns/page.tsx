@@ -2,12 +2,14 @@
 
 
 import { useState, useEffect } from "react"
-import { Search } from "lucide-react"
+import { Router, Search } from "lucide-react"
 import Link from "next/link"
 import { useUser } from "@auth0/nextjs-auth0/client"
 import { API_URL } from '@/lib/config'
 import { Button } from "@/components/ui/button"
 import { CampaignCard } from "../components/campaign-card"
+import { useRouter } from "next/navigation"
+import {useToast} from '../../../hooks/use-toast'
 
 // Define the campaign type based on the API response
 interface Campaign {
@@ -48,6 +50,9 @@ export default function CampaignsPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   // State for storing the user's current campaign
   const [currentUserCampaign, setCurrentUserCampaign] = useState<Campaign | null>(null)
+  const [haveStartup, setHaveStartup] = useState(false)
+  const router = useRouter()
+  const { toast } = useToast()
 
   useEffect(() => {
     const checkLoggedIn = async () => {
@@ -60,6 +65,27 @@ export default function CampaignsPage() {
 
     checkLoggedIn()
   }, [isUserLoading, user])
+
+  useEffect(() => {
+    const checkStartup = async () => {
+      const userId = user?.sub?.substring(14)
+      if (!userId) return
+
+      const response = await fetch(`${API_URL}/api/startup/get-projectId`, {
+        headers: {
+          user_id: userId,
+        },
+      })
+      if (response.status === 200) {
+        setHaveStartup(true)
+      }else {
+        setHaveStartup(false)
+      }
+    }
+
+    checkStartup()
+  }, [isUserLoading, user])
+
 
   // Fetch campaigns from API
 // Main fetchCampaigns with 404/204 fix
@@ -188,9 +214,18 @@ useEffect(() => {
                   </Button>
                 </Link>
               )}
-              <Link href="/campaign/create-campaign">
-                <Button className="bg-[#4361ff] hover:bg-[#4361ff]/90 text-white py-2 px-4 rounded-md font-medium w-full sm:w-auto">Create Campaign</Button>
-              </Link>
+              {!isLoading &&
+                <Button 
+                disabled={currentUserCampaign}
+                onClick={!haveStartup ? () => 
+                  toast({
+                  title: "Message",
+                  description: "Please Create a Startup to have a campaign",
+                  variant: "destructive",
+                  }) 
+                  : () => router.push("/campaign/create-campaign")}
+                className="bg-[#4361ff] hover:bg-[#4361ff]/90 text-white py-2 px-4 rounded-md font-medium w-full sm:w-auto">Create Campaign</Button>
+              }
             </div>
         </div>
 
