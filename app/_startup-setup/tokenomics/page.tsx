@@ -1,5 +1,6 @@
 "use client";
 
+import { API_URL } from '@/lib/config';
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -165,7 +166,7 @@ export default function TokenomicsForm({
 
       // Send data to API
       const response = await fetch(
-        "https://onlyfounders.azurewebsites.net/api/startup/submit-tokenomics-details",
+        `${API_URL}/api/startup/submit-tokenomics-details`,
         {
           method: "POST",
           headers: {

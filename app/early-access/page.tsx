@@ -1,5 +1,5 @@
 "use client";
-
+import { API_URL } from '@/lib/config';
 import type React from "react";
 
 import {
@@ -52,7 +52,7 @@ export default function Home() {
       console.log("FormDATA here 0000 ", formData.name, formData.email);
 
       const saveData = await fetch(
-        "https://onlyfounders.azurewebsites.net/api/auth/store-early-access-user",
+        `${API_URL}/api/auth/store-early-access-user`,
         {
           method: "POST",
           headers: {

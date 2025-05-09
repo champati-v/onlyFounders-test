@@ -1,5 +1,6 @@
 "use client";
 
+import { API_URL } from '@/lib/config';
 import { type ReactNode, useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -101,7 +102,7 @@ export function AppLayout({
       const userID = user.sub?.substring(14);
 
       const response = await fetch(
-        "https://ofStaging.azurewebsites.net/api/profile/get-onboarding-status",
+        `${API_URL}/api/profile/get-onboarding-status`,
         {
           method: "GET",
           headers: {
@@ -154,7 +155,7 @@ export function AppLayout({
           const userID = user.sub?.substring(14);
 
           const response = await axios.post(
-            "https://ofStaging.azurewebsites.net/api/profile/add-walletAddress",
+            `${API_URL}/api/profile/add-walletAddress`,
             { walletAddress: address },
             {
               headers: {
@@ -190,7 +191,7 @@ export function AppLayout({
           setIsSent(true);
 
           const response = await fetch(
-            "https://ofStaging.azurewebsites.net/api/auth/register-user",
+            `${API_URL}/api/auth/register-user`,
             {
               method: "POST",
               headers: {

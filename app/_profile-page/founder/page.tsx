@@ -2,6 +2,8 @@
 
 import type React from "react"
 
+import { API_URL } from '@/lib/config'
+
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -76,7 +78,7 @@ export default function FounderProfilePage() {
           return;
         }
         
-        const response = await fetch("https://ofStaging.azurewebsites.net/api/profile/get-profile", {
+        const response = await fetch(`${API_URL}/api/profile/get-profile`, {
           method: "GET",
           headers: {
             "user_id": String(userId), // Ensure it's a string
@@ -157,7 +159,7 @@ export default function FounderProfilePage() {
            // Append founderData as JSON string
            formData.append("founderData", JSON.stringify(founderData))
 
-      const response = await fetch("https://onlyfounders.azurewebsites.net/api/profile/submit-personal-details", {
+      const response = await fetch(`${API_URL}/api/profile/submit-personal-details`, {
         method: "POST",
         headers: {
           user_id: userId,

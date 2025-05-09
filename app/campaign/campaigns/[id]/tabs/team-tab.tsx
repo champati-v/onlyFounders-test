@@ -1,5 +1,6 @@
 "use client"
 
+import { API_URL } from '@/lib/config';
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Twitter, Github, Linkedin } from 'lucide-react'
@@ -39,7 +40,7 @@ export function TeamTab({ campaign }: TeamTabProps) {
         // Get user ID for the API request header
         const userId = user?.sub?.substring(14) || "guest-user"
 
-        const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/get-team-details", {
+        const response = await fetch(`${API_URL}/api/startup/get-team-details`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

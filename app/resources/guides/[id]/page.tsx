@@ -1,5 +1,6 @@
 "use client"
 
+import { API_URL } from '@/lib/config';
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { useParams } from "next/navigation"
@@ -56,7 +57,7 @@ export default function BlogDetail() {
       try {
         setIsBlogLoading(true)
 
-        const response = await fetch(`https://onlyfounders.azurewebsites.net/api/blog/get-blog-by-id/${blogId}`)
+        const response = await fetch(`${API_URL}/api/blog/get-blog-by-id/${blogId}`)
 
         const data: ApiResponse = await response.json()
         setBlog(data.blog)
@@ -88,7 +89,7 @@ export default function BlogDetail() {
 
 
       
-      const response = await fetch(`https://onlyfounders.azurewebsites.net/api/blog/upvote-blog/${blogId}`, {
+      const response = await fetch(`${API_URL}/api/blog/upvote-blog/${blogId}`, {
         method: "POST",
         headers: {
           user_id: userId,

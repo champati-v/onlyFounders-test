@@ -1,5 +1,5 @@
 "use client";
-
+import { API_URL } from '@/lib/config';
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { AppLayout } from "@/components/layout/app-layout";
@@ -97,7 +97,7 @@ export default function ResourcesPage() {
     const fetchBlogs = async () => {
       try {
         const response = await fetch(
-          "https://onlyfounders.azurewebsites.net/api/blog/get-all-blogs"
+          `${API_URL}/api/blog/get-all-blogs`
         );
 
         if (response.status === 200) {

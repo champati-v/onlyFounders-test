@@ -2,6 +2,7 @@
 
 import type React from "react"
 
+import { API_URL } from '@/lib/config';
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -303,7 +304,7 @@ export default function CreateCampaignPage() {
           return
         }
 
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/get-projectId", {
+        const response = await fetch(`${API_URL}/api/startup/get-projectId`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -364,7 +365,7 @@ export default function CreateCampaignPage() {
           return
         }
 
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/view-startup", {
+        const response = await fetch(`${API_URL}/api/startup/view-startup`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -440,7 +441,7 @@ export default function CreateCampaignPage() {
 
     setIsFetchingMilestones(true)
     try {
-      const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/fetch-predefined-milestones", {
+      const response = await fetch(`${API_URL}/api/startup/fetch-predefined-milestones`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -655,7 +656,7 @@ export default function CreateCampaignPage() {
           }
 
           const response = await fetch(
-            "https://ofStaging.azurewebsites.net/api/startup/submit-basic-campaign-details",
+            `${API_URL}/api/startup/submit-basic-campaign-details`,
             {
               method: "POST",
               headers: {
@@ -728,7 +729,7 @@ export default function CreateCampaignPage() {
         }
 
         const response = await fetch(
-          "https://ofStaging.azurewebsites.net/api/startup/submit-campaign-financial-details",
+          `${API_URL}/api/startup/submit-campaign-financial-details`,
           {
             method: "POST",
             headers: {
@@ -777,7 +778,7 @@ export default function CreateCampaignPage() {
           answer: faq.answer,
         }))
 
-        const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/add-faqs", {
+        const response = await fetch(`${API_URL}/api/startup/add-faqs`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -822,7 +823,7 @@ export default function CreateCampaignPage() {
         }
 
         // Step 4: Submit milestones
-        const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/submit-milestones", {
+        const response = await fetch(`${API_URL}/api/startup/submit-milestones`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

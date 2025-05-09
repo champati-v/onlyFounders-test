@@ -1,5 +1,5 @@
 "use client";
-
+import { API_URL } from '@/lib/config';
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -323,7 +323,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
   //       const requestBody = { projectId };
   //       console.log(requestBody);
   //       const response = await axios.post(
-  //         "https://onlyfounders.azurewebsites.net/api/profile/get-updates",
+  //         `${API_URL}/api/profile/get-updates`,
   //         requestBody,
   //         {
   //           headers: {
@@ -360,7 +360,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
         if (!user) return;
         const userId = user?.sub?.substring(14);
         const response = await fetch(
-          "https://onlyfounders.azurewebsites.net/api/startup/get-projectId",
+          `${API_URL}/api/startup/get-projectId`,
           {
             method: "GET",
             headers: {
@@ -394,7 +394,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
         const userId = user?.sub?.substring(14);
 
         const response = await fetch(
-          "https://onlyfounders.azurewebsites.net/api/startup/view-startup",
+          `${API_URL}/api/startup/view-startup`,
           {
             method: "POST",
             headers: {
@@ -424,7 +424,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
     const fetchStartups = async () => {
       try {
         const response = await fetch(
-          "https://onlyfounders.azurewebsites.net/api/startup/get-startup-listing"
+          `${API_URL}/api/startup/get-startup-listing`
         );
 
         // if (!response.ok) {
@@ -458,7 +458,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
 
       try {
         const response = await fetch(
-          `https://onlyfounders.azurewebsites.net/api/startup/get-upvote-status/${projectId}`,
+          `${API_URL}/api/startup/get-upvote-status/${projectId}`,
           {
             method: "POST",
             headers: {
@@ -486,7 +486,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
 
       try {
         const response = await fetch(
-          `https://onlyfounders.azurewebsites.net/api/startup/get-upvote-count/${projectId}`,
+          `${API_URL}/api/startup/get-upvote-count/${projectId}`,
           {
             method: "GET",
             headers: {
@@ -686,7 +686,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
       console.log(JSON.stringify(requestBody));
 
       const response = await axios.delete(
-        "https://onlyfounders.azurewebsites.net/api/startup/delete-teamMember",
+        `${API_URL}/api/startup/delete-teamMember`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -725,7 +725,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
     try {
       const userId = user.sub?.substring(14);
       const response = await fetch(
-        `https://onlyfounders.azurewebsites.net/api/startup/upvote-startup/${projectId}`,
+        `${API_URL}/api/startup/upvote-startup/${projectId}`,
         {
           method: "POST",
           headers: {
@@ -737,7 +737,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
       // After upvoting, fetch the updated status
       if (response.status === 200) {
         const statusResponse = await fetch(
-          `https://onlyfounders.azurewebsites.net/api/startup/get-upvote-status/${projectId}`,
+          `${API_URL}/api/startup/get-upvote-status/${projectId}`,
           {
             method: "POST",
             headers: {
@@ -754,7 +754,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
 
       if (response.status === 200) {
         const countResponse = await fetch(
-          `https://onlyfounders.azurewebsites.net/api/startup/get-upvote-count/${projectId}`,
+          `${API_URL}/api/startup/get-upvote-count/${projectId}`,
           {
             method: "GET",
             headers: {
@@ -783,7 +783,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
       console.log(JSON.stringify(requestBody));
 
       const response = await axios.delete(
-        "https://onlyfounders.azurewebsites.net/",
+        `${API_URL}/`,
         {
           headers: {
             "Content-Type": "application/json",

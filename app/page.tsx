@@ -1,6 +1,7 @@
 'use client'
 
 import { AppLayout } from "@/components/layout/app-layout";
+import { API_URL } from '@/lib/config'; 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -56,7 +57,7 @@ export default function HomePage() {
           const userID = user.sub?.substring(14);
     
           const response = await fetch(
-            "https://ofStaging.azurewebsites.net/api/profile/get-onboarding-status",
+            `${API_URL}/api/profile/get-onboarding-status`,
             {
               method: "GET",
               headers: {
@@ -95,7 +96,7 @@ export default function HomePage() {
       setIsLoading(true);
       try {
         const response = await fetch(
-          "https://onlyfounders.azurewebsites.net/api/startup/get-featured-projects"
+          `${API_URL}/api/startup/get-featured-projects`
         );
 
         // if (!response.ok) {

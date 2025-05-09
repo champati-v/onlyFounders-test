@@ -1,5 +1,5 @@
 "use client"
-
+import { API_URL } from '@/lib/config';
 import { useState, useEffect } from "react"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
@@ -114,7 +114,7 @@ export default function UpdatesPage() {
         formDataToSend.append("attachments", file);
       });
 
-      const response = await fetch("https://onlyfounders.azurewebsites.net/api/profile/create-update", {
+      const response = await fetch(`${API_URL}/api/profile/create-update`, {
         method: "POST",
         headers:{
           user_id: userID,
@@ -130,7 +130,7 @@ export default function UpdatesPage() {
 
       // Refresh the updates list
       const updatedResponse = await fetch(
-        "https://onlyfounders.azurewebsites.net/api/profile/get-updates-in-dashboard",
+        `${API_URL}/api/profile/get-updates-in-dashboard`,
         {
           headers: {
             user_id: userID,
@@ -159,7 +159,7 @@ export default function UpdatesPage() {
 
         const userID = user?.sub?.substring(14)
         
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/profile/get-updates-in-dashboard", {
+        const response = await fetch(`${API_URL}/api/profile/get-updates-in-dashboard`, {
           headers: {
             user_id: userID,
           },

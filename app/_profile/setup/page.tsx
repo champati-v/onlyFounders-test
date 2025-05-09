@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import { API_URL } from '@/lib/config';
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -35,7 +36,7 @@ export default function ProfileSetupPage() {
         return
       }
 
-      const response = await fetch("https://ofStaging.azurewebsites.net/api/profile/submit-role", {
+      const response = await fetch(`${API_URL}/api/profile/submit-role`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

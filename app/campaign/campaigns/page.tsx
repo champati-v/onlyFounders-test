@@ -1,10 +1,11 @@
 "use client"
 
+
 import { useState, useEffect } from "react"
 import { Search } from "lucide-react"
 import Link from "next/link"
 import { useUser } from "@auth0/nextjs-auth0/client"
-
+import { API_URL } from '@/lib/config'
 import { Button } from "@/components/ui/button"
 import { CampaignCard } from "../components/campaign-card"
 
@@ -73,8 +74,8 @@ useEffect(() => {
 
       const endpoint =
         filter === "all"
-          ? "https://ofstaging.azurewebsites.net/api/startup/list-campaigns"
-          : "https://ofstaging.azurewebsites.net/api/startup/list-my-campaigns"
+          ? `${API_URL}/api/startup/list-campaigns`
+          : `${API_URL}/api/startup/list-my-campaigns`
 
       const response = await fetch(endpoint, {
         headers: {
@@ -121,7 +122,7 @@ useEffect(() => {
       if (!user || isUserLoading) return
       const userId = user.sub?.substring(14)
 
-      const response = await fetch("https://ofstaging.azurewebsites.net/api/startup/list-my-campaigns", {
+      const response = await fetch(`${API_URL}/api/startup/list-my-campaigns`, {
         headers: {
           user_id: userId,
         },

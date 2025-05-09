@@ -1,5 +1,6 @@
 "use client"
 
+import { API_URL } from '@/lib/config';
 import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -169,7 +170,7 @@ export default function BasicInfoForm({ data, updateData, onNext, userId }: Basi
       formData.append("pitchDemoVideo", values.demoVideo)
 
       // Send data to API
-      const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/submit-basic-startup-details", {
+      const response = await fetch(`${API_URL}/api/startup/submit-basic-startup-details`, {
         method: "POST",
         headers: {
           // Ensure user_id is inside headers correctly

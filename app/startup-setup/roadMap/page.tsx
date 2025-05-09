@@ -1,5 +1,6 @@
 "use client"
 
+import { API_URL } from '@/lib/config';
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -65,7 +66,7 @@ export default function RoadmapForm({ data, updateData, onNext }: RoadmapFormPro
           try{
             if(!user) return
             const userId = user?.sub?.substring(14)
-            const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/get-projectId",{
+            const response = await fetch(`${API_URL}/api/startup/get-projectId`,{
               method: "GET",
               headers: {
                 user_id: userId,
@@ -97,7 +98,7 @@ export default function RoadmapForm({ data, updateData, onNext }: RoadmapFormPro
         const userId = user?.sub?.substring(14)
         const requestBody = { projectId };
         const response = await axios.post(
-          "https://ofStaging.azurewebsites.net/api/startup/view-startup",
+          `${API_URL}/api/startup/view-startup`,
           requestBody, // ✅ Correct JSON format
           {
             headers: {
@@ -331,7 +332,7 @@ export default function RoadmapForm({ data, updateData, onNext }: RoadmapFormPro
       }
 
       // Send data to API
-      const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/add-roadmap", {
+      const response = await fetch(`${API_URL}/api/startup/add-roadmap`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

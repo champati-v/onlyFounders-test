@@ -1,5 +1,6 @@
 "use client"
 
+import { API_URL } from '@/lib/config';
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Calendar, Clock, Eye, Users } from "lucide-react"
@@ -70,7 +71,7 @@ export default function FundraisingCampaigns() {
 
         const userID = user?.sub?.substring(14)
 
-        const response = await fetch("https://onlyfounders.azurewebsites.net/api/startup/list-campaigns", {
+        const response = await fetch(`${API_URL}/api/startup/list-campaigns`, {
           headers: {
             user_id: userID,
           },

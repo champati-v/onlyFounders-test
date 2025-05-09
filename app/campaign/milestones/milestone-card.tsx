@@ -1,5 +1,6 @@
 "use client"
 
+import { API_URL } from '@/lib/config';
 import { useState, useEffect } from "react"
 import { AlertCircle, Check, ChevronDown, ChevronUp, Clock, ExternalLink, XCircle } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
@@ -85,7 +86,7 @@ export function MilestoneCard({
         // This is a placeholder for the actual API endpoint to fetch milestone data
         // You'll need to replace this with the actual endpoint
         const response = await fetch(
-          `https://ofStaging.azurewebsites.net/api/startup/get-milestone?campaignId=${campaignId}&milestoneId=${id}`,
+          `${API_URL}/api/startup/get-milestone?campaignId=${campaignId}&milestoneId=${id}`,
           {
             headers: {
               user_id: userId || "",
@@ -167,7 +168,7 @@ export function MilestoneCard({
     try {
       const userId = user.sub?.substring(14)
 
-      const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/mark-milestones-task-done", {
+      const response = await fetch(`${API_URL}/api/startup/mark-milestones-task-done`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -223,7 +224,7 @@ export function MilestoneCard({
     try {
       const userId = user.sub?.substring(14)
 
-      const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/submit-verification-url", {
+      const response = await fetch(`${API_URL}/api/startup/submit-verification-url`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

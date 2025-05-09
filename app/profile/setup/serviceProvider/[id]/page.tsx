@@ -1,5 +1,6 @@
 "use client"
 
+import { API_URL } from '@/lib/config';
 import type React from "react"
 
 import { useEffect, useState } from "react"
@@ -325,7 +326,7 @@ export default function ServiceProviderProfileSetupPage({ params }: { params: { 
         if (!user || isLoading) return // Wait until user is fully loaded
         const userId = user?.sub?.substring(14)
 
-        const response = await fetch("https://ofStaging.azurewebsites.net/api/profile/get-profile", {
+        const response = await fetch(`${API_URL}/api/profile/get-profile`, {
           method: "GET",
           headers: {
             user_id: userId,
@@ -392,7 +393,7 @@ export default function ServiceProviderProfileSetupPage({ params }: { params: { 
   useEffect(() => {
     const getOnboardingStatus = async () => {
       try {
-        const response = await fetch("https://ofstaging.azurewebsites.net/api/profile/get-onboarding-status", {
+        const response = await fetch(`${API_URL}/api/profile/get-onboarding-status`, {
           method: "GET",
           headers: {
             user_id: user?.sub?.substring(14),
@@ -484,7 +485,7 @@ export default function ServiceProviderProfileSetupPage({ params }: { params: { 
       formData.append("serviceProviderData", JSON.stringify(serviceProviderData))
 
       // Make API call
-      const response = await fetch("https://ofstaging.azurewebsites.net/api/profile/submit-personal-details", {
+      const response = await fetch(`${API_URL}/api/profile/submit-personal-details`, {
         method: "POST",
         headers: {
           user_id: userId,

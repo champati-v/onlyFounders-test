@@ -1,5 +1,6 @@
 "use client"
 
+import { API_URL } from '@/lib/config';
 import { useState } from "react"
 import { AlertCircle, Check, ChevronDown, ChevronUp, Clock, Eye, XCircle } from "lucide-react"
 
@@ -87,7 +88,7 @@ export function MilestoneCard({
     try {
       const userId = user.sub?.substring(14)
 
-      const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/mark-milestones-task-done", {
+      const response = await fetch(`${API_URL}/api/startup/mark-milestones-task-done`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
