@@ -1,5 +1,6 @@
 "use client";
 
+import { API_URL } from '@/lib/config';
 import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -68,7 +69,7 @@ export default function FounderProfilePage({
         }
 
         const response = await fetch(
-          `https://ofStaging.azurewebsites.net/api/network/get-profile-data/${founderId}/Founder`,
+          `${API_URL}/api/network/get-profile-data/${founderId}/Founder`,
           {
             method: "GET",
             headers: {

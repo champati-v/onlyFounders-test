@@ -1,5 +1,6 @@
 "use client"
 
+import { API_URL } from '@/lib/config';
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 import { useUser } from "@auth0/nextjs-auth0/client"
 import { useAccount } from "wagmi"
@@ -47,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const userId = getUserId()
 
       // Fetch onboarding status
-      const response = await fetch("https://ofStaging.azurewebsites.net/api/profile/get-onboarding-status", {
+      const response = await fetch(`${API_URL}/api/profile/get-onboarding-status`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -142,7 +143,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
           setIsDataSent(true)
 
-          const response = await fetch("https://ofstaging.azurewebsites.net/api/auth/register-user", {
+          const response = await fetch(`${API_URL}/api/auth/register-user`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -181,7 +182,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const userId = getUserId()
 
           await axios.post(
-            "https://ofStaging.azurewebsites.net/api/profile/add-walletAddress",
+            `${API_URL}/api/profile/add-walletAddress`,
             { walletAddress: address },
             {
               headers: {

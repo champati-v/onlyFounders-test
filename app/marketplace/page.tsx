@@ -1,5 +1,6 @@
 "use client"
 
+import { API_URL } from '@/lib/config';
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
@@ -74,7 +75,7 @@ export default function MarketplacePage() {
 
         if(!user || isUserLoading) return
         const userID = user.sub?.substring(14)
-        const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/check-startup", {
+        const response = await fetch(`${API_URL}/api/startup/check-startup`, {
           method: "GET",
           headers: {
             user_id: userID,
@@ -110,7 +111,7 @@ export default function MarketplacePage() {
         setIsRoleLoading(true)
         const userID = user.sub?.substring(14)
 
-        const response = await fetch("https://ofStaging.azurewebsites.net/api/profile/get-onboarding-status", {
+        const response = await fetch(`${API_URL}/api/profile/get-onboarding-status`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -146,7 +147,7 @@ export default function MarketplacePage() {
     const fetchStartups = async () => {
       try {
         setIsLoading(true)
-        const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/get-startup-listing")
+        const response = await fetch(`${API_URL}/api/startup/get-startup-listing`)
 
         // if (!response.ok) {
         //   throw new Error(`API error: ${response.status}`)

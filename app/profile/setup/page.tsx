@@ -1,5 +1,6 @@
 "use client"
 
+import { API_URL } from '@/lib/config';
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -56,7 +57,7 @@ export default function ProfileSetupPage() {
         return
       }
 
-      const response = await fetch("https://ofstaging.azurewebsites.net/api/profile/submit-role", {
+      const response = await fetch(`${API_URL}/api/profile/submit-role`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,7 +68,7 @@ export default function ProfileSetupPage() {
         }),
       })
 
-      const getRole = await fetch("https://ofstaging.azurewebsites.net/api/profile/get-onboarding-status", {
+      const getRole = await fetch(`${API_URL}/api/profile/get-onboarding-status`, {
         method: "GET",
         headers: {
           user_id: user?.sub?.substring(14),
@@ -76,7 +77,7 @@ export default function ProfileSetupPage() {
 
     
       const sendWallet = await axios.post(
-        "https://ofStaging.azurewebsites.net/api/profile/add-walletAddress",
+        `${API_URL}/api/profile/add-walletAddress`,
         { walletAddress: address },
         {
           headers: {

@@ -1,5 +1,6 @@
 "use client"
 
+import { API_URL } from '@/lib/config';
 import { useState, useEffect } from "react"
 import { Check } from 'lucide-react'
 import { useUser } from "@auth0/nextjs-auth0/client"
@@ -46,7 +47,7 @@ export function TokenomicsTab({ campaign }: TokenomicsTabProps) {
         // Get user ID for the API request header
         const userId = user?.sub?.substring(14) || "guest-user"
 
-        const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/get-tokenomics", {
+        const response = await fetch(`${API_URL}/api/startup/get-tokenomics`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

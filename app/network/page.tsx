@@ -1,5 +1,6 @@
 "use client";
 
+import { API_URL } from '@/lib/config';
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -395,7 +396,7 @@ export default function NetworkPage() {
         if (!user || isLoading) return;
         console.log("Calling API now...");
         const response = await axios.get(
-          "https://ofStaging.azurewebsites.net/api/network/list-profile-by-role/Founder",
+          `${API_URL}/api/network/list-profile-by-role/Founder`,
           {
             headers: {
               user_id: userId,
@@ -424,7 +425,7 @@ export default function NetworkPage() {
         if (!user || isLoading) return;
         console.log("Calling API now...");
         const response = await axios.get(
-          "https://ofStaging.azurewebsites.net/api/network/list-profile-by-role/Investor",
+          `${API_URL}/api/network/list-profile-by-role/Investor`,
           {
             headers: {
               user_id: userId,
@@ -455,7 +456,7 @@ export default function NetworkPage() {
         setLoading(true);
         if (!user || isLoading) return;
         const response = await axios.get(
-          "https://ofStaging.azurewebsites.net/api/network/list-profile-by-role/ServiceProvider",
+          `${API_URL}/api/network/list-profile-by-role/ServiceProvider`,
           {
             headers: {
               user_id: userId,
