@@ -192,10 +192,10 @@ const milestoneSchema = z.object({
   _id: z.string().optional(),
   milestoneId: z.string(),
   name: z.string().min(1, "Milestone name is required"),
-  fundPercentage: z.number().min(0, "Fund percentage must be at least 0").max(100, "Fund percentage cannot exceed 100"),
+  // fundPercentage: z.number().min(0, "Fund percentage must be at least 0").max(100, "Fund percentage cannot exceed 100"),
   description: z.string().min(1, "Description is required"),
   requirements: z.array(requirementSchema).min(1, "At least one requirement is needed"),
-  verificationProof: z.string().url("Please enter a valid URL").or(z.literal("")),
+  // verificationProof: z.string().url("Please enter a valid URL").or(z.literal("")),
   milestoneStatus: z.enum(["incomplete", "complete"]),
   isExpanded: z.boolean().optional(),
   isPredefined: z.boolean().optional(),
@@ -834,12 +834,12 @@ export default function CreateCampaignPage() {
           }),
         })
 
-        if (response.status === 204) {
+        if (response.status === 200) {
           toast({
             title: "Success",
             description: "Campaign created successfully!",
           })
-          router.push('/campaign')
+          router.push('/campaign/campaigns')
         } else {
           toast({
             title: "Error",
@@ -1912,7 +1912,7 @@ export default function CreateCampaignPage() {
                                   </AccordionTrigger>
                                   <AccordionContent>
                                     <div className="pl-10 pt-2 space-y-4">
-                                      <div className="space-y-2">
+                                      {/* <div className="space-y-2">
                                         <h4 className="text-sm font-medium">Fund Percentage</h4>
                                         <Input
                                           type="number"
@@ -1934,7 +1934,7 @@ export default function CreateCampaignPage() {
                                           max="100"
                                           className="bg-[#0a0b14] border-[#2e2f45] text-white w-24"
                                         />
-                                      </div>
+                                      </div> */}
 
                                       <div className="space-y-2">
                                         <h4 className="text-sm font-medium">Requirements</h4>
@@ -1948,7 +1948,7 @@ export default function CreateCampaignPage() {
                                         </div>
                                       </div>
 
-                                      <div className="space-y-2">
+                                      {/* <div className="space-y-2">
                                         <h4 className="text-sm font-medium">Verification Proof</h4>
                                         <Input
                                           value={milestone.verificationProof}
@@ -1968,7 +1968,7 @@ export default function CreateCampaignPage() {
                                           placeholder="https://proof.com/verification"
                                           className="bg-[#0a0b14] border-[#2e2f45] text-white"
                                         />
-                                      </div>
+                                      </div> */}
                                     </div>
                                   </AccordionContent>
                                 </AccordionItem>
@@ -2051,7 +2051,7 @@ export default function CreateCampaignPage() {
                                 {(expandedMilestone === milestone.milestoneId ||
                                   editingMilestone === milestone.milestoneId) && (
                                   <div className="p-4 space-y-4">
-                                    <div className="space-y-2">
+                                    {/* <div className="space-y-2">
                                       <FormLabel>
                                         Fund Percentage
                                         <span className="text-red-500 ml-1">*</span>
@@ -2080,7 +2080,7 @@ export default function CreateCampaignPage() {
                                           {milestoneErrors[milestone.milestoneId].fundPercentage}
                                         </p>
                                       )}
-                                    </div>
+                                    </div> */}
 
                                     <div className="space-y-2">
                                       <FormLabel>
@@ -2233,7 +2233,7 @@ export default function CreateCampaignPage() {
                                       </div>
                                     </div>
 
-                                    <div className="space-y-2">
+                                    {/* <div className="space-y-2">
                                       <FormLabel>Verification Proof URL</FormLabel>
                                       <div className="flex">
                                         <div className="relative flex-1">
@@ -2255,7 +2255,7 @@ export default function CreateCampaignPage() {
                                           />
                                         </div>
                                       </div>
-                                    </div>
+                                    </div> */}
                                   </div>
                                 )}
                               </div>

@@ -34,6 +34,7 @@ interface MilestoneProps {
   milestoneStatus?: "complete" | "incomplete" // API response field
   approvalStatus?: "approved" | "pending" | "rejected" // API response field
   verificationProof?: string // API response field
+  proofUrl?: string
 }
 
 export function MilestoneCard({
@@ -50,7 +51,8 @@ export function MilestoneCard({
   isOwner = false,
   milestoneStatus: initialMilestoneStatus,
   verificationProof: initialVerificationProof,
-  approvalStatus
+  approvalStatus,
+  proofUrl,
 }: MilestoneProps) {
   const [expanded, setExpanded] = useState(number <= 2) // Auto-expand first two milestones
   const [showProofModal, setShowProofModal] = useState(false)

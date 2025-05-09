@@ -127,6 +127,7 @@ export function MilestonesTab({ campaign, isOwner, campaignId }: MilestonesTabPr
               progress={progress}
               status={status}
               approvalStatus={milestone.adminApprovalStatus}
+              proofUrl={milestone.verificationProof}
               campaignId={campaignId}
               isOwner={isOwner}
             />
