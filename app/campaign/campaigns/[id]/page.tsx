@@ -121,15 +121,15 @@ export default function CampaignDetailPage() {
           body: JSON.stringify({ campaignId }),
         })
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch campaign details: ${response.status}`)
-        }
 
         const data = await response.json()
         setCampaign(data.campaign)
+        console.log("Campaign Data:", data.campaign)
 
         // Check if the current user is the owner of the campaign
         setIsOwner(data.campaign.user_id === userId)
+ 
+
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch campaign details")
         console.error("Error fetching campaign details:", err)
@@ -142,6 +142,7 @@ export default function CampaignDetailPage() {
       fetchCampaignDetails()
     }
   }, [campaignId, user, isUserLoading])
+
 
   if (isLoading) {
     return (
@@ -179,6 +180,7 @@ export default function CampaignDetailPage() {
       </div>
     )
   }
+
 
   // Format campaign data for the components
   const formattedCampaign = {

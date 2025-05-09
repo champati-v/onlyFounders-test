@@ -97,6 +97,7 @@ export default function HomePage() {
       try {
         const response = await fetch(
           `${API_URL}/api/startup/get-featured-projects`
+          "https://ofstaging.azurewebsites.net/api/startup/get-featured-projects"
         );
 
         // if (!response.ok) {

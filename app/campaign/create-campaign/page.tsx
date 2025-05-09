@@ -1093,8 +1093,11 @@ export default function CreateCampaignPage() {
   return (
     <div className="min-h-screen bg-[#0a0b14] text-white p-6">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-2xl text-center md:text-left font-bold mb-1">Create New Campaign</h1>
-        <p className="text-gray-400 text-center md:text-left mb-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl md:text-left font-bold mb-1">Create New Campaign</h1>
+          <Button onClick={() => router.push("/campaign/campaigns")} className="bg-[#4361ff] hover:bg-[#4361ff]/90 text-white py-2 px-4 rounded-md font-medium" >Back</Button>
+        </div>
+        <p className="text-gray-400 md:text-left mb-6">
           {currentStep === 1
             ? "Enter basic information about your campaign"
             : currentStep === 2

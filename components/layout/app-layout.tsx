@@ -243,7 +243,7 @@ export function AppLayout({
     { href: "/", label: "Home", icon: Home },
     { href: "/about", label: "About", icon: Info },
     { href: "/marketplace", label: "Marketplace", icon: Store },
-    { href: "/campaign", label: "Campaigns", icon: HiOutlineSpeakerphone },
+    { href: "/campaign/campaigns", label: "Campaigns", icon: HiOutlineSpeakerphone },
     { href: "/network", label: "Network", icon: Users },
     { href: "/resources", label: "Resources", icon: BookOpen },
     { href: "/quests", label: "Quests", icon: Trophy },
@@ -465,7 +465,7 @@ export function AppLayout({
                   <NavigationMenuItem>
                     <NavigationMenuLink className="bg-transparent" asChild>
                       <a
-                        href="/campaign"
+                        href="/campaign/campaigns"
                         className="py-2.5 px-3 text-[15px] rounded-md hover:cursor-pointer hover:bg-gray-800"
                       >
                         Campaigns
