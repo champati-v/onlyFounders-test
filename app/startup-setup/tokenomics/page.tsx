@@ -1,5 +1,6 @@
 "use client"
 
+import { API_URL } from '@/lib/config';
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -70,7 +71,7 @@ export default function TokenomicsForm({ data, updateData, onSubmit }: Tokenomic
         try{
           if(!user) return
           const userId = user?.sub?.substring(14)
-          const response = await fetch("https://ofstaging.azurewebsites.net/api/startup/get-projectId",{
+          const response = await fetch(`${API_URL}/api/startup/get-projectId`,{
             method: "GET",
             headers: {
               user_id: userId,
@@ -107,7 +108,7 @@ export default function TokenomicsForm({ data, updateData, onSubmit }: Tokenomic
         console.log("The project id is", JSON.stringify({ projectId }));
   
         const response = await axios.post(
-          "https://ofStaging.azurewebsites.net/api/startup/view-startup",
+          `${API_URL}/api/startup/view-startup`,
           requestBody, // ✅ Correct JSON format
           {
             headers: {
@@ -279,7 +280,7 @@ export default function TokenomicsForm({ data, updateData, onSubmit }: Tokenomic
       }
 
       // Send data to API
-      const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/submit-tokenomics-details", {
+      const response = await fetch(`${API_URL}/api/startup/submit-tokenomics-details`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

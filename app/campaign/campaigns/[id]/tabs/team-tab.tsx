@@ -1,5 +1,6 @@
 "use client"
 
+import { API_URL } from '@/lib/config';
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Twitter, Github, Linkedin } from 'lucide-react'
@@ -39,7 +40,7 @@ export function TeamTab({ campaign }: TeamTabProps) {
         // Get user ID for the API request header
         const userId = user?.sub?.substring(14) || "guest-user"
 
-        const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/get-team-details", {
+        const response = await fetch(`${API_URL}/api/startup/get-team-details`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -68,43 +69,43 @@ export function TeamTab({ campaign }: TeamTabProps) {
   }, [campaign._id, user])
 
   // Placeholder team members if API returns empty or fails
-  const placeholderTeam = [
-    {
-      _id: "1",
-      fullName: "Alex Johnson",
-      title: "Founder & CEO",
-      shortBio: "Experienced blockchain professional with a passion for decentralized technologies.",
-      profilePicture: {
-        file_url: "/diverse-person.png",
-        file_name: "person1.png",
-        _id: "1",
-      },
-      socialLinks: {
-        twitter: "#",
-        linkedin: "#",
-        github: "#",
-      },
-    },
-    {
-      _id: "2",
-      fullName: "Sarah Chen",
-      title: "CTO",
-      shortBio: "Blockchain architect with 8+ years of experience in smart contract development.",
-      profilePicture: {
-        file_url: "/diverse-group-two.png",
-        file_name: "person2.png",
-        _id: "2",
-      },
-      socialLinks: {
-        twitter: "#",
-        linkedin: "#",
-        github: "#",
-      },
-    },
-  ]
+  // const placeholderTeam = [
+  //   {
+  //     _id: "1",
+  //     fullName: "Alex Johnson",
+  //     title: "Founder & CEO",
+  //     shortBio: "Experienced blockchain professional with a passion for decentralized technologies.",
+  //     profilePicture: {
+  //       file_url: "/diverse-person.png",
+  //       file_name: "person1.png",
+  //       _id: "1",
+  //     },
+  //     socialLinks: {
+  //       twitter: "#",
+  //       linkedin: "#",
+  //       github: "#",
+  //     },
+  //   },
+  //   {
+  //     _id: "2",
+  //     fullName: "Sarah Chen",
+  //     title: "CTO",
+  //     shortBio: "Blockchain architect with 8+ years of experience in smart contract development.",
+  //     profilePicture: {
+  //       file_url: "/diverse-group-two.png",
+  //       file_name: "person2.png",
+  //       _id: "2",
+  //     },
+  //     socialLinks: {
+  //       twitter: "#",
+  //       linkedin: "#",
+  //       github: "#",
+  //     },
+  //   },
+  // ]
 
   // Use API data if available, otherwise use placeholder
-  const displayTeam = teamMembers.length > 0 ? teamMembers : placeholderTeam
+  const displayTeam = teamMembers.length > 0 ? teamMembers : []
 
   return (
     <div className="bg-[#0c1425] rounded-lg p-4 sm:p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">

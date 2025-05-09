@@ -1,5 +1,5 @@
 "use client";
-
+import { API_URL } from '@/lib/config';
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -88,7 +88,7 @@ export default function QuestsPage() {
       try {
         const userID = user.sub?.substring(14);
         const response = await axios.get(
-          "https://ofstaging.azurewebsites.net/api/nft/quest-status",
+          `${API_URL}/api/nft/quest-status`,
           {
             method: "GET",
             headers: {

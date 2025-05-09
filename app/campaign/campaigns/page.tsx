@@ -1,10 +1,11 @@
 "use client"
 
+
 import { useState, useEffect } from "react"
 import { Search } from "lucide-react"
 import Link from "next/link"
 import { useUser } from "@auth0/nextjs-auth0/client"
-
+import { API_URL } from '@/lib/config'
 import { Button } from "@/components/ui/button"
 import { CampaignCard } from "../components/campaign-card"
 
@@ -61,93 +62,95 @@ export default function CampaignsPage() {
   }, [isUserLoading, user])
 
   // Fetch campaigns from API
-  useEffect(() => {
-    const fetchCampaigns = async () => {
-      setIsLoading(true)
-      try {
-        // Return early if user is not loaded yet
-        if (!user || isUserLoading) return
-        const userId = user.sub?.substring(14)
+// Main fetchCampaigns with 404/204 fix
+useEffect(() => {
+  const fetchCampaigns = async () => {
+    setIsLoading(true)
+    setError("") // Clear previous error
 
-        // Determine which endpoint to use based on filter
-        const endpoint =
-          filter === "all"
-            ? "https://ofstaging.azurewebsites.net/api/startup/list-campaigns"
-            : "https://ofstaging.azurewebsites.net/api/startup/list-my-campaigns"
+    try {
+      if (!user || isUserLoading) return
+      const userId = user.sub?.substring(14)
 
-        const response = await fetch(endpoint, {
-          headers: {
-            user_id: userId,
-          },
-        })
+      const endpoint =
+        filter === "all"
+          ? `${API_URL}/api/startup/list-campaigns`
+          : `${API_URL}/api/startup/list-my-campaigns`
 
-        if (!response.ok) {
-          throw new Error(`Failed to fetch campaigns: ${response.status}`)
-        }
+      const response = await fetch(endpoint, {
+        headers: {
+          user_id: userId,
+        },
+      })
 
-        const data = await response.json()
-
-        // Map campaigns to include isOwner property
-        // For "my" campaigns, all are owned by the user
-        const campaignsWithOwnership = data.campaigns.map((campaign: Campaign) => ({
-          ...campaign,
-          isOwner: (userId ? campaign.user_id === userId : false),
-        }))
-
-        console.log("isOwner",campaigns.map(c => c.isOwner));
-
-
-        setCampaigns(campaignsWithOwnership)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch campaigns")
-        console.error("Error fetching campaigns:", err)
-      } finally {
-        setIsLoading(false)
+      if (response.status === 204 || response.status === 404) {
+        setCampaigns([]) // No campaigns found
+        return
       }
-    }
 
+      if (!response.ok) {
+        throw new Error(`Failed to fetch campaigns: ${response.status}`)
+      }
+
+      const data = await response.json()
+      const campaignsArray = Array.isArray(data.campaigns) ? data.campaigns : []
+
+      const campaignsWithOwnership = campaignsArray.map((campaign: Campaign) => ({
+        ...campaign,
+        isOwner: userId ? campaign.user_id === userId : false,
+      }))
+
+      console.log("isOwner", campaignsWithOwnership.map(c => c.isOwner))
+      setCampaigns(campaignsWithOwnership)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch campaigns")
+      console.error("Error fetching campaigns:", err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  if (user && !isUserLoading) {
     fetchCampaigns()
-  }, [user, isUserLoading, filter])
+  }
+}, [user, isUserLoading, filter])
 
-  console.log("isOwner",campaigns.map(c => c.isOwner));
+// User campaign fetch with 404/204 handling
+useEffect(() => {
+  const fetchUserCampaign = async () => {
+    try {
+      if (!user || isUserLoading) return
+      const userId = user.sub?.substring(14)
 
-  // Add this useEffect to fetch the user's campaigns separately
-  useEffect(() => {
-    const fetchUserCampaign = async () => {
-      try {
-        // Return early if user is not loaded yet
-        if (!user || isUserLoading) return
-        const userId = user.sub?.substring(14)
+      const response = await fetch(`${API_URL}/api/startup/list-my-campaigns`, {
+        headers: {
+          user_id: userId,
+        },
+      })
 
-        const response = await fetch("https://ofstaging.azurewebsites.net/api/startup/list-my-campaigns", {
-          headers: {
-            user_id: userId,
-          },
-        })
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch user campaigns: ${response.status}`)
-        }
-
-        const data = await response.json()
-
-        // Find the first campaign with status "Active"
-        const activeCampaign = data.campaigns.find(
-          (campaign: Campaign) => campaign.campaignStatus === "Active"
-        )
-
-        if (activeCampaign) {
-          setCurrentUserCampaign(activeCampaign)
-        } else {
-          setCurrentUserCampaign(null) // Optional: clear it if none found
-        }
-      } catch (err) {
-        console.error("Error fetching user campaigns:", err)
+      if (response.status === 204 || response.status === 404) {
+        setCurrentUserCampaign(null)
+        return
       }
-    }
 
-    fetchUserCampaign()
-  }, [user, isUserLoading])
+      if (!response.ok) {
+        throw new Error(`Failed to fetch user campaigns: ${response.status}`)
+      }
+
+      const data = await response.json()
+      const activeCampaign = data.campaigns.find(
+        (campaign: Campaign) => campaign.campaignStatus === "Active"
+      )
+
+      setCurrentUserCampaign(activeCampaign || null)
+    } catch (err) {
+      console.error("Error fetching user campaigns:", err)
+    }
+  }
+
+  fetchUserCampaign()
+}, [user, isUserLoading])
+
 
   // Get the current campaign ID for the "View Current Campaign" button
   const currentCampaignId = currentUserCampaign?.campaignId || ""

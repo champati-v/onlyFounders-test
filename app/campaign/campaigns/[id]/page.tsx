@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import { useUser } from "@auth0/nextjs-auth0/client"
-
+import { API_URL } from '@/lib/config';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { CampaignHeader } from "../../components/campaign-header"
 import { FundingSidebar } from "../../components/funding-sidebar"
@@ -112,7 +112,7 @@ export default function CampaignDetailPage() {
         // Get user ID for the API request header
         const userId = user?.sub?.substring(14) || "guest-user"
 
-        const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/get-campaign", {
+        const response = await fetch(`${API_URL}/api/startup/get-campaign`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -1,5 +1,5 @@
 "use client"
-
+import { API_URL } from '@/lib/config';
 import type React from "react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
@@ -158,7 +158,7 @@ export default function CoreTeamForm({ data, updateData, onNext }: CoreTeamFormP
         }
 
         // Send data to API
-        const response = await fetch("https://ofStaging.azurewebsites.net/api/startup/add-team-member", {
+        const response = await fetch(`${API_URL}/api/startup/add-team-member`, {
           method: "POST",
           headers: {
             user_id: userId,

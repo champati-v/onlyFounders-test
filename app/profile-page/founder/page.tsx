@@ -1,5 +1,6 @@
 "use client";
 
+import { API_URL } from '@/lib/config';
 import type React from "react";
 
 import { useState, useEffect } from "react";
@@ -78,7 +79,7 @@ export default function FounderProfilePage() {
         }
 
         const response = await fetch(
-          "https://ofStaging.azurewebsites.net/api/profile/get-profile",
+          `${API_URL}/api/profile/get-profile`,
           {
             method: "GET",
             headers: {
@@ -164,7 +165,7 @@ export default function FounderProfilePage() {
       formData.append("founderData", JSON.stringify(founderData));
 
       const response = await fetch(
-        "https://ofstaging.azurewebsites.net/api/profile/submit-personal-details",
+        `${API_URL}/api/profile/submit-personal-details`,
         {
           method: "POST",
           headers: {

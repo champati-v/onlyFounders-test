@@ -2,6 +2,7 @@
 
 import type React from "react"
 
+import { API_URL } from '@/lib/config';
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -289,7 +290,7 @@ export default function InvestorProfileSetupPage({params, }: { params: { id: num
   useEffect(() => {
     const getOnboardingStatus = async () => {
       try {
-        const response = await fetch("https://ofstaging.azurewebsites.net/api/profile/get-onboarding-status", {
+        const response = await fetch(`${API_URL}/api/profile/get-onboarding-status`, {
           method: "GET",
           headers: {
             user_id: user?.sub?.substring(14),
@@ -371,7 +372,7 @@ export default function InvestorProfileSetupPage({params, }: { params: { id: num
           return
         }
 
-        const response = await fetch("https://ofStaging.azurewebsites.net/api/profile/get-profile", {
+        const response = await fetch(`${API_URL}/api/profile/get-profile`, {
           method: "GET",
           headers: {
             user_id: userId,
@@ -469,7 +470,7 @@ export default function InvestorProfileSetupPage({params, }: { params: { id: num
       formData.append("socialLinks", JSON.stringify(socialLinks))
 
       // Make API call
-      const response = await fetch("https://ofstaging.azurewebsites.net/api/profile/submit-personal-details", {
+      const response = await fetch(`${API_URL}/api/profile/submit-personal-details`, {
         method: "POST",
         headers: {
           user_id: userId,

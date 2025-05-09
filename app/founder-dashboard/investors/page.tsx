@@ -1,5 +1,5 @@
 "use client"
-
+import { API_URL } from '@/lib/config';
 import { useState, useEffect } from "react"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -61,7 +61,7 @@ export default function InvestorsPage() {
           return
         }
 
-        const response = await fetch("https://ofstaging.azurewebsites.net/api/profile/get-founder-projectStats", {
+        const response = await fetch(`${API_URL}/api/profile/get-founder-projectStats`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

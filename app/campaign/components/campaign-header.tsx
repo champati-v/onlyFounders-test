@@ -1,5 +1,6 @@
 "use client"
 
+import { API_URL } from '@/lib/config';
 import type React from "react"
 
 import { useState, useEffect, useCallback } from "react"
@@ -50,11 +51,11 @@ export function CampaignHeader({ campaign }: CampaignHeaderProps) {
         // Fetch upvote count
         console.log(
           "Fetching upvote count from:",
-          `https://ofstaging.azurewebsites.net/api/startup/get-campaign-upvote-count/${campaignId}`,
+          `${API_URL}/api/startup/get-campaign-upvote-count/${campaignId}`,
         )
 
         const countResponse = await fetch(
-          `https://ofstaging.azurewebsites.net/api/startup/get-campaign-upvote-count/${campaignId}`,
+          `${API_URL}/api/startup/get-campaign-upvote-count/${campaignId}`,
           {
             method: "GET",
             headers: {
@@ -77,11 +78,11 @@ export function CampaignHeader({ campaign }: CampaignHeaderProps) {
         // Fetch upvote status
         console.log(
           "Fetching upvote status from:",
-          `https://ofstaging.azurewebsites.net/api/startup/get-campaign-upvote-status/${campaignId}`,
+          `${API_URL}/api/startup/get-campaign-upvote-status/${campaignId}`,
         )
 
         const statusResponse = await fetch(
-          `https://ofstaging.azurewebsites.net/api/startup/get-campaign-upvote-status/${campaignId}`,
+          `${API_URL}/api/startup/get-campaign-upvote-status/${campaignId}`,
           {
             method: "POST",
             headers: {
@@ -146,7 +147,7 @@ export function CampaignHeader({ campaign }: CampaignHeaderProps) {
       console.log("Toggling upvote with:", { campaignId, userId })
 
       // Log the full URL and headers
-      const url = `https://ofstaging.azurewebsites.net/api/startup/upvote-campaign/${campaignId}`
+      const url = `${API_URL}/api/startup/upvote-campaign/${campaignId}`
       const headers = {
         "Content-Type": "application/json",
         user_id: userId,

@@ -1,5 +1,6 @@
 "use client"
 
+import { API_URL } from '@/lib/config';
 import { useEffect, useState } from "react"
 import { useUser } from "@auth0/nextjs-auth0/client"
 import { toast } from "@/hooks/use-toast"
@@ -53,7 +54,7 @@ const CombinedProfile = () => {
       setError(null)
 
       try {
-        const response = await fetch("https://ofstaging.azurewebsites.net/api/profile/get-onboarding-status", {
+        const response = await fetch(`${API_URL}/api/profile/get-onboarding-status`, {
           method: "GET",
           headers: {
             user_id: user.sub.substring(14),

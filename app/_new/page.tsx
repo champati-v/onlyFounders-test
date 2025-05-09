@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-
+import { API_URL } from '@/lib/config';
 import { useState, useEffect } from "react"
 import { MapPin, Globe, Twitter, Linkedin, Github, Pencil, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -78,7 +78,7 @@ export default function ProfilePage() {
           return;
         }
   
-        const response = await fetch("https://ofStaging.azurewebsites.net/api/profile/get-profile", {
+        const response = await fetch(`${API_URL}/api/profile/get-profile`, {
           headers: {
             user_id: userId,
           },
@@ -241,7 +241,7 @@ export default function ProfilePage() {
         return;
       }
   
-      const response = await fetch("https://ofstaging.azurewebsites.net/api/profile/submit-personal-details", {
+      const response = await fetch(`${API_URL}/api/profile/submit-personal-details`, {
         headers: {
           user_id: userId,
         },
