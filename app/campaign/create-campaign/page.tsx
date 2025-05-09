@@ -2,27 +2,14 @@
 
 import type React from "react"
 
-import { API_URL } from '@/lib/config';
+import { API_URL } from "@/lib/config"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { format } from "date-fns"
-import {
-  CalendarIcon,
-  Trash2,
-  Upload,
-  Plus,
-  AlertCircle,
-  X,
-  ChevronDown,
-  ChevronUp,
-  Edit,
-  Link,
-  Camera,
-  Loader2,
-} from "lucide-react"
+import { CalendarIcon, Trash2, Plus, AlertCircle, X, ChevronDown, ChevronUp, Edit, Camera, Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -136,6 +123,7 @@ interface Milestone {
 // Define form schemas for each step
 const step1Schema = z.object({
   startupName: z.string().min(1, "Startup name is required"),
+  campaignOverview: z.string().min(1, "Campaign overview is required"),
   tagline: z.string().min(1, "Tagline is required"),
   category: z.string().min(1, "Category is required"),
   startupStage: z.string().min(1, "Startup stage is required"),
@@ -248,7 +236,7 @@ export default function CreateCampaignPage() {
   const [headerSrc, setHeaderSrc] = useState<string>("/placeholder.svg?height=300&width=1000")
   const [headerFile, setHeaderFile] = useState<File | null>(null)
   const [hasCreatedCampaign, setHasCreatedCampaign] = useState(false)
-  const {address} = useAccount()
+  const { address } = useAccount()
 
   // Initialize form with default values
   const form = useForm<z.infer<typeof formSchema>>({
@@ -257,6 +245,7 @@ export default function CreateCampaignPage() {
     ),
     defaultValues: {
       startupName: "",
+      campaignOverview: "",
       tagline: "",
       category: "",
       startupStage: "",
@@ -412,7 +401,6 @@ export default function CreateCampaignPage() {
               setDefaultBannerFile(bannerFile)
             }
           }
-
         } else {
           console.error("Failed to fetch startup data")
         }
@@ -643,7 +631,7 @@ export default function CreateCampaignPage() {
 
           // Create FormData to properly handle file uploads
           const formData = new FormData()
-          formData.append("campaignOverview", "Campaign")
+          formData.append("campaignOverview", form.getValues("campaignOverview"))
           formData.append("stage", form.getValues("startupStage") || startupData?.stage || "")
 
           if (campaignId) {
@@ -655,16 +643,13 @@ export default function CreateCampaignPage() {
             formData.append("bannerImage", bannerFile)
           }
 
-          const response = await fetch(
-            `${API_URL}/api/startup/submit-basic-campaign-details`,
-            {
-              method: "POST",
-              headers: {
-                user_id: userId || "",
-              },
-              body: formData,
+          const response = await fetch(`${API_URL}/api/startup/submit-basic-campaign-details`, {
+            method: "POST",
+            headers: {
+              user_id: userId || "",
             },
-          )
+            body: formData,
+          })
 
           if (response.ok) {
             const data = await response.json()
@@ -672,9 +657,9 @@ export default function CreateCampaignPage() {
             //   setCampaignId(data.campaign_id)
             // }
 
-            if(hasCreatedCampaign){
+            if (hasCreatedCampaign) {
               setCampaignId(campaignId)
-            }else{
+            } else {
               setCampaignId(data.campaign_id)
             }
 
@@ -724,20 +709,17 @@ export default function CreateCampaignPage() {
         formData.append("dealName", values.dealName)
         formData.append("dealRound", values.dealRound)
 
-        if(headerFile) {
+        if (headerFile) {
           formData.append("fundingHeaderImage", headerFile)
         }
 
-        const response = await fetch(
-          `${API_URL}/api/startup/submit-campaign-financial-details`,
-          {
-            method: "POST",
-            headers: {
-              user_id: userId || "",
-            },
-            body: formData,
+        const response = await fetch(`${API_URL}/api/startup/submit-campaign-financial-details`, {
+          method: "POST",
+          headers: {
+            user_id: userId || "",
           },
-        )
+          body: formData,
+        })
 
         if (response.ok) {
           setCurrentStep(currentStep + 1)
@@ -840,7 +822,7 @@ export default function CreateCampaignPage() {
             title: "Success",
             description: "Campaign created successfully!",
           })
-          router.push('/campaign/campaigns')
+          router.push("/campaign/campaigns")
         } else {
           toast({
             title: "Error",
@@ -973,26 +955,6 @@ export default function CreateCampaignPage() {
     form.setValue("userMilestones", updatedMilestones)
   }
 
-  // Handle removing a requirement from a milestone
-  const removeRequirement = (milestoneId: string, reqId: string) => {
-    const milestone = userMilestones.find((m) => m.milestoneId === milestoneId)
-
-    if (milestone && milestone.requirements.length > 1) {
-      const updatedMilestones = userMilestones.map((m) => {
-        if (m.milestoneId === milestoneId) {
-          return {
-            ...m,
-            requirements: m.requirements.filter((r) => (r.id || r._id) !== reqId),
-          }
-        }
-        return m
-      })
-
-      setUserMilestones(updatedMilestones)
-      form.setValue("userMilestones", updatedMilestones)
-    }
-  }
-
   // Update milestone field
   const updateMilestoneField = (milestoneId: string, field: string, value: any) => {
     const updatedMilestones = userMilestones.map((milestone) => {
@@ -1086,7 +1048,7 @@ export default function CreateCampaignPage() {
   //     </div>
   //   )
   // }
-  if(!user) {
+  if (!user) {
     router.push("/api/auth/login")
   }
 
@@ -1095,7 +1057,12 @@ export default function CreateCampaignPage() {
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl md:text-left font-bold mb-1">Create New Campaign</h1>
-          <Button onClick={() => router.push("/campaign/campaigns")} className="bg-[#4361ff] hover:bg-[#4361ff]/90 text-white py-2 px-4 rounded-md font-medium" >Back</Button>
+          <Button
+            onClick={() => router.push("/campaign/campaigns")}
+            className="bg-[#4361ff] hover:bg-[#4361ff]/90 text-white py-2 px-4 rounded-md font-medium"
+          >
+            Back
+          </Button>
         </div>
         <p className="text-gray-400 md:text-left mb-6">
           {currentStep === 1
@@ -1159,6 +1126,24 @@ export default function CreateCampaignPage() {
                         <FormLabel>Startup Name (Fetched from Startup page)</FormLabel>
                         <FormControl>
                           <Input {...field} className="bg-[#1a1b2e] border-[#2e2f45] text-white" disabled />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="campaignOverview"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Campaign Overview</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            placeholder="Provide an overview of your campaign"
+                            className="bg-[#1a1b2e] border-[#2e2f45] text-white min-h-[100px]"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -1641,30 +1626,30 @@ export default function CreateCampaignPage() {
                           <div className="border border-dashed border-[#2e2f45] rounded-md p-6 flex flex-col items-center justify-center bg-[#1a1b2e]">
                             {value || headerSrc ? (
                               <div className="relative w-full h-32 bg-gray-800 rounded-lg overflow-hidden mb-2">
-                              <img
-                                src={headerSrc || "/placeholder.svg"}
-                                alt="Banner"
-                                className="w-full h-full object-cover"
-                              />
-                              <label
-                                htmlFor="banner-upload"
-                                className="absolute bottom-2 right-2 p-1 rounded-full bg-gray-800 border border-gray-700 cursor-pointer"
-                              >
-                                <Camera className="h-4 w-4 text-gray-400" />
-                                <span className="sr-only">Upload Header Image</span>
-                              </label>
-                              <input
-                                id="banner-upload"
-                                type="file"
-                                accept="image/*"
-                                className="hidden"
-                                onChange={handleFundingHeaderChange}
-                              />
-                            </div>
+                                <img
+                                  src={headerSrc || "/placeholder.svg"}
+                                  alt="Banner"
+                                  className="w-full h-full object-cover"
+                                />
+                                <label
+                                  htmlFor="banner-upload"
+                                  className="absolute bottom-2 right-2 p-1 rounded-full bg-gray-800 border border-gray-700 cursor-pointer"
+                                >
+                                  <Camera className="h-4 w-4 text-gray-400" />
+                                  <span className="sr-only">Upload Header Image</span>
+                                </label>
+                                <input
+                                  id="banner-upload"
+                                  type="file"
+                                  accept="image/*"
+                                  className="hidden"
+                                  onChange={handleFundingHeaderChange}
+                                />
+                              </div>
                             ) : (
                               <div className="flex flex-col items-center justify-center text-gray-400">
-                              <p className="text-xs mt-1">Click upload to change your Header Image</p>
-                            </div>
+                                <p className="text-xs mt-1">Click upload to change your Header Image</p>
+                              </div>
                             )}
                           </div>
                         </FormControl>
@@ -2326,8 +2311,9 @@ export default function CreateCampaignPage() {
                 <div></div>
               )}
 
-              <Button type="submit" className="bg-blue-600 hover:bg-blue-700" >
-                {currentStep === 4 ? "Create Campaign" : "Next"} {submitLoading && <Loader2 className="animate-spin h-4 w-4 ml-2" />}
+              <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
+                {currentStep === 4 ? "Create Campaign" : "Next"}{" "}
+                {submitLoading && <Loader2 className="animate-spin h-4 w-4 ml-2" />}
               </Button>
             </div>
           </form>
