@@ -900,7 +900,7 @@ export default function BasicInfoForm({ data, updateData, onNext, userId }: Basi
                           <div className="relative">
                             <Twitter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                             <Input
-                              placeholder="@username"
+                              placeholder="https://twitter.com/username"
                               className="bg-gray-800 border-gray-700 text-white pl-10"
                               {...field}
                             />
@@ -921,7 +921,7 @@ export default function BasicInfoForm({ data, updateData, onNext, userId }: Basi
                           <div className="relative">
                             <Github className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                             <Input
-                              placeholder="github.com/organization"
+                              placeholder="https://github.com/username"
                               className="bg-gray-800 border-gray-700 text-white pl-10"
                               {...field}
                             />
@@ -976,7 +976,7 @@ export default function BasicInfoForm({ data, updateData, onNext, userId }: Basi
                         <FormLabel className="text-white">Medium</FormLabel>
                         <FormControl>
                           <Input
-                            placeholder="medium.com/@yourusername"
+                            placeholder="https://medium.com/yourusername"
                             className="bg-gray-800 border-gray-700 text-white"
                             {...field}
                           />

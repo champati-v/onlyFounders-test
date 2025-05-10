@@ -1050,7 +1050,7 @@ export default function ServiceProviderProfileSetupPage({ params }: { params: { 
                               <div className="relative">
                                 <Twitter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                                 <Input
-                                  placeholder="@companyname"
+                                  placeholder="https://twitter.com/username"
                                   className="bg-gray-800 border-gray-700 text-white pl-10"
                                   {...field}
                                 />
@@ -1074,7 +1074,7 @@ export default function ServiceProviderProfileSetupPage({ params }: { params: { 
                               <div className="relative">
                                 <Linkedin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                                 <Input
-                                  placeholder="linkedin.com/company/name"
+                                  placeholder="https://linkedin.com/username"
                                   className="bg-gray-800 border-gray-700 text-white pl-10"
                                   {...field}
                                 />
@@ -1098,7 +1098,7 @@ export default function ServiceProviderProfileSetupPage({ params }: { params: { 
                               <div className="relative">
                                 <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                                 <Input
-                                  placeholder="instagram.com/companyname"
+                                  placeholder="https://instagram.com/username"
                                   className="bg-gray-800 border-gray-700 text-white pl-10"
                                   {...field}
                                 />
@@ -1122,7 +1122,7 @@ export default function ServiceProviderProfileSetupPage({ params }: { params: { 
                               <div className="relative">
                                 <Facebook className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                                 <Input
-                                  placeholder="facebook.com/companyname"
+                                  placeholder="https://facebook.com/username"
                                   className="bg-gray-800 border-gray-700 text-white pl-10"
                                   {...field}
                                 />
@@ -1151,7 +1151,7 @@ export default function ServiceProviderProfileSetupPage({ params }: { params: { 
                               <div className="relative">
                                 <Twitter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                                 <Input
-                                  placeholder="@username"
+                                  placeholder="https://twitter.com/username"
                                   className="bg-gray-800 border-gray-700 text-white pl-10"
                                   {...field}
                                 />
@@ -1175,7 +1175,7 @@ export default function ServiceProviderProfileSetupPage({ params }: { params: { 
                               <div className="relative">
                                 <Linkedin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                                 <Input
-                                  placeholder="linkedin.com/in/username"
+                                  placeholder="https://linkedin.com/username"
                                   className="bg-gray-800 border-gray-700 text-white pl-10"
                                   {...field}
                                 />
@@ -1199,7 +1199,7 @@ export default function ServiceProviderProfileSetupPage({ params }: { params: { 
                               <div className="relative">
                                 <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                                 <Input
-                                  placeholder="instagram.com/username"
+                                  placeholder="https://instagram.com/username"
                                   className="bg-gray-800 border-gray-700 text-white pl-10"
                                   {...field}
                                 />
@@ -1223,7 +1223,7 @@ export default function ServiceProviderProfileSetupPage({ params }: { params: { 
                               <div className="relative">
                                 <Facebook className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                                 <Input
-                                  placeholder="facebook.com/username"
+                                  placeholder="https://facebook.com/username"
                                   className="bg-gray-800 border-gray-700 text-white pl-10"
                                   {...field}
                                 />
@@ -1252,7 +1252,7 @@ export default function ServiceProviderProfileSetupPage({ params }: { params: { 
                       className="bg-black hover:bg-gray-900 text-white border border-gray-800"
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? "Submitting..." : "Submit"}
+                      {isSubmitting ? "Submitting..." : "Complete Profile"}
                       {!isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}
                     </Button>
                   </div>

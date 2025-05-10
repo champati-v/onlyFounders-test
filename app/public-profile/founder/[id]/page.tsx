@@ -253,7 +253,7 @@ export default function FounderProfilePage({
                 </p>
                 <span className="text-gray-300">•</span>
                 <span className="text-gray-300 bg-[#1e1a3c] px-2 py-0.5 rounded text-sm">
-                  {profile.role}
+                  Founder
                 </span>
               </div>
               <div className="mt-1">
@@ -325,10 +325,12 @@ export default function FounderProfilePage({
             )}
 
             {profile.founderData?.socialLinks?.website && (
-              <div className="flex items-center gap-2 text-gray-300">
-                <Globe className="h-4 w-4" />
-                <span>{profile.founderData.socialLinks.website}</span>
-              </div>
+                <a href={profile.founderData.socialLinks.website} target='_blank' rel="noopener noreferrer">
+                  <div className="flex items-center gap-2 text-gray-300">
+                      <Globe className="h-4 w-4" />
+                      <span>{profile.founderData.socialLinks.website}</span>
+                  </div>
+                </a>
             )}
           </div>
 

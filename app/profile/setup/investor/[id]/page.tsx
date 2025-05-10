@@ -907,7 +907,7 @@ export default function InvestorProfileSetupPage({params, }: { params: { id: num
                                 <div className="relative">
                                   <Twitter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                                   <Input
-                                    placeholder="@username"
+                                    placeholder="https://twitter.com/username"
                                     className="bg-gray-800 border-gray-700 text-white pl-10"
                                     {...field}
                                   />
@@ -928,7 +928,7 @@ export default function InvestorProfileSetupPage({params, }: { params: { id: num
                                 <div className="relative">
                                   <Linkedin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                                   <Input
-                                    placeholder="linkedin.com/in/username"
+                                    placeholder="https://linkedin.com/username"
                                     className="bg-gray-800 border-gray-700 text-white pl-10"
                                     {...field}
                                   />
@@ -975,7 +975,7 @@ export default function InvestorProfileSetupPage({params, }: { params: { id: num
                         className="bg-black hover:bg-gray-900 text-white border border-gray-800"
                         disabled={isSubmitting}
                       >
-                        {isSubmitting ? "Submitting..." : "Complete Setup"}
+                        {isSubmitting ? "Submitting..." : "Complete Profile"}
                         {!isSubmitting && <Check className="ml-2 h-4 w-4" />}
                       </Button>
                     </div>

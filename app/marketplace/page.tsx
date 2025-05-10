@@ -191,18 +191,18 @@ export default function MarketplacePage() {
   }
 
   // Filter startups based on active tab
-  const filteredStartups = startups.filter((startup) => {
+  const filteredStartups = startups?.filter((startup) => {
     if (activeTab === "all") return true
     if (activeTab === "trending") return startup.featuredStatus === "Trending"
     if (activeTab === "featured") return startup.featuredStatus === "Featured"
-    if (activeTab === "defi") return startup.category === "DEFI" || startup.category === "defi"
-    if (activeTab === "nfts") return startup.category === "NFT" || startup.category === "nft"
+    if (activeTab === "defi") return startup.category === "DEFI" || startup.category === "defi" || startup.category === "DeFi" 
+    if (activeTab === "nfts") return startup.category === "NFT" || startup.category === "nft" || startup.category === "Nft"
     // Filter by category
     return startup.category.toLowerCase() === activeTab.toLowerCase()
   })
 
   // Get featured startups directly from the API response
-  const featuredStartups = startups.filter((startup) => startup.featuredStatus === "Featured")
+  const featuredStartups = startups?.filter((startup) => startup.featuredStatus === "Featured")
 
   return (
     <div>
@@ -374,7 +374,7 @@ export default function MarketplacePage() {
         ) : (
           <>
             {/* Featured Startups */}
-            {featuredStartups.length > 0 && (
+            {featuredStartups?.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {featuredStartups.slice(0, 2).map((startup, index) => (
                   <Card
@@ -538,7 +538,7 @@ export default function MarketplacePage() {
 
               <TabsContent value={activeTab} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {filteredStartups.filter((startup) => 
+                  {filteredStartups?.filter((startup) => 
                     startup.startupName.toLowerCase().includes(searchItem.toLowerCase()) ||
                     startup.category?.toLowerCase().includes(searchItem.toLowerCase())
                     ).map((startup, index) => (
@@ -660,7 +660,7 @@ export default function MarketplacePage() {
                   ))}
                 </div>
 
-                {filteredStartups.length === 0 && (
+                {filteredStartups?.length === 0 && (
                   <div className="text-center py-12">
                     <Search className="h-12 w-12 text-gray-500 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-white mb-2">No projects found</h3>
@@ -669,7 +669,7 @@ export default function MarketplacePage() {
                   </div>
                 )}
 
-                {filteredStartups.length > 0 && (
+                {filteredStartups?.length > 0 && (
                   <div className="flex justify-center">
                     <Button variant="outline" className="text-gray-300 border-gray-700">
                       Load More Projects
