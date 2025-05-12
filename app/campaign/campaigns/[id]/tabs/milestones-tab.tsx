@@ -120,6 +120,7 @@ export function MilestonesTab({ campaign, isOwner, campaignId }: MilestonesTabPr
               id={milestone.milestoneId}
               number={index + 1}
               title={milestone.name}
+              milestoneStatus={milestone.milestoneStatus}
               description={milestone.description}
               tasks={tasks}
               releaseAmount={milestone.fundPercentage}

@@ -2,13 +2,15 @@
 
 import { API_URL } from '@/lib/config';
 import { useState, useEffect } from "react"
-import { AlertCircle, Check, ChevronDown, ChevronUp, Clock, ExternalLink, XCircle } from "lucide-react"
+import { AlertCircle, Check, ChevronDown, ChevronUp, Clock, ExternalLink, Loader2, XCircle } from "lucide-react"
 import { toast } from "@/hooks/use-toast"
 import { Progress } from "@/components/ui/progress"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import { useUser } from "@auth0/nextjs-auth0/client"
+import {useToast} from '../../../hooks/use-toast'
+import { Badge } from '@/components/ui/badge';
 
 interface Task {
   id: string
@@ -32,7 +34,7 @@ interface MilestoneProps {
   status: "completed" | "in-progress" | "upcoming"
   campaignId?: string
   isOwner?: boolean
-  milestoneStatus?: "complete" | "incomplete" // API response field
+  milestoneStatus?: "complete" | "upcoming" // API response field
   approvalStatus?: "approved" | "pending" | "rejected" // API response field
   verificationProof?: string // API response field
   proofUrl?: string
@@ -59,18 +61,19 @@ export function MilestoneCard({
   const [showProofModal, setShowProofModal] = useState(false)
   const [showViewProofModal, setShowViewProofModal] = useState(false)
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
-  const [verificationProof, setVerificationProof] = useState(initialVerificationProof || "")
+  const [verificationProof, setVerificationProof] = useState<string>("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { user } = useUser()
   const [localTasks, setLocalTasks] = useState<Task[]>(tasks)
   const [verificationSubmitted, setVerificationSubmitted] = useState(!!initialVerificationProof)
-  const [milestoneStatus, setMilestoneStatus] = useState(initialMilestoneStatus || "incomplete")
+  const [milestoneStatus, setMilestoneStatus] = useState(initialMilestoneStatus || "upcoming")
   // const [adminApprovalStatus, setAdminApprovalStatus] = useState(initialAdminApprovalStatus || "pending")
   const [status, setStatus] = useState(initialStatus)
+  const { toast } = useToast()
 
   // Check if all tasks are completed
   const allTasksCompleted = localTasks.every((task) => task.status === "completed")
-
+  
   const isValidProofLink = (link: string): boolean => {
     const googleDriveRegex = /^https:\/\/(drive\.google\.com|docs\.google\.com)\//;
     const notionRegex = /^https:\/\/(www\.)?notion\.so\//;
@@ -78,69 +81,77 @@ export function MilestoneCard({
   };
 
   // Fetch the milestone data to get the latest status and verification proof
+  // useEffect(() => {
+  //   const fetchMilestoneData = async () => {
+  //     console.log(verificationProof)
+  //     if (!campaignId || !user) return
+
+  //     try {
+  //       const userId = user.sub?.substring(14)
+
+  //       // This is a placeholder for the actual API endpoint to fetch milestone data
+  //       // You'll need to replace this with the actual endpoint
+  //       const response = await fetch(
+  //         `${API_URL}/api/startup/get-milestone?campaignId=${campaignId}&milestoneId=${id}`,
+  //         {
+  //           headers: {
+  //             user_id: userId || "",
+  //           },
+  //         },
+  //       )
+
+  //       if (response.ok) {
+  //         const data = await response.json()
+
+  //         // Update milestone data from API response
+  //         if (data.milestone) {
+  //           // Update verification proof if it exists
+  //           if (data.milestone.verificationProof) {
+  //             setVerificationProof(data.milestone.verificationProof)
+  //             setVerificationSubmitted(true)
+  //           }
+
+  //           // Update milestone status
+  //           if (data.milestone.milestoneStatus) {
+  //             setMilestoneStatus(data.milestone.milestoneStatus)
+
+  //             // Update overall status based on milestone status
+  //             if (data.milestone.milestoneStatus === "complete") {
+  //               setStatus("completed")
+  //             }
+  //           }
+
+  //           // Update admin approval status
+  //           // if (data.milestone.adminApprovalStatus) {
+  //           //   setAdminApprovalStatus(data.milestone.adminApprovalStatus)
+  //           // }
+
+  //           // Update tasks if available
+  //           if (data.milestone.requirements && data.milestone.requirements.length > 0) {
+  //             const updatedTasks = data.milestone.requirements.map((req: any, index: number) => ({
+  //               id: req._id || `task-${index}`,
+  //               title: req.name,
+  //               description: req.description,
+  //               status: req.status === "complete" ? "completed" : "pending",
+  //             }))
+  //             setLocalTasks(updatedTasks)
+  //           }
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching milestone data:", error)
+  //     }
+  //   }
+
+  //   fetchMilestoneData()
+  // }, [campaignId, id, user])
+
   useEffect(() => {
-    const fetchMilestoneData = async () => {
-      if (!campaignId || !user) return
-
-      try {
-        const userId = user.sub?.substring(14)
-
-        // This is a placeholder for the actual API endpoint to fetch milestone data
-        // You'll need to replace this with the actual endpoint
-        const response = await fetch(
-          `${API_URL}/api/startup/get-milestone?campaignId=${campaignId}&milestoneId=${id}`,
-          {
-            headers: {
-              user_id: userId || "",
-            },
-          },
-        )
-
-        if (response.ok) {
-          const data = await response.json()
-
-          // Update milestone data from API response
-          if (data.milestone) {
-            // Update verification proof if it exists
-            if (data.milestone.verificationProof) {
-              setVerificationProof(data.milestone.verificationProof)
-              setVerificationSubmitted(true)
-            }
-
-            // Update milestone status
-            if (data.milestone.milestoneStatus) {
-              setMilestoneStatus(data.milestone.milestoneStatus)
-
-              // Update overall status based on milestone status
-              if (data.milestone.milestoneStatus === "complete") {
-                setStatus("completed")
-              }
-            }
-
-            // Update admin approval status
-            // if (data.milestone.adminApprovalStatus) {
-            //   setAdminApprovalStatus(data.milestone.adminApprovalStatus)
-            // }
-
-            // Update tasks if available
-            if (data.milestone.requirements && data.milestone.requirements.length > 0) {
-              const updatedTasks = data.milestone.requirements.map((req: any, index: number) => ({
-                id: req._id || `task-${index}`,
-                title: req.name,
-                description: req.description,
-                status: req.status === "complete" ? "completed" : "pending",
-              }))
-              setLocalTasks(updatedTasks)
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching milestone data:", error)
-      }
+    return () => {
+      console.log("The milestoneStatus is:", initialMilestoneStatus)
     }
-
-    fetchMilestoneData()
-  }, [campaignId, id, user])
+  }, [])
+  
 
   const toggleExpanded = () => {
     setExpanded(!expanded)
@@ -160,7 +171,7 @@ export function MilestoneCard({
     setShowViewProofModal(false)
     setSelectedTask(null)
   }
-
+  
   // Mark task as complete
   const markTaskComplete = async (task: Task, index: number) => {
     if (!isOwner || !campaignId || !user) return
@@ -198,6 +209,8 @@ export function MilestoneCard({
         status: "completed",
       }
       setLocalTasks(updatedTasks)
+
+      console.log("All task completed: ", allTasksCompleted)
     } catch (error) {
       console.error("Error marking task as complete:", error)
       alert("Failed to mark task as complete. Please try again.")
@@ -261,8 +274,11 @@ export function MilestoneCard({
         // }
       }
 
-      alert("Verification proof submitted successfully!")
-
+      toast({
+        title: "Success",
+        description: "Verification proof submitted successfully.",
+        variant: "default",
+      })
       // Set verification as submitted
       setVerificationSubmitted(true)
     } catch (error) {
@@ -273,11 +289,20 @@ export function MilestoneCard({
     }
   }
 
+
+  const viewProof = () => {
+    if(proofUrl != "url") {
+      window.open(proofUrl, "_blank")
+    } else {
+      window.open(verificationProof, "_blank")
+  }
+}
+
   // Get status color based on milestone status and admin approval status
   const getStatusColor = () => {
     if (milestoneStatus === "complete") {
       return "bg-[#10b981]/10 border-[#10b981]/30" // Green for completed
-    } else if (approvalStatus === "pending" && verificationSubmitted) {
+    } else if (approvalStatus === "pending" && proofUrl != "url") {
       return "bg-[#f59e0b]/10 border-[#f59e0b]/30" // Yellow for pending approval
     } else if (status === "in-progress") {
       return "bg-[#3b82f6]/10 border-[#3b82f6]/30" // Blue for in-progress
@@ -290,12 +315,13 @@ export function MilestoneCard({
   const getMilestoneStatusColor = () => {
     if (milestoneStatus === "complete") {
       return "bg-[#10b981] text-white" // Green for completed
-    } else if (approvalStatus === "pending" && verificationSubmitted) {
+    } else if (approvalStatus === "pending" && proofUrl != "url") {
       return "bg-[#f59e0b] text-white" // Yellow for pending approval
-    } else if (status === "in-progress") {
-      return "bg-[#3b82f6] text-white" // Blue for in-progress
-    } else {
-      return "bg-[#1e293b] text-gray-400" // Dark for upcoming
+    } else if (milestoneStatus === "upcoming") {
+      return "bg-[#1e293b] text-gray-400" // Blue for in-progress
+    } 
+    else {
+      return "bg-[#3b82f6] text-white" 
     }
   }
 
@@ -357,7 +383,7 @@ export function MilestoneCard({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-xl font-bold">{title}</h3>
+                  <h3 className="text-xl font-bold">{title}</h3>
                 {approvalStatus === "pending" && verificationSubmitted && (
                   <span className="text-xs bg-[#f59e0b]/20 text-[#f59e0b] px-2 py-1 rounded-full font-medium">
                     Pending Approval
@@ -501,6 +527,15 @@ export function MilestoneCard({
             <div className="mt-8 pt-6 border-t border-[#1e293b]">
               <h4 className="font-medium mb-4">Verification Proof</h4>
               <div className="flex gap-3">
+                {proofUrl != "url" ? (
+                  <Input
+                  type="text"
+                  className="flex-1 bg-[#131e32] border-[#1e293b]"
+                  value={proofUrl}
+                  onChange={(e) => setVerificationProof(e.target.value)}
+                  disabled
+                />
+                ) : (
                 <Input
                   type="text"
                   placeholder="Enter verification proof link"
@@ -509,25 +544,28 @@ export function MilestoneCard({
                   onChange={(e) => setVerificationProof(e.target.value)}
                   disabled={verificationSubmitted}
                 />
-                {verificationSubmitted ? (
+                )}
+                
+                {verificationSubmitted || proofUrl != "url"? (
                   <Button
                     className="bg-[#131e32] hover:bg-[#1e293b] text-white"
-                    onClick={() => window.open(verificationProof, "_blank")}
+                    onClick={() => viewProof()}
                   >
                     <ExternalLink size={16} className="mr-2" />
                     View Proof
                   </Button>
                 ) : (
                   <Button
-                    className="bg-[#5b5bf8] hover:bg-[#4a4af0] text-white"
+                    className="bg-[#5b5bf8] hover:bg-[#4a4af0] text-white flex items-center gap-2"
                     disabled={!verificationProof || isSubmitting}
                     onClick={submitVerificationProof}
                   >
                     {isSubmitting ? "Submitting..." : "Submit Proof"}
+                    {isSubmitting && <Loader2 className="animate-spin h-4 w-4 ml-2" />}
                   </Button>
                 )}
               </div>
-              {/* {verificationSubmitted && ( */}
+              { (verificationSubmitted || proofUrl != "url") &&
                 <div className="mt-3 text-sm">
                   <div className="flex items-center gap-2">
                     {approvalStatus === "pending" ? (
@@ -535,7 +573,7 @@ export function MilestoneCard({
                         <Clock size={14} />
                         <span>Verification proof submitted and pending approval</span>
                       </div>
-                    ) : milestoneStatus === "complete" ? (
+                    ) : approvalStatus === "approved" ? (
                       <div className="text-[#10b981] flex items-center gap-1">
                         <Check size={14} />
                         <span>Verification proof approved</span>
@@ -547,7 +585,7 @@ export function MilestoneCard({
                     )}
                   </div>
                 </div>
-              {/* )} */}
+              }
             </div>
           )}
         </div>

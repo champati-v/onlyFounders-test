@@ -19,6 +19,7 @@ export default function MilestonesPage() {
   const campaignId = params.id as string
   const isOwner = isOwnedCampaign(campaignId)
 
+
   console.log("Current campaign ID:", campaignId, "Is owner:", isOwner)
 
   const milestones = [
