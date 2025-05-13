@@ -186,55 +186,6 @@ export default function AboutPage() {
             {/* Main vision statement */}
             <div className="bg-gradient-to-br from-[#1a1e42]/80 to-[#141736]/80 backdrop-blur-sm p-6 md:p-6 rounded-3xl shadow-xl border border-[#4361EE]/10 mb-12 transform hover:scale-[1.01] transition-all duration-500">
               <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
-                {/* <div className="w-full md:w-1/3 flex-shrink-0">
-                  <div className="relative w-full aspect-square">
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#4361EE]/20 to-[#7B61FF]/20 rounded-2xl"></div>
-                    <div className="absolute inset-4 bg-gradient-to-br from-[#1a1e42] to-[#141736] rounded-xl flex items-center justify-center">
-                      <svg
-                        className="w-24 h-24 text-[#7B61FF]"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M3 12H8"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M16 12H21"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M12 7V3"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M12 21V16"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                </div> */}
                 <Image
                   src="/vision_logo.jpg"
                   width={250}
@@ -520,7 +471,7 @@ export default function AboutPage() {
 
       {/* Team Section */}
       <section id="team" className="py-20 md:py-24 bg-[#0c0f24]">
-        <div className="max-w-7xl mx-auto px-6 md:px-8">
+        <div className="max-w-7xl mx-auto flex flex-col items-center px-6 md:px-8">
           <div className="text-center mb-16 reveal-animation">
             <h2 className="text-3xl md:text-5xl font-bold mb-6">
               Meet the Team
@@ -531,12 +482,12 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 items-center justify-center lg:grid-cols-4 gap-8 reveal-animation">
+          <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-20 reveal-animation">
             {[
               {
                 name: "Moe",
                 role: "CEO/Founder",
-                image: "/team/Moe.jpg",
+                image: "/team/moe.jpg",
                 bio: "Ex-TradFi, 2x Exits, Advisor & Mentor, 20+ yrs in Sports, Finance, Health, Tech, and Investments, Health & Wellness, Art Gallery.",
                 id: "01",
                 linkedin: "https://www.linkedin.com/in/moeiman/",
@@ -555,25 +506,16 @@ export default function AboutPage() {
               {
                 name: "Raj",
                 role: "CPO",
-                image: "/team/Raj.jpg",
+                image: "/team/raj.jpg",
                 bio: "Co-Founder - DcodeBlock, UX Designer, Growth Strategist.",
                 id: "02",
                 linkedin: "https://www.linkedin.com/in/raj-gupta-67265a21a/",
                 x: "https://x.com/Raj_Dcoder",
               },
-              {
-                name: "V0 & Vercel",
-                role: "Product Owner",
-                image: "/team/V0.jpg",
-                bio: "Full-stack Developer, DevOps specialist, Web3 Architect.",
-                id: "04",
-                linkedin: "https://www.linkedin.com/company/vercel/",
-                x: "https://x.com/vercel",
-              },
             ].map((member, index) => (
               <div
                 key={index}
-                className="rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group hover:-translate-y-1 bg-[#1a1e42] relative w-full max-w-[280px] h-[550px] max-h-[700px] flex flex-col"
+                className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group relative w-full max-w-[280px] h-[550px] max-h-[700px] flex flex-col"
               >
                 {/* ID Number */}
                 <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold">
@@ -587,7 +529,7 @@ export default function AboutPage() {
                       src={member.image || "/placeholder.svg"}
                       alt={member.name}
                       fill
-                      className="ml-[1px] object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                      className="ml-[1px] rounded-md object-cover object-top group-hover:scale-105 hover:rounded-md transition-transform duration-500"
                     />
                   </div>
                 </div>
@@ -595,16 +537,14 @@ export default function AboutPage() {
                 {/* Content */}
                 <div className="p-6 text-center flex-grow flex flex-col justify-between">
                   <div>
-                    <h3 className="text-2xl font-bold mb-1">{member.name}</h3>
-                    <p className="text-purple-400 text-sm mb-4">
-                      {member.role}
-                    </p>
+                      <p className="text-sm mb-2">{member.role}</p>
+                      <h3 className="text-2xl text-purple-400 font-bold mb-2">{member.name}</h3>
                     <p className="text-sm text-white/80">{member.bio}</p>
                   </div>
 
-                  <div className="flex items-end justify-center mt-6 space-x-4">
+                  <div className="flex items-center justify-center mt-6 space-x-4">
                     <a
-                      className="hover:text-gray-400 transition-all duration-300"
+                      className="h-8 w-8 flex items-center hover:bg-gray-500 rounded-full hover:text-gray-400 transition-all duration-300"
                       target="_blank"
                       href={member.linkedin}
                     >
@@ -613,14 +553,20 @@ export default function AboutPage() {
                         width={30}
                         height={30}
                         alt="linkedIn"
+                        className="ml-[1px]"
                       />
                     </a>
                     <a
-                      className="hover:text-gray-400 transition-all duration-300"
+                      className="h-7 w-7 flex items-center hover:bg-gray-500 rounded-full hover:text-gray-400 transition-all duration-300"
                       target="_blank"
                       href={member.x}
                     >
-                      <Image src="/x.svg" width={30} height={30} alt="x.com" />
+                      <Image 
+                        src="/x.svg" 
+                        width={30} 
+                        height={30} 
+                        alt="x.com" 
+                      />
                     </a>
                   </div>
                 </div>
@@ -629,37 +575,29 @@ export default function AboutPage() {
           </div>
 
           <div className="mt-20 text-center reveal-animation">
-            <h3 className="text-2xl font-bold mb-10">Advisors & Experts</h3>
-            <div className="flex flex-wrap justify-center gap-8">
+            <h3 className="text-3xl font-bold mb-10">Backers</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 justify-center gap-20">
               {[
                 {
                   name: "Brian D Evans",
                   role: "BDE Ventures",
                   image: "/team/brian.jpg",
                   id: "A1",
-                  linkedin: "",
+                  linkedin: "https://www.linkedin.com/in/briandevansla/",
                   x: "https://x.com/BrianDEvans",
                 },
                 {
-                  name: "Ravi Aggarwal",
-                  role: "Polygon x Privado ID",
-                  image: "/team/Ravi.jpg",
+                  name: "Tamar Vanderhass",
+                  role: "Harlem Holding",
+                  image: "/team/tamar.jpg",
                   id: "A2",
-                  linkedin: "",
-                  x: "https://x.com/ravikantagrawal",
-                },
-                {
-                  name: "Vijay Pravin",
-                  role: "bitsCrunch",
-                  image: "/team/Vijay.jpg",
-                  id: "A3",
-                  linkedin: "https://www.linkedin.com/in/vijaypravin/",
-                  x: "https://x.com/VijayPravinM",
+                  linkedin: "https://www.linkedin.com/in/tamar-vanderhaas-b9257b2a2/",
+                  x: "https://x.com/TamarVanderhaas",
                 },
               ].map((advisor, index) => (
                 <div
                   key={index}
-                  className="rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group hover:-translate-y-1 bg-[#1a1e42] relative w-full max-w-[280px] h-[450px] flex flex-col"
+                  className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group relative w-full max-w-[280px] h-[450px] flex flex-col"
                 >
                   {/* ID Number */}
                   <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold">
@@ -673,19 +611,19 @@ export default function AboutPage() {
                         src={advisor.image || "/placeholder.svg"}
                         alt={advisor.name}
                         fill
-                        className="ml-[1px] object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                        className="rounded-md object-cover object-top group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
                   </div>
 
                   {/* Content Section */}
                   <div className="p-6 text-center flex-grow flex flex-col justify-center">
-                    <h3 className="text-2xl font-bold mb-1">{advisor.name}</h3>
                     <p className="text-purple-400 text-sm">{advisor.role}</p>
+                    <h3 className="text-2xl font-bold mb-1">{advisor.name}</h3>
 
-                    <div className="flex items-end justify-center mt-6 space-x-4">
+                    <div className="flex items-center justify-center mt-6 space-x-4">
                       <a
-                        className="hover:text-gray-400 transition-all duration-300"
+                        className="h-8 w-8 flex items-center hover:bg-gray-500 rounded-full hover:text-gray-400 transition-all duration-300"
                         target="_blank"
                         href={advisor.linkedin}
                       >
@@ -694,10 +632,86 @@ export default function AboutPage() {
                         width={30}
                         height={30}
                         alt="linkedIn"
+                        className="ml-[1px]"
                       />
                       </a>
                       <a
-                        className="hover:text-gray-400 transition-all duration-300"
+                        className="h-7 w-7 flex items-center hover:bg-gray-500 rounded-full hover:text-gray-400 transition-all duration-300"
+                        target="_blank"
+                        href={advisor.x}
+                      >
+                        <Image src="/x.svg" width={30} height={30} alt="x.com" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-20 text-center reveal-animation">
+            <h3 className="text-3xl font-bold mb-10">Advisors</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 justify-center gap-20">
+              {[
+                {
+                  name: "Ravi Agarwal",
+                  role: "Polygon X Privado ID",
+                  image: "/team/ravi.jpg",
+                  id: "A1",
+                  linkedin: "https://www.linkedin.com/in/ravikantagrawal/",
+                  x: "https://x.com/ravikantagrawal",
+                },
+                {
+                  name: "Vijay Parwin",
+                  role: "bitsCrunch",
+                  image: "/team/vijay.jpg",
+                  id: "A2",
+                  linkedin: "https://www.linkedin.com/in/vijaypravin/",
+                  x: "https://x.com/VijayPravinM",
+                },
+              ].map((advisor, index) => (
+                <div
+                  key={index}
+                  className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group relative w-full max-w-[280px] h-[450px] flex flex-col"
+                >
+                  {/* ID Number */}
+                  <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold">
+                    {advisor.id}
+                  </div>
+
+                  {/* Advisor Image */}
+                  <div className="h-[250px] w-full overflow-hidden flex items-center justify-center">
+                    <div className="relative h-full w-full">
+                      <Image
+                        src={advisor.image || "/placeholder.svg"}
+                        alt={advisor.name}
+                        fill
+                        className="ml-[1px] rounded-md object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Content Section */}
+                  <div className="p-6 text-center flex-grow flex flex-col justify-center">
+                    <p className="text-purple-400 text-sm">{advisor.role}</p>
+                    <h3 className="text-2xl font-bold mb-1">{advisor.name}</h3>
+
+                    <div className="flex items-center justify-center mt-6 space-x-4">
+                      <a
+                        className="h-8 w-8 flex items-center hover:bg-gray-500 rounded-full hover:text-gray-400 transition-all duration-300"
+                        target="_blank"
+                        href={advisor.linkedin}
+                      >
+                         <Image
+                        src="/linkedin.svg"
+                        width={30}
+                        height={30}
+                        alt="linkedIn"
+                        className="ml-[1px]"
+                      />
+                      </a>
+                      <a
+                        className="h-7 w-7 flex items-center hover:bg-gray-500 rounded-full hover:text-gray-400 transition-all duration-300"
                         target="_blank"
                         href={advisor.x}
                       >

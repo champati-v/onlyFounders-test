@@ -816,7 +816,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
   }
 
   return (
-    <div className="space-y-8 p-10">
+    <div className="container mx-auto space-y-8 py-8">
       <div className="flex items-center justify-between gap-2">
         <button className="text-sm rounded-md bg-gradient-to-br from-blue-600 to-purple-600 text-white px-3 py-2">
           <a href="/marketplace" className="flex items-center gap-2">
