@@ -34,7 +34,7 @@ interface MilestoneProps {
   status: "completed" | "in-progress" | "upcoming"
   campaignId?: string
   isOwner?: boolean
-  milestoneStatus?: "complete" | "upcoming" // API response field
+  milestoneStatus?: "completed" | "upcoming" // API response field
   approvalStatus?: "approved" | "pending" | "rejected" // API response field
   verificationProof?: string // API response field
   proofUrl?: string
@@ -300,7 +300,7 @@ export function MilestoneCard({
 
   // Get status color based on milestone status and admin approval status
   const getStatusColor = () => {
-    if (milestoneStatus === "complete") {
+    if (milestoneStatus === "completed") {
       return "bg-[#10b981]/10 border-[#10b981]/30" // Green for completed
     } else if (approvalStatus === "pending" && proofUrl != "url") {
       return "bg-[#f59e0b]/10 border-[#f59e0b]/30" // Yellow for pending approval
@@ -313,7 +313,7 @@ export function MilestoneCard({
 
   // Get milestone status indicator color
   const getMilestoneStatusColor = () => {
-    if (milestoneStatus === "complete") {
+    if (milestoneStatus === "completed") {
       return "bg-[#10b981] text-white" // Green for completed
     } else if (approvalStatus === "pending" && proofUrl != "url") {
       return "bg-[#f59e0b] text-white" // Yellow for pending approval
@@ -355,7 +355,7 @@ export function MilestoneCard({
 
   // Get milestone status text
   const getMilestoneStatusText = () => {
-    if (milestoneStatus === "complete") {
+    if (milestoneStatus === "completed") {
       return "Completed"
     } else if (approvalStatus === "pending" && verificationSubmitted) {
       return "Pending Approval"
@@ -389,7 +389,7 @@ export function MilestoneCard({
                     Pending Approval
                   </span>
                 )}
-                {milestoneStatus === "complete" && (
+                {milestoneStatus === "completed" && (
                   <span className="text-xs bg-[#10b981]/20 text-[#10b981] px-2 py-1 rounded-full font-medium">
                     Completed
                   </span>
@@ -416,7 +416,7 @@ export function MilestoneCard({
               value={progress}
               className="h-2"
               indicatorClassName={
-                milestoneStatus === "complete"
+                milestoneStatus === "completed"
                   ? "bg-[#10b981]"
                   : approvalStatus === "pending" && verificationSubmitted
                     ? "bg-[#f59e0b]"

@@ -118,7 +118,7 @@ export function MilestoneCard({
       setLocalTasks(updatedTasks)
     } catch (error) {
       console.error("Error marking task as complete:", error)
-      alert("Failed to mark task as complete. Please try again.")
+      
     } finally {
       setIsSubmitting(false)
     }
@@ -228,7 +228,7 @@ export function MilestoneCard({
               value={progress}
               className="h-2"
               indicatorClassName={
-                status === "completed" ? "bg-[#10b981]" : status === "in-progress" ? "bg-[#3b82f6]" : "bg-[#6b7280]"
+                status === "completed" ? "bg-[#10b981]" : "bg-[#3b82f6]"
               }
             />
           </div>
