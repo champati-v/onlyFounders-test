@@ -44,6 +44,7 @@ const CombinedProfile = () => {
   const [activeTab, setActiveTab] = useState<string>("")
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [onboardingStatus, setOnboardingStatus] = useState<boolean>(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -66,10 +67,11 @@ const CombinedProfile = () => {
         }
 
         const data = await response.json()
+        setOnboardingStatus(data.status)
         const rolesArray = Array.isArray(data.role) ? data.role : [data.role].filter(Boolean)
 
         if (rolesArray.length === 0) {
-          setError("No roles found for this user. Please complete onboarding.")
+          console.log("No roles found in the response")
         } else {
           setUserRoles(rolesArray)
           setActiveTab(rolesArray[0]) // Default to first role
@@ -120,6 +122,58 @@ const CombinedProfile = () => {
       )
     }
 
+    if(!onboardingStatus) {
+      return (
+        <div className="w-full max-w-4xl mx-auto px-4 p-10">
+                <Skeleton className="h-48 w-full rounded-md bg-blue-600" />
+                <div className="bg-[#121026] p-6 rounded-b-lg relative">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-start gap-4">
+                      <Skeleton className="h-24 w-24 rounded-full -mt-12 border-4 border-[#121026] bg-gray-300" />
+                      <div className="space-y-2 mt-2">
+                        <Skeleton className="h-8 w-48" />
+                        <Skeleton className="h-4 w-32" />
+                      </div>
+                    </div>
+                    <Skeleton className="h-10 w-28" />
+                  </div>
+        
+                  <div className="mt-6 space-y-2">
+                    <div className="flex gap-2">
+                      <Skeleton className="h-10 w-10 rounded" />
+                      <Skeleton className="h-10 w-10 rounded" />
+                      <Skeleton className="h-10 w-10 rounded" />
+                    </div>
+        
+                    <div className="flex items-center gap-2 mt-4">
+                      <Skeleton className="h-4 w-4 rounded-full" />
+                      <Skeleton className="h-4 w-32" />
+                    </div>
+        
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-4 w-4 rounded-full" />
+                      <Skeleton className="h-4 w-40" />
+                    </div>
+        
+                    <Skeleton className="h-4 w-full mt-6" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-3/4" />
+        
+                    <Skeleton className="h-6 w-48 mt-6" />
+                    <Skeleton className="h-10 w-32 rounded-full" />
+        
+                    <Skeleton className="h-6 w-48 mt-6" />
+                    <div className="flex gap-2">
+                      <Skeleton className="h-10 w-48 rounded-full" />
+                      <Skeleton className="h-10 w-48 rounded-full" />
+                      <Skeleton className="h-10 w-48 rounded-full" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+      )
+    }
+
     return (
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="flex justify-center w-full mb-2">
@@ -159,6 +213,22 @@ const CombinedProfile = () => {
         <ArrowLeft/> Back to Home
       </Button>
       {renderProfileContent()}
+
+      {!onboardingStatus && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/10">
+          <div className="flex flex-col items-center bg-gray-900 p-6 rounded-lg shadow-lg">
+            <div className='flex items-center gap-2 mb-4'>
+              <AlertCircle className="h-8 w-8 text-red-500" />
+              <h2 className="text-lg text-center font-semibold">Onboarding Required</h2>
+            </div>
+            <p className="mb-4 text-center">Please complete the onboarding process to view your profile.</p>
+            <Button onClick={() => router.push("/profile/setup")} className="w-full mb-4">
+              Setup Profile Now!
+            </Button>
+            <a className='text-center text-sm text-gray-400 underline' href="/">I'll do it later</a>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
