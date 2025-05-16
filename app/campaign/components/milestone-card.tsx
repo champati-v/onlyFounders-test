@@ -56,7 +56,7 @@ export function MilestoneCard({
   const { user } = useUser()
   const [localTasks, setLocalTasks] = useState<Task[]>(tasks)
 
-  // Check if all tasks are completed
+  // Check if all tasks are completed or not
   const allTasksCompleted = localTasks.every((task) => task.status === "completed")
 
   const toggleExpanded = () => {
