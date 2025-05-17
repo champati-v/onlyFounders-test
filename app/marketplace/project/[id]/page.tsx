@@ -50,7 +50,7 @@ import {
   ArrowBigUp,
 } from "lucide-react";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { useToast } from "@/components/ui/use-toast";
+import {useToast} from '../../../../hooks/use-toast'
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import dynamic from "next/dynamic";
@@ -357,7 +357,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
   useEffect(() => {
     const fetchProjectId = async () => {
       try {
-        if (!user) return;
+        // if (!user) return;
         const userId = user?.sub?.substring(14);
         const response = await fetch(
           `${API_URL}/api/startup/get-projectId`,
@@ -375,11 +375,6 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
         }
       } catch (error) {
         console.error("Error fetching project ID:", error);
-        toast({
-          title: "Error",
-          description: "Failed to load project ID. Please refresh the page.",
-          variant: "destructive",
-        });
       }
     };
 
@@ -452,9 +447,9 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
   //fetch upvote status
   useEffect(() => {
     const fetchUpvoteStatus = async () => {
-      if (!user) {
-        return;
-      }
+      // if (!user) {
+      //   return;
+      // }
 
       try {
         const response = await fetch(
@@ -480,13 +475,13 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
   //fetch upvote counts
   useEffect(() => {
     const fetchUpvoteCounts = async () => {
-      if (!user) {
-        return;
-      }
+      // if (!user) {
+      //   return;
+      // }
 
       try {
         const response = await fetch(
-          `${API_URL}/api/startup/get-upvote-count/${projectId}`,
+          `${API_URL}/api/startup/get-upvote-count/${params.id}`,
           {
             method: "GET",
             headers: {
@@ -804,16 +799,16 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
     // Here you would typically handle the investment process
   };
 
-  if (loading || !user) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading project details...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (loading || !user) {
+  //   return (
+  //     <div className="flex items-center justify-center min-h-screen">
+  //       <div className="text-center">
+  //         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
+  //         <p className="text-gray-400">Loading project details...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="container mx-auto space-y-8 py-8">
@@ -850,8 +845,12 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
         />
         <div className="absolute inset-0 z-10 bg-gradient-to-t from-black to-transparent"></div>
         <button
-          onClick={() => {
-            handleUpvoteStatus();
+          onClick={() => {user?
+            handleUpvoteStatus(): 
+            toast({
+              title: "Login Required",
+              description: "Please login to upvote this project.",
+            });
           }}
           disabled={upvoteLoading}
           className={`absolute flex z-30 items-center gap-1 top-5 right-5 cursor-pointer hover:bg-slate-700 transition-all duration-200 bg-slate-800 px-3 py-1.5 rounded-md ${
@@ -1550,9 +1549,21 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
               <Separator className="bg-gray-800" />
 
               <div className="flex flex-col gap-3">
-                <a href="https://spring.net/discover/onlyfounders" target="_blank" className="flex items-center justify-center rounded-md w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border py-2">
+                <Button
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border py-2"
+                  onClick={() => {
+                    if (!user) {
+                      toast({
+                        title: "Login Required",
+                        description: "Please login to invest in this project.",
+                      });
+                    } else {
+                      window.open("https://spring.net/discover/onlyfounders", "_blank");
+                    }
+                  }}
+                >
                   Invest Now
-                </a>
+                </Button>
                 {/* <Dialog open={showInvestDialog} onOpenChange={setShowInvestDialog}>
                   <DialogTrigger asChild>
                     <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border">
@@ -1600,24 +1611,32 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
                 </Button>
 
                 <div className="flex items-center justify-center gap-3">
-                  <a href={twitterUrl} target="_blank" rel="noopener noreferrer">
                   <Button
                     variant="outline"
-                    className="flex-1 border-gray-800 text-white"
+                    className="w-1/2 border-gray-800 text-white"
+                    onClick={() => window.open(twitterUrl, "_blank")}
                   >
                     <Share2 className="mr-2 h-4 w-4" />
                     Share
                   </Button>
-                  </a>
-                  <a href={project.telegram} target="_blank" rel="noopener noreferrer">
+
                   <Button
                     variant="outline"
-                    className="flex-1 border-gray-800 text-white"
+                    className="w-1/2 border-gray-800 text-white"
+                    onClick={() => {
+                    if (!user) {
+                      toast({
+                        title: "Login Required",
+                        description: "Please login to contact project founder.",
+                      });
+                    } else {
+                      window.open(`${project.telegram}`, "_blank");
+                    }
+                  }}
                   >
                     <MessageSquare className="mr-2 h-4 w-4" />
                     Contact
                   </Button>
-                  </a>
                 </div>
               </div>
 

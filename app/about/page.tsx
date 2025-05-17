@@ -487,7 +487,7 @@ export default function AboutPage() {
               {
                 name: "Moe",
                 role: "CEO/Founder",
-                image: "/team/moe.jpg",
+                image: "/team/moe.png",
                 bio: "Ex-TradFi, 2x Exits, Advisor & Mentor, 20+ yrs in Sports, Finance, Health, Tech, and Investments, Health & Wellness, Art Gallery.",
                 id: "01",
                 linkedin: "https://www.linkedin.com/in/moeiman/",
@@ -496,7 +496,7 @@ export default function AboutPage() {
               {
                 name: "Rasesh",
                 role: "CTO",
-                image: "/team/rasesh.jpg",
+                image: "/team/rasesh.png",
                 bio: "Co-Founded 20,000+ Dev EduFi Startup, Blockchain Protocol Engineer, AI Research Lead.",
                 id: "03",
                 linkedin:
@@ -506,7 +506,7 @@ export default function AboutPage() {
               {
                 name: "Raj",
                 role: "CPO",
-                image: "/team/raj.jpg",
+                image: "/team/raj.png",
                 bio: "Co-Founder - DcodeBlock, UX Designer, Growth Strategist.",
                 id: "02",
                 linkedin: "https://www.linkedin.com/in/raj-gupta-67265a21a/",
@@ -517,13 +517,9 @@ export default function AboutPage() {
                 key={index}
                 className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group relative w-full max-w-[280px] h-[550px] max-h-[700px] flex flex-col"
               >
-                {/* ID Number */}
-                <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold">
-                  {member.id}
-                </div>
 
                 {/* Member Image */}
-                <div className="h-[280px] w-full overflow-hidden flex items-center justify-center">
+                <div className="h-[300px] w-full overflow-hidden flex items-center justify-center">
                   <div className="relative h-full w-full">
                     <Image
                       src={member.image || "/placeholder.svg"}
@@ -581,7 +577,7 @@ export default function AboutPage() {
                 {
                   name: "Brian D Evans",
                   role: "BDE Ventures",
-                  image: "/team/brian.jpg",
+                  image: "/team/brian.png",
                   id: "A1",
                   linkedin: "https://www.linkedin.com/in/briandevansla/",
                   x: "https://x.com/BrianDEvans",
@@ -589,7 +585,7 @@ export default function AboutPage() {
                 {
                   name: "Tamar Vanderhass",
                   role: "Harlem Holding",
-                  image: "/team/tamar.jpg",
+                  image: "/team/tamar.png",
                   id: "A2",
                   linkedin: "https://www.linkedin.com/in/tamar-vanderhaas-b9257b2a2/",
                   x: "https://x.com/TamarVanderhaas",
@@ -599,10 +595,6 @@ export default function AboutPage() {
                   key={index}
                   className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group relative w-full max-w-[280px] h-[450px] flex flex-col"
                 >
-                  {/* ID Number */}
-                  <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold">
-                    {advisor.id}
-                  </div>
 
                   {/* Advisor Image */}
                   <div className="h-[250px] w-full overflow-hidden flex items-center justify-center">
@@ -656,7 +648,7 @@ export default function AboutPage() {
                 {
                   name: "Ravi Agarwal",
                   role: "Polygon X Privado ID",
-                  image: "/team/ravi.jpg",
+                  image: "/team/ravi.png",
                   id: "A1",
                   linkedin: "https://www.linkedin.com/in/ravikantagrawal/",
                   x: "https://x.com/ravikantagrawal",
@@ -664,7 +656,7 @@ export default function AboutPage() {
                 {
                   name: "Vijay Parwin",
                   role: "bitsCrunch",
-                  image: "/team/vijay.jpg",
+                  image: "/team/vijay.png",
                   id: "A2",
                   linkedin: "https://www.linkedin.com/in/vijaypravin/",
                   x: "https://x.com/VijayPravinM",
@@ -674,10 +666,6 @@ export default function AboutPage() {
                   key={index}
                   className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 group relative w-full max-w-[280px] h-[450px] flex flex-col"
                 >
-                  {/* ID Number */}
-                  <div className="absolute top-4 left-4 bg-white/10 backdrop-blur-sm px-2 py-1 rounded text-xs font-bold">
-                    {advisor.id}
-                  </div>
 
                   {/* Advisor Image */}
                   <div className="h-[250px] w-full overflow-hidden flex items-center justify-center">

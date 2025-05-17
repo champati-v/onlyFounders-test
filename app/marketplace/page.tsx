@@ -464,16 +464,17 @@ export default function MarketplacePage() {
                         }
                       > 
                         <Button onClick={() => {
-                          if (isLoggedIn) {
-                            router.push(`/marketplace/project/${startup.startup_id}`)
-                          } else {
-                            toast({
-                              title: "Message",
-                              description: "Please login to view startup details",
-                              variant: "destructive",
-                            })
-                            router.push('api/auth/login')
-                          }
+                          // if (isLoggedIn) {
+                          //   router.push(`/marketplace/project/${startup.startup_id}`)
+                          // } else {
+                          //   toast({
+                          //     title: "Message",
+                          //     description: "Please login to view startup details",
+                          //     variant: "destructive",
+                          //   })
+                          //   router.push('api/auth/login')
+                          // }
+                          router.push(`/marketplace/project/${startup.startup_id}`)
                         }} disabled={isLoading}>
                           View Details
                           <ArrowUpRight className="ml-1 h-4 w-4" />
@@ -634,19 +635,20 @@ export default function MarketplacePage() {
                           }
                         >
                           <Button onClick={() => {
-                          if (isLoggedIn) {
+                            // if (isLoggedIn) {
+                            //   router.push(`/marketplace/project/${startup.startup_id}`)
+                            // } else {
+                            //   toast({
+                            //     title: "Message",
+                            //     description: "Please login to view startup details",
+                            //     variant: "destructive",
+                            //   })
+                            // }
                             router.push(`/marketplace/project/${startup.startup_id}`)
-                          } else {
-                            toast({
-                              title: "Message",
-                              description: "Please login to view startup details",
-                              variant: "destructive",
-                            })
-                          }
-                        }} disabled={isLoading}>
-                          View Details
-                          <ArrowUpRight className="ml-1 h-4 w-4" />
-                        </Button>
+                          }} disabled={isLoading}>
+                            View Details
+                            <ArrowUpRight className="ml-1 h-4 w-4" />
+                          </Button>
                         </Button>
 
                         {shouldShowBookmark() && (

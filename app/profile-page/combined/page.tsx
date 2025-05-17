@@ -6,7 +6,7 @@ import { useUser } from "@auth0/nextjs-auth0/client"
 import { toast } from "@/hooks/use-toast"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Skeleton } from "@/components/ui/skeleton"
-import { AlertCircle, ArrowLeft } from "lucide-react"
+import { AlertCircle, ArrowLeft, ArrowRight } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { useRouter } from "next/navigation"
 
@@ -216,16 +216,20 @@ const CombinedProfile = () => {
 
       {!onboardingStatus && (
         <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/10">
-          <div className="flex flex-col items-center bg-gray-900 p-6 rounded-lg shadow-lg">
-            <div className='flex items-center gap-2 mb-4'>
-              <AlertCircle className="h-8 w-8 text-red-500" />
-              <h2 className="text-lg text-center font-semibold">Onboarding Required</h2>
+          <div className="w-2/5 flex flex-col items-center bg-gray-900 p-6 rounded-lg shadow-lg">
+            <div className='flex items-center mb-6'>
+              <h2 className="text-xl text-center font-semibold">Complete Profile Setup</h2>
             </div>
-            <p className="mb-4 text-center">Please complete the onboarding process to view your profile.</p>
-            <Button onClick={() => router.push("/profile/setup")} className="w-full mb-4">
-              Setup Profile Now!
-            </Button>
-            <a className='text-center text-sm text-gray-400 underline' href="/">I'll do it later</a>
+            <p className="text-center text-sm">You Are All Set Up!</p>
+            <p className="mb-4 text-center text-sm">Just Complete Your Profile For Full Access</p>
+            <div className='flex items-center gap-2 w-full'>
+              <Button onClick={() => router.push("/")} className="bg-transparent w-full">
+                skip
+              </Button>
+              <Button onClick={() => router.push("/profile/setup")} className="text-black hover:bg-[#00d5ffe4] bg-[#00D3FF] w-full">
+                Setup Now <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
           </div>
         </div>
       )}

@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import './globals.css'
 import {
   ArrowRight,
+  ArrowUpRightFromSquareIcon,
   Building,
   CheckCircle,
   Shield,
@@ -15,6 +16,7 @@ import {
   User,
   Users,
   Wallet,
+  X,
   Zap,
 } from "lucide-react";
 import Link from "next/link";
@@ -49,6 +51,7 @@ export default function HomePage() {
   const {user, isLoading} = useUser();
   const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [onboardingStatus, setOnboardingStatus] = useState(false);
+  const [showOnboardingBar, setShowOnboardingBar] = useState(false);
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -80,7 +83,8 @@ export default function HomePage() {
     
           const data = await response.json();
           setOnboardingStatus(data.status);
-    
+          setShowOnboardingBar(data.status);
+
           // Navigate based on the fetched status
             if (!data.role || (Array.isArray(data.role) && data.role.length === 0)) {
             setShowOnboardingModal(true);
@@ -197,6 +201,27 @@ export default function HomePage() {
     }
 
   return (
+    <>
+    {!showOnboardingBar && user && (
+      <div className="w-full bg-slate-950 text-sm py-2 px-4 relative flex justify-center">
+        <div className="flex flex-col md:flex-row items-center gap-1 text-center text-white max-w-screen-md">
+          <span className="text-blue-400">Welcome to OnlyFounders!</span>
+          <div className="flex items-center gap-1">
+            <span>To get full access to our platform,</span>
+            <span onClick={() => router.push('/profile/setup')} className="inline-flex items-center justify-center underline text-blue-400 cursor-pointer">
+              complete your profile now
+              <ArrowUpRightFromSquareIcon className="w-4 h-4 ml-1" />
+            </span>
+          </div>
+        </div>
+        
+        {/* Close Button */}
+        <button onClick={() => setShowOnboardingBar(true)} className="absolute right-3 md:right-4 top-4 md:top-1/2 -translate-y-1/2 text-white sm:right-6">
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    )}
+
     <AppLayout className="" showHero={true}>
       <section className="relative py-12 overflow-hidden">
         {/* Background gradient */}
@@ -777,5 +802,6 @@ export default function HomePage() {
       </div>
     )}
     </AppLayout>
+    </>
   );
 }

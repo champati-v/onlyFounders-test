@@ -66,9 +66,9 @@ export default function FounderProfilePage({
       try {
         setIsLoading(true);
 
-        if (!user) {
-          return;
-        }
+        // if (!user) {
+        //   return;
+        // }
 
         const userId = user?.sub?.split("|")[1];
         const projectId = params.id;

@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -22,11 +21,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Footer } from "@/components/footer";
 import {
-  Bell,
   BookOpen,
   Building,
-  ChevronDown,
-  FileText,
   Home,
   LogOut,
   Menu,
@@ -77,7 +73,6 @@ export function AppLayout({
   const requestSent = useRef(false);
   const { user, isLoading } = useUser();
   const { address, isConnected } = useAccount();
-  const toast = useToast();
   const [onboardingStatus, setOnboardingStatus] = useState<boolean>(false);
   const [role, setRole] = useState<string>("");
 
