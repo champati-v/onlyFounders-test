@@ -251,7 +251,7 @@ export default function FounderDashboardPage() {
           <Card className="bg-gradient-to-br from-indigo-950/50 to-purple-900/30 border-purple-800/20">
             <CardHeader className="pb-2">
               <CardDescription className="text-purple-200/70">Total Raised</CardDescription>
-              <CardTitle className="text-2xl text-white">{projectStats.totalRaised.toLocaleString()} USDC</CardTitle>
+              <CardTitle className="text-2xl text-white">{projectStats.totalRaised} USDC</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-sm text-green-500 flex items-center">
@@ -277,7 +277,7 @@ export default function FounderDashboardPage() {
           <Card className="bg-gradient-to-br from-indigo-950/50 to-purple-900/30 border-purple-800/20">
             <CardHeader className="pb-2">
               <CardDescription className="text-purple-200/70">Avg. Investment</CardDescription>
-              <CardTitle className="text-2xl text-white">{projectStats.avgInvestment.toLocaleString()} USDC</CardTitle>
+              <CardTitle className="text-2xl text-white">{projectStats.avgInvestment} USDC</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-sm text-green-500 flex items-center">
@@ -313,7 +313,7 @@ export default function FounderDashboardPage() {
                 <div className="flex justify-between text-sm">
                   <span className="text-purple-200/70">Raised</span>
                   <span className="text-white">
-                    {projectStats.totalRaised.toLocaleString()} / {projectStats.targetAmount.toLocaleString()} USDC
+                    {projectStats.totalRaised} / {projectStats.targetAmount} USDC
                   </span>
                 </div>
                 <Progress
@@ -407,14 +407,6 @@ export default function FounderDashboardPage() {
                 )}
               </div>
             </CardContent>
-            <CardFooter>
-              <Link href="/founder-dashboard/milestones">
-                <Button className="w-full bg-gradient-to-r from-blue-600/10 to-purple-600/10 hover:bg-purple-900/50 text-white border border-purple-800/20">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Milestone
-                </Button>
-              </Link>
-            </CardFooter>
           </Card>
         </div>
       </div>

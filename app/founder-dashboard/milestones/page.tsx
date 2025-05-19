@@ -144,13 +144,13 @@ export default function MilestonesPage() {
               completedDate: milestone.milestoneStatus === "complete" ? "Completed" : null,
               progress: progress,
               status:
-                milestone.milestoneStatus === "complete" ? "completed" : progress > 0 ? "in_progress" : "not_started",
+                milestone.milestoneStatus === "completed" ? "completed" : progress > 0 ? "in_progress" : "not_started",
               fundingAmount: Math.round(milestone.fundPercentage),
               tasks: milestone.requirements.map((req, index) => ({
                 id: `${milestone.milestoneId}-${index}`,
                 title: req.name,
                 description: req.description,
-                completed: req.status === "complete",
+                completed: req.status === "completed",
               })),
             }
           })
@@ -175,7 +175,7 @@ export default function MilestonesPage() {
   const filteredMilestones = milestones.filter((milestone) => {
     if (activeTab === "all") return true
     if (activeTab === "completed") return milestone.status === "completed"
-    if (activeTab === "in_progress") return milestone.status === "in_progress"
+    if (activeTab === "in_progress") return milestone.status === "incomplete"
     if (activeTab === "not_started") return milestone.status === "not_started"
     return true
   })
@@ -214,81 +214,6 @@ export default function MilestonesPage() {
             <h1 className="text-3xl font-bold text-white">Milestones</h1>
             <p className="text-purple-200/70">Track and manage your project milestones</p>
           </div>
-
-          <div className="flex items-center gap-2">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Add Milestone
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="bg-[#1F2A3D] border-[#313E54] text-white max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle>Add New Milestone</DialogTitle>
-                  <DialogDescription className="text-purple-200/70">
-                    Create a new milestone for your project.
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                  <div className="space-y-2">
-                    <label htmlFor="title" className="text-sm font-medium text-white">
-                      Title
-                    </label>
-                    <Input
-                      id="title"
-                      placeholder="Enter milestone title"
-                      className="bg-[#29305F] border-[#313E54] text-white"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="description" className="text-sm font-medium text-white">
-                      Description
-                    </label>
-                    <Textarea
-                      id="description"
-                      placeholder="Enter milestone description"
-                      className="bg-[#29305F] border-[#313E54] text-white min-h-[100px]"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="fundingAmount" className="text-sm font-medium text-white">
-                      Funding Amount (USDC)
-                    </label>
-                    <Input
-                      id="fundingAmount"
-                      type="number"
-                      placeholder="0"
-                      className="bg-[#29305F] border-[#313E54] text-white"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label htmlFor="status" className="text-sm font-medium text-white">
-                      Status
-                    </label>
-                    <Select>
-                      <SelectTrigger className="bg-[#29305F] border-[#313E54] text-white">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-[#202C41] border-[#313E54] text-white">
-                        <SelectItem value="not_started">Not Started</SelectItem>
-                        <SelectItem value="in_progress">In Progress</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button variant="outline" className="text-white border-[#3D4E6B] bg-[#1F2A3D] hover:bg-[#29305F]">
-                    Cancel
-                  </Button>
-                  <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
-                    Create Milestone
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -322,7 +247,7 @@ export default function MilestonesPage() {
           <Card className="bg-gradient-to-br from-indigo-950/50 to-purple-900/30 border-purple-800/20">
             <CardHeader className="pb-2">
               <CardDescription className="text-purple-200/70">Total Funding</CardDescription>
-              <CardTitle className="text-2xl text-white">{projectStats.totalFunding.toLocaleString()} USDC</CardTitle>
+              <CardTitle className="text-2xl text-white">{projectStats.totalFunding} USDC</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-sm text-purple-200/70 flex items-center">
@@ -407,20 +332,12 @@ export default function MilestonesPage() {
                           >
                             {milestone.status === "completed"
                               ? "Completed"
-                              : milestone.status === "in_progress"
+                              : milestone.status === "incomplete"
                                 ? "In Progress"
                                 : "Not Started"}
                           </Badge>
                         </div>
                         <CardTitle className="text-xl text-white">{milestone.title}</CardTitle>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-[#A3A8AF] hover:text-white">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-[#A3A8AF] hover:text-white">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
                       </div>
                     </div>
                   </CardHeader>
@@ -437,7 +354,7 @@ export default function MilestonesPage() {
                           ${
                             milestone.status === "completed"
                               ? "bg-green-500"
-                              : milestone.status === "in_progress"
+                              : milestone.status === "incomplete"
                                 ? "bg-blue-500"
                                 : "bg-purple-500"
                           }
@@ -448,7 +365,7 @@ export default function MilestonesPage() {
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-sm">
                       <div className="flex items-center gap-4">
                         <div className="text-purple-200/70">
-                          <span className="font-medium text-white">{milestone.fundingAmount.toLocaleString()}</span>{" "}
+                          <span className="font-medium text-white">{milestone.fundingAmount}</span>{" "}
                           USDC
                         </div>
                         {milestone.status === "completed" ? (

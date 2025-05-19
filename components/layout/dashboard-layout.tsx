@@ -21,6 +21,7 @@ import {
   CheckCircle,
   FileText,
 } from "lucide-react"
+import { useUser } from "@auth0/nextjs-auth0/client"
 
 interface DashboardLayoutProps {
   children: ReactNode
@@ -31,6 +32,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const isInvestorDashboard = pathname?.startsWith("/investor-dashboard")
   const isFounderDashboard = pathname?.startsWith("/founder-dashboard")
+  const { user } = useUser()
+  const name = user?.name
 
   // Define navigation items for both dashboards
   const investorNavItems = [
@@ -64,7 +67,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   }
 
   return (
-    <AppLayout>
+    <AppLayout className="">
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center text-sm text-gray-400 mb-6">
           <Link href="/" className="hover:text-white">
@@ -93,10 +96,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="bg-gradient-to-br from-indigo-950/50 to-purple-900/30 border border-purple-800/20 rounded-lg p-4">
               <div className="flex items-center gap-3 mb-6">
                 <div className="h-10 w-10 rounded-full overflow-hidden relative">
-                  <Image src="/placeholder.svg?height=40&width=40" alt="User Avatar" fill className="object-cover" />
+                  <Image src={user?.picture} alt="User Avatar" fill className="object-cover" />
                 </div>
                 <div>
-                  <h3 className="text-white font-medium">John Doe</h3>
+                  <h3 className="text-white font-medium">{name}</h3>
                   <p className="text-xs text-purple-200/70">{isInvestorDashboard ? "Investor" : "Founder"}</p>
                 </div>
               </div>
@@ -124,13 +127,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <Separator className="bg-purple-800/20 my-4" />
 
               <div className="space-y-1">
-                <Link
-                  href="/settings"
-                  className="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-purple-200/70 hover:bg-purple-900/30 hover:text-white transition-colors"
-                >
-                  <Settings className="h-4 w-4" />
-                  <span>Settings</span>
-                </Link>
                 <Link
                   href={isInvestorDashboard ? "/founder-dashboard" : "/investor-dashboard"}
                   className="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-purple-200/70 hover:bg-purple-900/30 hover:text-white transition-colors"

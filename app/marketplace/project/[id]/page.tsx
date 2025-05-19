@@ -453,7 +453,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
 
       try {
         const response = await fetch(
-          `${API_URL}/api/startup/get-upvote-status/${projectId}`,
+          `${API_URL}/api/startup/get-upvote-status/${params.id}`,
           {
             method: "POST",
             headers: {
@@ -720,7 +720,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
     try {
       const userId = user.sub?.substring(14);
       const response = await fetch(
-        `${API_URL}/api/startup/upvote-startup/${projectId}`,
+        `${API_URL}/api/startup/upvote-startup/${params.id}`,
         {
           method: "POST",
           headers: {
@@ -732,7 +732,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
       // After upvoting, fetch the updated status
       if (response.status === 200) {
         const statusResponse = await fetch(
-          `${API_URL}/api/startup/get-upvote-status/${projectId}`,
+          `${API_URL}/api/startup/get-upvote-status/${params.id}`,
           {
             method: "POST",
             headers: {
@@ -749,7 +749,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
 
       if (response.status === 200) {
         const countResponse = await fetch(
-          `${API_URL}/api/startup/get-upvote-count/${projectId}`,
+          `${API_URL}/api/startup/get-upvote-count/${params.id}`,
           {
             method: "GET",
             headers: {

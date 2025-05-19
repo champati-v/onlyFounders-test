@@ -17,26 +17,6 @@ export default function AnalyticsPage() {
             <h1 className="text-3xl font-bold text-white">Analytics</h1>
             <p className="text-purple-200/70">Track your project's performance and investor engagement</p>
           </div>
-
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Select defaultValue="6m">
-              <SelectTrigger className="bg-[#1F2A3D] border-[#313E54] text-white w-full sm:w-[120px]">
-                <Filter className="mr-2 h-4 w-4" />
-                <SelectValue placeholder="Time Range" />
-              </SelectTrigger>
-              <SelectContent className="bg-[#202C41] border-[#313E54] text-white">
-                <SelectItem value="1m">1 Month</SelectItem>
-                <SelectItem value="3m">3 Months</SelectItem>
-                <SelectItem value="6m">6 Months</SelectItem>
-                <SelectItem value="1y">1 Year</SelectItem>
-                <SelectItem value="all">All Time</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button variant="outline" className="text-white border-[#3D4E6B] bg-[#1F2A3D] hover:bg-[#29305F]">
-              <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
-          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mx-auto">

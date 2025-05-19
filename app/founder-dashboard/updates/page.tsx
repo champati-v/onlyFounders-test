@@ -440,7 +440,7 @@ export default function UpdatesPage() {
           </div>
         </Tabs>
 
-        <Card className="bg-gradient-to-br from-indigo-950/50 to-purple-900/30 border-purple-800/20">
+        {/* <Card className="bg-gradient-to-br from-indigo-950/50 to-purple-900/30 border-purple-800/20">
           <CardHeader>
             <CardTitle className="text-xl text-white">Investor Comments</CardTitle>
             <CardDescription className="text-purple-200/70">Recent comments from your investors</CardDescription>
@@ -551,7 +551,7 @@ export default function UpdatesPage() {
               </div>
             </div>
           </CardFooter>
-        </Card>
+        </Card> */}
       </div>
     </DashboardLayout>
   )
