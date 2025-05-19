@@ -126,11 +126,11 @@ export default function InvestorDashboardPage() {
             <TabsTrigger value="watchlist" className="data-[state=active]:bg-black data-[state=active]:text-white">
               Watchlist
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="data-[state=active]:bg-black data-[state=active]:text-white">
+            {/* <TabsTrigger value="analytics" className="data-[state=active]:bg-black data-[state=active]:text-white">
               Analytics
-            </TabsTrigger>
-            <TabsTrigger value="messages" className="data-[state=active]:bg-black data-[state=active]:text-white">
-              Messages
+            </TabsTrigger> */}
+            <TabsTrigger value="quests" className="data-[state=active]:bg-black data-[state=active]:text-white">
+              Quests
             </TabsTrigger>
           </TabsList>
 
@@ -349,8 +349,7 @@ export default function InvestorDashboardPage() {
             <PortfolioAnalytics />
           </TabsContent>
           <TabsContent value="watchlist">{/* Watchlist content would go here */}</TabsContent>
-          <TabsContent value="analytics">{/* Analytics content would go here */}</TabsContent>
-          <TabsContent value="messages">{/* Messages content would go here */}</TabsContent>
+          <TabsContent value="quests">{/* Messages content would go here */}</TabsContent>
         </Tabs>
       </div>
     </DashboardLayout>

@@ -2,17 +2,14 @@
 
 import { API_URL } from '@/lib/config';
 import { useState, useEffect } from "react"
-import Link from "next/link"
 import Image from "next/image"
-import { AppLayout } from "@/components/layout/app-layout"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Bookmark, Filter, Search, TrendingUp, Users, Calendar, ArrowUpRight, CheckCircle, Rocket, Heart, Router } from "lucide-react"
+import { Bookmark, Search, TrendingUp, Users, Calendar, ArrowUpRight, CheckCircle } from "lucide-react"
 import { useUser } from "@auth0/nextjs-auth0/client"
 import {useToast} from '../../hooks/use-toast'
 import { useRouter } from "next/navigation"
@@ -71,6 +68,7 @@ export default function MarketplacePage() {
   useEffect(() => {
     const checkStartup = async () => {
       try{
+        console.log("Checking startup status now...")
         setStartupLoading(true)
 
         if(!user || isUserLoading) return
@@ -85,6 +83,7 @@ export default function MarketplacePage() {
         if (response.status === 200) {
           const data = await response.json()
           if (data.status) {
+            console.log("User has startup:", data)
             setHasStartup(true)
           }
         }
@@ -124,9 +123,9 @@ export default function MarketplacePage() {
         // }
 
         const data = await response.json()
-        console.log("current user role is:", data)
+        console.log("data received from API: ", data)
         // Set user role from API response
-        if (data.status && data.role) {
+        if (data.role) {
           const rolesArray = Array.isArray(data.role) ? data.role : [data.role]
           setUserRole(rolesArray)
         }

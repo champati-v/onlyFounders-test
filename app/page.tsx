@@ -11,13 +11,10 @@ import {
   ArrowUpRightFromSquareIcon,
   Building,
   CheckCircle,
-  Shield,
-  Star,
   User,
   Users,
   Wallet,
   X,
-  Zap,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";

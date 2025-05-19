@@ -105,7 +105,7 @@ export default function FounderDashboardPage() {
             description: "Please sign in again to continue.",
             variant: "destructive",
           })
-          router.push("/login")
+          router.push("/api/auth/login")
           return
         }
         const response = await fetch(`${API_URL}/api/profile/get-founder-projectStats`, {
