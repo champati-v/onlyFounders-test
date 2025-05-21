@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { CampaignCard } from "../components/campaign-card"
 import { useRouter } from "next/navigation"
 import {useToast} from '../../../hooks/use-toast'
+import { Separator } from "@radix-ui/react-separator"
 
 // Define the campaign type based on the API response
 interface Campaign {
@@ -196,6 +197,32 @@ useEffect(() => {
   // Load more campaigns
   const loadMoreCampaigns = () => {
     setVisibleCampaigns((prev) => Math.min(prev + 3, filteredCampaigns.length))
+  }
+
+  if (!user && !isUserLoading) {
+    return (
+      <>
+        <div className="bg-[#050914] text-white">
+          <div className="container mx-auto px-4 py-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+              <div>
+                <h1 className="text-3xl sm:text-4xl font-bold mb-1">Campaigns</h1>
+                <p className="text-gray-400">Explore and support innovative blockchain projects</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col gap-4 justify-center items-center">
+          <p className="text-lg text-gray-400">Please login to view campaigns</p>
+          <Button
+            onClick={() => router.push("/api/auth/login")}
+            className="bg-[#4361ff] hover:bg-[#4361ff]/90 text-white py-2 px-4 rounded-md font-medium mb-4"
+          >
+            Login
+          </Button>
+        </div>
+      </>
+    )
   }
 
   return (

@@ -755,7 +755,7 @@ export function AppLayout({
                       </div>
                     ) : (
                       <div className="grid gap-1 px-2">
-                        <a href="api/auth/login">
+                        <a href="/api/auth/login">
                           <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
                             Login
                           </Button>
