@@ -199,6 +199,7 @@ useEffect(() => {
     setVisibleCampaigns((prev) => Math.min(prev + 3, filteredCampaigns.length))
   }
 
+  // Handle login redirect
   if (!user && !isUserLoading) {
     return (
       <>
