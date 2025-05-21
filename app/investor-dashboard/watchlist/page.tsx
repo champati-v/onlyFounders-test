@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
@@ -10,78 +10,90 @@ import { Progress } from "@/components/ui/progress"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Search, Filter, Users, Clock, CheckCircle, Bookmark, Plus, Star, Trash2, Bell } from "lucide-react"
+import { useUser } from "@auth0/nextjs-auth0/client"
+import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation"
+import axios from "axios"
+import { API_URL } from "@/lib/config"
 
 export default function WatchlistPage() {
   const [searchQuery, setSearchQuery] = useState("")
+  const [watchlistData, setWatchlistData] = useState({ message: "", startups: [] })
+  const [loading, setLoading] = useState(false)
+  const { user, isLoading: userLoading } = useUser()
+  const { toast } = useToast()
+  const router = useRouter()
 
-  // Mock data for the watchlist
-  const watchlistProjects = [
-    {
-      id: "1",
-      name: "VirtualRealms",
-      logo: "/placeholder.svg?height=40&width=40&text=VR",
-      category: "Metaverse",
-      description: "Immersive virtual world with blockchain-based economy",
-      raisedAmount: 280000,
-      targetAmount: 350000,
-      backers: 65,
-      daysLeft: 10,
-      starred: true,
-      notifications: true,
-    },
-    {
-      id: "2",
-      name: "TokenGate",
-      logo: "/placeholder.svg?height=40&width=40&text=TG",
-      category: "Access",
-      description: "Token-gated community platform with governance",
-      raisedAmount: 150000,
-      targetAmount: 200000,
-      backers: 42,
-      daysLeft: 5,
-      starred: false,
-      notifications: true,
-    },
-    {
-      id: "3",
-      name: "CryptoSwap",
-      logo: "/placeholder.svg?height=40&width=40&text=CS",
-      category: "DeFi",
-      description: "Decentralized exchange with cross-chain swapping capabilities",
-      raisedAmount: 180000,
-      targetAmount: 250000,
-      backers: 45,
-      daysLeft: 12,
-      starred: true,
-      notifications: false,
-    },
-    {
-      id: "4",
-      name: "ArtBlock",
-      logo: "/placeholder.svg?height=40&width=40&text=AB",
-      category: "NFT",
-      description: "AI-generated NFT platform with royalty distribution",
-      raisedAmount: 120000,
-      targetAmount: 200000,
-      backers: 32,
-      daysLeft: 8,
-      starred: false,
-      notifications: false,
-    },
-    {
-      id: "5",
-      name: "DataChain",
-      logo: "/placeholder.svg?height=40&width=40&text=DC",
-      category: "Infrastructure",
-      description: "Decentralized data storage solution with encryption",
-      raisedAmount: 320000,
-      targetAmount: 400000,
-      backers: 78,
-      daysLeft: 15,
-      starred: true,
-      notifications: true,
-    },
-  ]
+  useEffect(() => {
+    const fetchWatchlist = async () => {
+      if (userLoading || !user) return
+
+      try {
+        setLoading(true)
+        const userId = user.sub?.substring(14)
+
+        if (!userId) {
+          toast({
+            title: "Authentication error",
+            description: "Please sign in again to continue.",
+            variant: "destructive",
+          })
+          router.push("/api/auth/login")
+          return
+        }
+
+        const response = await axios.get(`${API_URL}/api/startup/list-watchList`, {
+          headers: {
+            user_id: userId,
+          },
+        })
+        setWatchlistData(response.data)
+      } catch (error) {
+        console.error("Error fetching watchlist:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchWatchlist()
+  }, [user, userLoading, router, toast])
+
+  // Map API data to match the UI structure
+  const mappedWatchlistProjects = watchlistData.startups.map((startup, index) => ({
+    id: index.toString(),
+    name: startup.startupName,
+    logo: "/placeholder.svg?height=40&width=40&text=" + startup.startupName.substring(0, 2),
+    category: startup.category,
+    stage: startup.stage,
+    description: startup.description,
+    raisedAmount: startup.totalRaised,
+    targetAmount: startup.fundingTarget || 1, // Prevent division by zero
+    backers: Math.floor(Math.random() * 100), // Random backers since not in API
+    daysLeft:
+      startup.deadline !== "NA" ? Math.ceil((new Date(startup.deadline) - new Date()) / (1000 * 60 * 60 * 24)) : 30,
+    starred: Math.random() > 0.5, // Random starred status
+    notifications: Math.random() > 0.5, // Random notification status
+  }))
+
+  // Keep the mock data as fallback
+  const watchlistProjects =
+    mappedWatchlistProjects.length > 0
+      ? mappedWatchlistProjects
+      : [
+          {
+            id: "1",
+            name: "Loading",
+            logo: "/placeholder.svg?height=40&width=40&text=VR",
+            category: "Loading",
+            description: "Loading",
+            raisedAmount: 0,
+            targetAmount: 0,
+            backers: 0,
+            daysLeft: 0,
+            starred: true,
+            notifications: true,
+          },
+        ]
 
   // Filter projects based on search query
   const filteredProjects = watchlistProjects.filter(
@@ -133,37 +145,23 @@ export default function WatchlistPage() {
                         alt={project.name}
                         width={40}
                         height={40}
-                        className="rounded"
+                        className="rounded-lg"
                       />
                     </div>
                     <div>
                       <div className="flex items-center gap-1">
                         <h3 className="font-medium text-white">{project.name}</h3>
-                        <CheckCircle className="h-3 w-3 text-blue-400" />
+
                       </div>
-                      <Badge variant="outline" className="bg-[#1F2A3D] text-[#A3A8AF] border-[#313E54]">
-                        {project.category}
-                      </Badge>
+                        <div className="flex items-center gap-2 mt-4">
+                          <Badge variant="outline" className="bg-[#1F2A3D] text-[#A3A8AF] border-[#313E54]">
+                            {project.category}
+                          </Badge>
+                          <Badge variant="outline" className="bg-[#1F2A3D] text-[#A3A8AF] border-[#313E54]">
+                            {project.stage}
+                          </Badge>
+                        </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={project.starred ? "text-yellow-400" : "text-[#A3A8AF]"}
-                    >
-                      <Star className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className={project.notifications ? "text-blue-400" : "text-[#A3A8AF]"}
-                    >
-                      <Bell className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="text-[#A3A8AF] hover:text-red-400">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
                   </div>
                 </div>
               </CardHeader>
@@ -188,17 +186,6 @@ export default function WatchlistPage() {
                     <span>{project.targetAmount.toLocaleString()} USDC</span>
                   </div>
                 </div>
-
-                <div className="flex items-center justify-between text-sm">
-                  <div className="flex items-center text-[#A3A8AF]">
-                    <Users className="mr-1 h-4 w-4" />
-                    {project.backers} backers
-                  </div>
-                  <div className="flex items-center text-[#A3A8AF]">
-                    <Clock className="mr-1 h-4 w-4" />
-                    {project.daysLeft} days left
-                  </div>
-                </div>
               </CardContent>
               <CardFooter className="flex gap-2">
                 <Button
@@ -214,21 +201,8 @@ export default function WatchlistPage() {
               </CardFooter>
             </Card>
           ))}
-
-          <Card className="bg-gradient-to-br from-indigo-950/50 to-purple-900/30 border-purple-800/20 flex flex-col items-center justify-center p-8">
-            <div className="rounded-full bg-[#1F2A3D] p-4 mb-4">
-              <Plus className="h-8 w-8 text-purple-400" />
-            </div>
-            <h3 className="text-lg font-medium text-white mb-2">Add to Watchlist</h3>
-            <p className="text-[#A3A8AF] text-center mb-4">Discover and add more projects to your watchlist</p>
-            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
-              <Bookmark className="mr-2 h-4 w-4" />
-              Browse Projects
-            </Button>
-          </Card>
         </div>
       </div>
     </DashboardLayout>
   )
 }
-

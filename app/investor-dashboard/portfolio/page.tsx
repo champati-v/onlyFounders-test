@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -20,91 +20,134 @@ import {
   TrendingDown,
 } from "lucide-react"
 import { PortfolioAnalytics } from "@/components/portfolio-analytics"
+import { useUser } from "@auth0/nextjs-auth0/client"
+import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation"
+import axios from "axios"
+import { API_URL } from "@/lib/config"
 
 export default function PortfolioPage() {
   const [activeTab, setActiveTab] = useState("all")
+  const { user, isLoading: userLoading } = useUser()
+  const { toast } = useToast()
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
 
-  // Mock data for the portfolio
-  const investments = [
-    {
-      id: "1",
-      name: "DecentraVault",
-      logo: "/placeholder.svg?height=40&width=40&text=DV",
-      category: "DeFi",
-      invested: 25000,
-      currentValue: 32500,
-      growth: 30,
-      progress: 75,
-      status: "active",
-      nextMilestone: "Mainnet Launch",
-      nextMilestoneDate: "Apr 25, 2025",
+  const [investorStats, setInvestorStats] = useState({
+    totalInvested: 0,
+    activeInvestmentCount: 0,
+    bestPerformingCampaign: {
+      campaignName: "N/A",
+      completedMilestones: 0,
     },
-    {
-      id: "2",
-      name: "MetaCanvas",
-      logo: "/placeholder.svg?height=40&width=40&text=MC",
-      category: "NFT",
-      invested: 15000,
-      currentValue: 18750,
-      growth: 25,
-      progress: 60,
-      status: "active",
-      nextMilestone: "Mobile App Beta",
-      nextMilestoneDate: "Apr 30, 2025",
+    worstPerformingCampaign: {
+      campaignName: "N/A",
+      completedMilestones: 0,
     },
-    {
-      id: "3",
-      name: "ChainGovernance",
-      logo: "/placeholder.svg?height=40&width=40&text=CG",
-      category: "DAO",
-      invested: 20000,
-      currentValue: 19000,
-      growth: -5,
-      progress: 40,
-      status: "at_risk",
-      nextMilestone: "Security Audit",
-      nextMilestoneDate: "May 5, 2025",
-    },
-    {
-      id: "4",
-      name: "GameFi World",
-      logo: "/placeholder.svg?height=40&width=40&text=GW",
-      category: "Gaming",
-      invested: 30000,
-      currentValue: 36000,
-      growth: 20,
-      progress: 25,
-      status: "active",
-      nextMilestone: "Gameplay Demo",
-      nextMilestoneDate: "May 10, 2025",
-    },
-    {
-      id: "5",
-      name: "BlockSync",
-      logo: "/placeholder.svg?height=40&width=40&text=BS",
-      category: "Infrastructure",
-      invested: 35000,
-      currentValue: 42000,
-      growth: 20,
-      progress: 90,
-      status: "completed",
-      nextMilestone: "Final Release",
-      nextMilestoneDate: "Apr 20, 2025",
-    },
-  ]
+    totalReturns: 0,
+    roi: 0,
+    currentValue: 0,
+  })
 
-  // Portfolio summary stats
+  const [activeInvestments, setActiveInvestments] = useState({
+    message: "",
+    investments: [],
+  })
+
+  useEffect(() => {
+    const fetchInvestorStats = async () => {
+      if (userLoading || !user) return
+
+      try {
+        setLoading(true)
+        const userId = user.sub?.substring(14)
+
+        if (!userId) {
+          toast({
+            title: "Authentication error",
+            description: "Please sign in again to continue.",
+            variant: "destructive",
+          })
+          router.push("/api/auth/login")
+          return
+        }
+
+        const response = await axios.get(`${API_URL}/api/profile/get-investor-dashboard-analytics`, {
+          headers: {
+            user_id: userId,
+          },
+        })
+
+        setInvestorStats(response.data)
+      } catch (err) {
+        console.error("Error fetching investor stats:", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchInvestorStats()
+  }, [user, userLoading, router, toast])
+
+  useEffect(() => {
+    const fetchActiveInvestments = async () => {
+      if (userLoading || !user) return
+
+      try {
+        const userId = user.sub?.substring(14)
+
+        if (!userId) {
+          toast({
+            title: "Authentication error",
+            description: "Please sign in again to continue.",
+            variant: "destructive",
+          })
+          router.push("/api/auth/login")
+          return
+        }
+
+        const response = await axios.get(`${API_URL}/api/profile/get-active-investments-for-investor`, {
+          headers: {
+            user_id: userId,
+          },
+        })
+        setActiveInvestments(response.data)
+      } catch (error) {
+        console.error("Error fetching active investments:", error)
+      }
+    }
+    fetchActiveInvestments()
+  }, [user, userLoading, router, toast])
+
+  // Map API data to match UI structure
+  const investments = activeInvestments.investments.map((investment, index) => ({
+    id: index.toString(),
+    name: investment.campaignName,
+    logo:
+      investment.startupLogo || `/placeholder.svg?height=40&width=40&text=${investment.campaignName.substring(0, 2)}`,
+    category: investment.category,
+    invested: investment.investedAmount,
+    currentValue: investment.investedAmount, // No current value in API, using invested amount
+    growth: 0, // No growth data in API
+    progress: 0, // Random progress since not in API
+    status: "active", // Default status
+    nextMilestone: "Next Milestone", // Placeholder
+    nextMilestoneDate: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+  }))
+
+  // Portfolio summary stats from API
   const portfolioStats = {
-    totalInvested: investments.reduce((sum, inv) => sum + inv.invested, 0),
-    totalValue: investments.reduce((sum, inv) => sum + inv.currentValue, 0),
-    totalGrowth: (
-      (investments.reduce((sum, inv) => sum + inv.currentValue, 0) /
-        investments.reduce((sum, inv) => sum + inv.invested, 0) -
-        1) *
-      100
-    ).toFixed(1),
-    bestPerforming: investments.reduce((best, inv) => (inv.growth > best.growth ? inv : best), investments[0]),
-    worstPerforming: investments.reduce((worst, inv) => (inv.growth < worst.growth ? inv : worst), investments[0]),
+    totalInvested: investorStats.totalInvested,
+    totalValue: investorStats.currentValue || investorStats.totalInvested,
+    totalGrowth: investorStats.roi,
+    bestPerforming: {
+      name: investorStats.bestPerformingCampaign?.campaignName || "N/A",
+      growth: 0, // No growth data in API
+    },
+    worstPerforming: {
+      name: investorStats.worstPerformingCampaign?.campaignName || "N/A",
+      growth: 0, // No growth data in API
+    },
   }
 
   // Filter investments based on active tab
@@ -124,21 +167,6 @@ export default function PortfolioPage() {
           <div>
             <h1 className="text-3xl font-bold text-white">Portfolio</h1>
             <p className="text-purple-200/70">Manage and track your investments</p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button variant="outline" className="text-white border-[#3D4E6B] bg-[#1F2A3D] hover:bg-[#29305F]">
-              <Filter className="mr-2 h-4 w-4" />
-              Filter
-            </Button>
-            <Button variant="outline" className="text-white border-[#3D4E6B] bg-[#1F2A3D] hover:bg-[#29305F]">
-              <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
-            <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
-              <Wallet className="mr-2 h-4 w-4" />
-              Add Funds
-            </Button>
           </div>
         </div>
 
@@ -347,4 +375,3 @@ export default function PortfolioPage() {
     </DashboardLayout>
   )
 }
-

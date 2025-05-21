@@ -41,7 +41,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     { href: "/investor-dashboard/portfolio", label: "Portfolio", icon: Wallet },
     { href: "/investor-dashboard/watchlist", label: "Watchlist", icon: Star },
     { href: "/investor-dashboard/analytics", label: "Analytics", icon: LineChart },
-    { href: "/investor-dashboard/messages", label: "Messages", icon: MessageSquare },
   ]
 
   const founderNavItems = [

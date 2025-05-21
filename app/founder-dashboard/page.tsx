@@ -30,12 +30,21 @@ export default function FounderDashboardPage() {
     InvesterEngagement: "Low",
     institutionalInvestor: 0,
     individualInvestors: 0,
-    targetAmount: 1000000, // Keeping this for UI calculations
+    activeCampaignfundingTarget: 0, // Keeping this for UI calculations
   })
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [upcomingMilestones, setUpcomingMilestones] = useState([])
+  interface FormattedMilestone {
+    id: string
+    title: string
+    description: string
+    progress: number
+    status: "completed" | "in_progress" | "not_started"
+    fundPercentage: number
+  }
+  
+  const [upcomingMilestones, setUpcomingMilestones] = useState<FormattedMilestone[]>([])
 
   // const recentInvestors = [
   //   {
@@ -125,8 +134,7 @@ export default function FounderDashboardPage() {
 
         const data = await response.json()
         setProjectStats({
-          ...data,
-          targetAmount: 1000000, // Keeping this for UI calculations
+          ...data 
         })
       } catch (err) {
         console.error("Error fetching founder stats:", err)
@@ -175,7 +183,31 @@ export default function FounderDashboardPage() {
 
         // Map the API response to the component's expected structure
         if (data && data.upcomingMilestones && Array.isArray(data.upcomingMilestones)) {
-          const formattedMilestones = data.upcomingMilestones.slice(0, 3).map((milestone) => {
+          interface Requirement {
+            status: string
+            [key: string]: any
+          }
+
+          interface MilestoneApiResponse {
+            milestoneId: string
+            name: string
+            description: string
+            requirements: Requirement[]
+            milestoneStatus: string
+            fundPercentage: number
+            [key: string]: any
+          }
+
+          interface FormattedMilestone {
+            id: string
+            title: string
+            description: string
+            progress: number
+            status: "completed" | "in_progress" | "not_started"
+            fundPercentage: number
+          }
+
+          const formattedMilestones: FormattedMilestone[] = (data.upcomingMilestones as MilestoneApiResponse[]).slice(0, 3).map((milestone) => {
             // Calculate progress based on requirements completion
             const totalRequirements = milestone.requirements.length
             const completedRequirements = milestone.requirements.filter((req) => req.status === "complete").length
@@ -256,7 +288,7 @@ export default function FounderDashboardPage() {
             <CardContent>
               <div className="text-sm text-green-500 flex items-center">
                 <ArrowUpRight className="mr-1 h-4 w-4" />
-                {Math.round((projectStats.totalRaised / projectStats.targetAmount) * 100)}% of target reached
+                {Math.round((projectStats.totalRaised / projectStats.activeCampaignfundingTarget) * 100)}% of target reached
               </div>
             </CardContent>
           </Card>
@@ -313,11 +345,11 @@ export default function FounderDashboardPage() {
                 <div className="flex justify-between text-sm">
                   <span className="text-purple-200/70">Raised</span>
                   <span className="text-white">
-                    {projectStats.totalRaised} / {projectStats.targetAmount} USDC
+                    {projectStats.totalRaised} / {projectStats.activeCampaignfundingTarget} USDC
                   </span>
                 </div>
                 <Progress
-                  value={(projectStats.totalRaised / projectStats.targetAmount) * 100}
+                  value={(projectStats.totalRaised / projectStats.activeCampaignfundingTarget) * 100}
                   className="h-2 bg-purple-900/30"
                   indicatorClassName="bg-gradient-to-r from-blue-500 to-purple-500"
                 />

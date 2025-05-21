@@ -376,7 +376,7 @@ export default function ResourcesPage() {
                       asChild
                       className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
                     >
-                      <Link href="#blogs">
+                      <Link href="https://www.onlyfounders.xyz/blogs" target='_blank'>
                         Browse Blogs <BookOpen className="ml-2 h-4 w-4" />
                       </Link>
                     </Button>
@@ -471,7 +471,7 @@ export default function ResourcesPage() {
         </Card>
 
         <Tabs
-          defaultValue="blogs"
+          defaultValue="tools"
           value={activeTab}
           onValueChange={handleTabChange}
           className="space-y-8"
@@ -520,10 +520,8 @@ export default function ResourcesPage() {
             <AIAgents />
           </TabsContent>
 
-          <TabsContent id="blogs" value="blogs">
+          {/* <TabsContent id="blogs" value="blogs">
             <div className="space-y-8">
-            
-              {/* Category Filter */}
               <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-wrap gap-2">
                   <Button
@@ -636,7 +634,7 @@ export default function ResourcesPage() {
                 ))}
               </div>
             </div>
-          </TabsContent>
+          </TabsContent> */}
 
           <TabsContent value="videos">
             <div className="space-y-8">

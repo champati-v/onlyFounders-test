@@ -236,7 +236,6 @@ export function AppLayout({
 
   const mainNavItems = [
     { href: "/", label: "Home", icon: Home },
-    { href: "/about", label: "About", icon: Info },
     { href: "/marketplace", label: "Marketplace", icon: Store },
     { href: "/campaign/campaigns", label: "Campaigns", icon: HiOutlineSpeakerphone },
     { href: "/network", label: "Network", icon: Users },
@@ -401,16 +400,6 @@ export function AppLayout({
 
               <NavigationMenu>
                 <NavigationMenuList className="flex gap-2">
-                  <NavigationMenuItem>
-                    <NavigationMenuLink className="bg-transparent" asChild>
-                      <a
-                        href="/about"
-                        className="py-2.5 px-3 text-[15px] rounded-md hover:cursor-pointer hover:bg-gray-800"
-                      >
-                        About
-                      </a>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
                   <NavigationMenuItem>
                     <NavigationMenuTrigger className="bg-transparent">
                       Marketplace

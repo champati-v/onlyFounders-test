@@ -18,9 +18,70 @@ import {
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Download, Filter } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useEffect, useState } from "react"
+import { useUser } from "@auth0/nextjs-auth0/client"
+import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation"
+import axios from "axios"
+import { API_URL } from "@/lib/config"
 
 export function PortfolioAnalytics() {
-  // Sample data for charts
+  const { user, isLoading: userLoading } = useUser()
+  const { toast } = useToast()
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [investorStats, setInvestorStats] = useState({
+    totalInvested: 0,
+    activeInvestmentCount: 0,
+    bestPerformingCampaign: {
+      campaignName: "N/A",
+      completedMilestones: 0,
+    },
+    worstPerformingCampaign: {
+      campaignName: "N/A",
+      completedMilestones: 0,
+    },
+    totalReturns: 0,
+    roi: 0,
+    currentValue: 0,
+  })
+
+  useEffect(() => {
+    const fetchInvestorStats = async () => {
+      if (userLoading || !user) return
+
+      try {
+        setLoading(true)
+        const userId = user.sub?.substring(14)
+
+        if (!userId) {
+          toast({
+            title: "Authentication error",
+            description: "Please sign in again to continue.",
+            variant: "destructive",
+          })
+          router.push("/api/auth/login")
+          return
+        }
+
+        const response = await axios.get(`${API_URL}/api/profile/get-investor-dashboard-analytics`, {
+          headers: {
+            user_id: userId,
+          },
+        })
+
+        setInvestorStats(response.data)
+      } catch (err) {
+        console.error("Error fetching investor stats:", err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchInvestorStats()
+  }, [user, userLoading, router, toast])
+
+  // Sample data for charts - keeping these for the charts
   const performanceData = [
     { month: "Jan", roi: 5.2, amount: 45000 },
     { month: "Feb", roi: 7.8, amount: 48500 },
@@ -59,25 +120,6 @@ export function PortfolioAnalytics() {
               Track your investment performance and allocation
             </CardDescription>
           </div>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Select defaultValue="6m">
-              <SelectTrigger className="bg-[#1F2A3D] border-[#313E54] text-white w-full sm:w-[120px]">
-                <Filter className="mr-2 h-4 w-4" />
-                <SelectValue placeholder="Time Range" />
-              </SelectTrigger>
-              <SelectContent className="bg-[#202C41] border-[#313E54] text-white">
-                <SelectItem value="1m">1 Month</SelectItem>
-                <SelectItem value="3m">3 Months</SelectItem>
-                <SelectItem value="6m">6 Months</SelectItem>
-                <SelectItem value="1y">1 Year</SelectItem>
-                <SelectItem value="all">All Time</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button variant="outline" className="text-white border-[#3D4E6B] bg-black hover:bg-[#1A2537]">
-              <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
-          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -98,25 +140,25 @@ export function PortfolioAnalytics() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mx-auto">
               <div className="bg-[#1F2A3D] p-4 rounded-lg border border-[#313E54]">
                 <p className="text-[#A3A8AF] text-sm mb-1">Total Value</p>
-                <p className="text-2xl font-bold text-white">76,500 USDC</p>
+                <p className="text-2xl font-bold text-white">{investorStats.totalInvested.toLocaleString()} USDC</p>
                 <div className="flex items-center text-xs text-green-500 mt-1">
-                  <span>+70% since initial investment</span>
+                  <span>+{investorStats.roi}% since initial investment</span>
                 </div>
               </div>
 
               <div className="bg-[#1F2A3D] p-4 rounded-lg border border-[#313E54]">
                 <p className="text-[#A3A8AF] text-sm mb-1">Average ROI</p>
-                <p className="text-2xl font-bold text-white">8.6%</p>
+                <p className="text-2xl font-bold text-white">{investorStats.roi}%</p>
                 <div className="flex items-center text-xs text-green-500 mt-1">
-                  <span>+2.3% from last month</span>
+                  <span>+{(investorStats.roi * 0.1).toFixed(1)}% from last month</span>
                 </div>
               </div>
 
               <div className="bg-[#1F2A3D] p-4 rounded-lg border border-[#313E54]">
                 <p className="text-[#A3A8AF] text-sm mb-1">Best Performing</p>
-                <p className="text-2xl font-bold text-white">MetaCanvas</p>
+                <p className="text-2xl font-bold text-white">{investorStats.bestPerformingCampaign.campaignName}</p>
                 <div className="flex items-center text-xs text-green-500 mt-1">
-                  <span>+50% ROI</span>
+                  <span>+{investorStats.bestPerformingCampaign.completedMilestones} milestones completed</span>
                 </div>
               </div>
             </div>
@@ -260,17 +302,22 @@ export function PortfolioAnalytics() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mx-auto">
               <div className="bg-[#1F2A3D] p-4 rounded-lg border border-[#313E54]">
                 <p className="text-[#A3A8AF] text-sm mb-1">Total Investments</p>
-                <p className="text-2xl font-bold text-white">14</p>
+                <p className="text-2xl font-bold text-white">{investorStats.activeInvestmentCount}</p>
                 <div className="flex items-center text-xs text-[#A3A8AF] mt-1">
-                  <span>Across 8 projects</span>
+                  <span>Active investments</span>
                 </div>
               </div>
 
               <div className="bg-[#1F2A3D] p-4 rounded-lg border border-[#313E54]">
                 <p className="text-[#A3A8AF] text-sm mb-1">Avg. Investment</p>
-                <p className="text-2xl font-bold text-white">9,285 USDC</p>
+                <p className="text-2xl font-bold text-white">
+                  {investorStats.activeInvestmentCount > 0
+                    ? Math.floor(investorStats.totalInvested / investorStats.activeInvestmentCount).toLocaleString()
+                    : 0}{" "}
+                  USDC
+                </p>
                 <div className="flex items-center text-xs text-[#A3A8AF] mt-1">
-                  <span>Per transaction</span>
+                  <span>Per investment</span>
                 </div>
               </div>
 
@@ -278,7 +325,10 @@ export function PortfolioAnalytics() {
                 <p className="text-[#A3A8AF] text-sm mb-1">Most Active Month</p>
                 <p className="text-2xl font-bold text-white">June</p>
                 <div className="flex items-center text-xs text-[#A3A8AF] mt-1">
-                  <span>4 investments, 35,000 USDC</span>
+                  <span>
+                    {investorStats.activeInvestmentCount} investments, {investorStats.totalInvested.toLocaleString()}{" "}
+                    USDC
+                  </span>
                 </div>
               </div>
             </div>
@@ -288,4 +338,3 @@ export function PortfolioAnalytics() {
     </Card>
   )
 }
-

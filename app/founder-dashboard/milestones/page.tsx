@@ -47,7 +47,28 @@ export default function MilestonesPage() {
     institutionalInvestor: 0,
     individualInvestors: 0,
   })
-  const [milestones, setMilestones] = useState([])
+  interface Task {
+    id: string
+    title: string
+    description: string
+    completed: boolean
+    req_status: string
+  }
+
+  interface Milestone {
+    id: string
+    title: string
+    description: string
+    startDate: string
+    dueDate: string
+    completedDate: string | null
+    progress: number
+    status: "completed" | "incomplete" | "not_started"
+    fundingAmount: number
+    tasks: Task[]
+  }
+
+  const [milestones, setMilestones] = useState<Milestone[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -128,7 +149,44 @@ export default function MilestonesPage() {
 
         // Map API response to component structure
         if (data && data.milestones && Array.isArray(data.milestones)) {
-          const formattedMilestones = data.milestones.map((milestone) => {
+          interface ApiRequirement {
+            name: string
+            description: string
+            status: string
+          }
+
+          interface ApiMilestone {
+            milestoneId: string
+            name: string
+            description: string
+            milestoneStatus: string
+            fundPercentage: number
+            requirements: ApiRequirement[]
+          }
+
+          interface Task {
+            id: string
+            title: string
+            description: string
+            completed: boolean
+            req_status: string
+          }
+
+          interface Milestone {
+            id: string
+            title: string
+            description: string
+            startDate: string
+            dueDate: string
+            completedDate: string | null
+            progress: number
+            status: "completed" | "incomplete" | "not_started"
+            fundingAmount: number
+            tasks: Task[]
+           
+          }
+
+          const formattedMilestones: Milestone[] = (data.milestones as ApiMilestone[]).map((milestone) => {
             // Calculate progress based on requirements completion
             const totalRequirements = milestone.requirements.length
             const completedRequirements = milestone.requirements.filter((req) => req.status === "complete").length
@@ -141,21 +199,25 @@ export default function MilestonesPage() {
               // No start/due/completed dates in API response
               startDate: "TBD",
               dueDate: "TBD",
-              completedDate: milestone.milestoneStatus === "complete" ? "Completed" : null,
+              completedDate: milestone.milestoneStatus === "completed" ? "Completed" : null,
               progress: progress,
+              totalRequirements: totalRequirements,
+              completedRequirements: completedRequirements,
               status:
-                milestone.milestoneStatus === "completed" ? "completed" : progress > 0 ? "in_progress" : "not_started",
+                milestone.milestoneStatus === "completed" ? "completed" : progress > 0 ? "incomplete" : "not_started",
               fundingAmount: Math.round(milestone.fundPercentage),
-              tasks: milestone.requirements.map((req, index) => ({
+              tasks: milestone.requirements.map((req, index): Task => ({
                 id: `${milestone.milestoneId}-${index}`,
                 title: req.name,
                 description: req.description,
-                completed: req.status === "completed",
+                req_status: req.status,
+                completed: req.status === "complete",
               })),
             }
           })
 
           setMilestones(formattedMilestones)
+          console.log("Formatted Milestones:", formattedMilestones)
         }
       } catch (error) {
         console.error("Error fetching milestones:", error)
@@ -175,7 +237,7 @@ export default function MilestonesPage() {
   const filteredMilestones = milestones.filter((milestone) => {
     if (activeTab === "all") return true
     if (activeTab === "completed") return milestone.status === "completed"
-    if (activeTab === "in_progress") return milestone.status === "incomplete"
+    if (activeTab === "incomplete") return milestone.status === "incomplete"
     if (activeTab === "not_started") return milestone.status === "not_started"
     return true
   })
@@ -261,7 +323,7 @@ export default function MilestonesPage() {
             <CardHeader className="pb-2">
               <CardDescription className="text-purple-200/70">Next Milestone</CardDescription>
               <CardTitle className="text-2xl text-white">
-                {projectStats.nextMilestone || milestones.find((m) => m.status === "in_progress")?.title || "None"}
+                {projectStats.nextMilestone || milestones.find((m) => m.status === "incomplete")?.title || "None"}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -284,7 +346,7 @@ export default function MilestonesPage() {
                   Completed
                 </TabsTrigger>
                 <TabsTrigger
-                  value="in_progress"
+                  value="incomplete"
                   className="data-[state=active]:bg-black data-[state=active]:text-white"
                 >
                   In Progress
@@ -324,7 +386,7 @@ export default function MilestonesPage() {
                               ${
                                 milestone.status === "completed"
                                   ? "bg-green-900/30 text-green-400 border-green-800"
-                                  : milestone.status === "in_progress"
+                                  : milestone.status === "incomplete"
                                     ? "bg-blue-900/30 text-blue-400 border-blue-800"
                                     : "bg-purple-900/30 text-purple-400 border-purple-800"
                               }
@@ -373,7 +435,7 @@ export default function MilestonesPage() {
                             <CheckCircle className="mr-1 h-4 w-4" />
                             Released
                           </div>
-                        ) : milestone.status === "in_progress" ? (
+                        ) : milestone.status === "incomplete" ? (
                           <div className="flex items-center text-blue-400">
                             <PlayCircle className="mr-1 h-4 w-4" />
                             Pending
@@ -416,32 +478,32 @@ export default function MilestonesPage() {
 
                         <div>
                           <h4 className="font-medium text-white mb-2">Requirements</h4>
-                          <div className="space-y-2">
-                            {milestone.tasks.map((task) => (
-                              <div
-                                key={task.id}
-                                className="flex items-start p-2 rounded-md bg-[#1F2A3D] border border-[#313E54]"
-                              >
-                                <div className="flex items-start gap-2">
-                                  <div className="pt-0.5">
-                                    {task.completed ? (
-                                      <CheckCircle className="h-4 w-4 text-green-400" />
-                                    ) : (
-                                      <div className="h-4 w-4 rounded-full border border-[#A3A8AF]" />
-                                    )}
-                                  </div>
-                                  <div>
-                                    <span className={`block ${task.completed ? "text-white" : "text-[#A3A8AF]"}`}>
-                                      {task.title}
-                                    </span>
-                                    {task.description && (
-                                      <span className="text-xs text-[#A3A8AF] mt-1 block">{task.description}</span>
-                                    )}
+                            <div className="space-y-2">
+                              {milestone.tasks.map((task) => (
+                                <div
+                                  key={task.id}
+                                  className="flex items-start p-2 rounded-md border border-[#313E54]"
+                                >
+                                  <div className="flex items-start gap-2">
+                                    <div className="pt-0.5">
+                                      {task.req_status === "complete" ? (
+                                        <CheckCircle className="h-4 w-4 text-green-400" />
+                                      ) : (
+                                        <div className="h-4 w-4 rounded-full border border-[#A3A8AF]" />
+                                      )}
+                                    </div>
+                                    <div>
+                                      <span className={`block ${task.req_status === 'complete' ? "text-white" : "text-[#A3A8AF]"}`}>
+                                        {task.title}
+                                      </span>
+                                      {task.description && (
+                                        <span className="text-xs text-[#A3A8AF] mt-1 block">{task.description}</span>
+                                      )}
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
-                          </div>
+                              ))}
+                            </div>
                         </div>
                       </div>
                     )}
@@ -450,7 +512,7 @@ export default function MilestonesPage() {
               ))
             ) : (
               <div className="text-center py-8 text-purple-200/70">
-                No milestones found. Add your first milestone to get started.
+                No milestones found...
               </div>
             )}
           </div>

@@ -22,6 +22,11 @@ export function AIInvestmentAssistant() {
   }
 
   return (
+  <div className="relative">
+    {/* Coming Soon Overlay */}
+    <div className="absolute inset-0 bg-black/60 z-30 flex items-center justify-center rounded-lg">
+      <span className="text-white text-4xl font-semibold">Coming Soon...</span>
+    </div>
     <Card className="bg-[#202C41] border-[#313E54] mx-auto w-full">
       <CardHeader>
         <div className="flex items-center justify-between">
@@ -116,6 +121,7 @@ export function AIInvestmentAssistant() {
         </div>
       </CardFooter>
     </Card>
+  </div>
   )
 }
 

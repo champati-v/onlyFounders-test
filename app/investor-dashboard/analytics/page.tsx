@@ -1,5 +1,6 @@
 "use client"
 
+import { API_URL } from "@/lib/config"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -21,6 +22,10 @@ import {
 } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Download, Filter, ArrowUpRight, TrendingUp, BarChart3, PieChartIcon, LineChartIcon } from "lucide-react"
+import { useEffect, useState } from "react"
+import { useUser } from "@auth0/nextjs-auth0/client"
+import { useToast } from "@/hooks/use-toast"
+import { useRouter } from "next/navigation"
 
 export default function AnalyticsPage() {
   // Sample data for charts
@@ -51,6 +56,64 @@ export default function AnalyticsPage() {
     { month: "Jun", investments: 4, volume: 35000 },
     { month: "Jul", investments: 2, volume: 25000 },
   ]
+  const {user, isLoading: userLoading} = useUser()
+  const [loading, setLoading] = useState(false)
+  const {toast} = useToast()
+  const router = useRouter()
+  const [investorStats, setInvestorStats] = useState({
+      totalInvested: 0,
+      activeInvestmentCount: 0,
+      bestPerformingCampaign: {
+        campaignName: "N/A",
+        completedMilestones: 0
+      },
+      worstPerformingCampaign: {
+        campaignName: "N/A",
+        completedMilestones: 0
+      },
+      totalReturns: 0,
+      roi: 0,
+      currentValue: 0
+    })
+
+       useEffect(() => {
+          const fetchInvestorStats = async () => {
+            if (userLoading || !user) return
+      
+            try {
+              setLoading(true)
+              const userId = user.sub?.substring(14)
+      
+              if (!userId) {
+                toast({
+                  title: "Authentication error",
+                  description: "Please sign in again to continue.",
+                  variant: "destructive",
+                })
+                router.push("/api/auth/login")
+                return
+              }
+              const response = await fetch(`${API_URL}/api/profile/get-investor-dashboard-analytics`, {
+                method: "GET",
+                headers: {
+                  user_id: userId,
+                }
+              })
+      
+              const data = await response.json()
+              setInvestorStats({
+                ...data 
+              })
+            } catch (err) {
+              console.error("Error fetching founder stats:", err)
+            } finally {
+              setLoading(false)
+            }
+          }
+      
+          fetchInvestorStats()
+        }, [user, userLoading])
+    
 
   return (
     <DashboardLayout>
@@ -59,26 +122,6 @@ export default function AnalyticsPage() {
           <div>
             <h1 className="text-3xl font-bold text-white">Analytics</h1>
             <p className="text-purple-200/70">Track your investment performance and metrics</p>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Select defaultValue="6m">
-              <SelectTrigger className="bg-[#1F2A3D] border-[#313E54] text-white w-full sm:w-[120px]">
-                <Filter className="mr-2 h-4 w-4" />
-                <SelectValue placeholder="Time Range" />
-              </SelectTrigger>
-              <SelectContent className="bg-[#202C41] border-[#313E54] text-white">
-                <SelectItem value="1m">1 Month</SelectItem>
-                <SelectItem value="3m">3 Months</SelectItem>
-                <SelectItem value="6m">6 Months</SelectItem>
-                <SelectItem value="1y">1 Year</SelectItem>
-                <SelectItem value="all">All Time</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button variant="outline" className="text-white border-[#3D4E6B] bg-[#1F2A3D] hover:bg-[#29305F]">
-              <Download className="mr-2 h-4 w-4" />
-              Export
-            </Button>
           </div>
         </div>
 
@@ -91,7 +134,7 @@ export default function AnalyticsPage() {
             <CardContent>
               <div className="text-sm text-green-500 flex items-center">
                 <ArrowUpRight className="mr-1 h-4 w-4" />
-                <span>+70% since initial investment</span>
+                {/* <span>+70% since initial investment</span> */}
               </div>
             </CardContent>
           </Card>
@@ -99,12 +142,12 @@ export default function AnalyticsPage() {
           <Card className="bg-gradient-to-br from-indigo-950/50 to-purple-900/30 border-purple-800/20">
             <CardHeader className="pb-2">
               <CardDescription className="text-purple-200/70">Average ROI</CardDescription>
-              <CardTitle className="text-2xl text-white">8.6%</CardTitle>
+              <CardTitle className="text-2xl text-white">{investorStats.roi}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-sm text-green-500 flex items-center">
                 <ArrowUpRight className="mr-1 h-4 w-4" />
-                <span>+2.3% from last month</span>
+                {/* <span>+0% from last month</span> */}
               </div>
             </CardContent>
           </Card>
@@ -112,12 +155,12 @@ export default function AnalyticsPage() {
           <Card className="bg-gradient-to-br from-indigo-950/50 to-purple-900/30 border-purple-800/20">
             <CardHeader className="pb-2">
               <CardDescription className="text-purple-200/70">Best Performing</CardDescription>
-              <CardTitle className="text-2xl text-white">MetaCanvas</CardTitle>
+              <CardTitle className="text-2xl text-white">{investorStats.bestPerformingCampaign.campaignName}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-sm text-green-500 flex items-center">
                 <TrendingUp className="mr-1 h-4 w-4" />
-                <span>+50% ROI</span>
+                <span>{investorStats.bestPerformingCampaign.completedMilestones} milestones completed</span>
               </div>
             </CardContent>
           </Card>
