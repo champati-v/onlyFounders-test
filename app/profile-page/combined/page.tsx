@@ -79,11 +79,6 @@ const CombinedProfile = () => {
       } catch (error) {
         console.error("Error fetching onboarding status:", error)
         setError("Failed to fetch user roles. Please try again later.")
-        toast({
-          title: "Failed to fetch onboarding status",
-          description: "Please try again later.",
-          variant: "destructive",
-        })
       } finally {
         setIsLoading(false)
       }

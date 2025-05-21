@@ -193,8 +193,9 @@ export default function CampaignDetailPage() {
 
   return (
     <div className="min-h-screen bg-[#050914] text-white">
-      <CampaignHeader campaign={formattedCampaign} />
-
+      <div className="px-12 pt-4">
+        <CampaignHeader campaign={formattedCampaign} />
+      </div>
       <div className="max-w-[1800px] mx-auto px-4 md:px-8 lg:px-16 xl:px-16 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">

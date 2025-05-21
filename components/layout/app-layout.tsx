@@ -52,6 +52,7 @@ import {
 } from "../ui/navigation-menu";
 import LoginButton from "../ocidLogin-button";
 import { useOCAuth } from "@opencampus/ocid-connect-js";
+import { TbDashboard } from 'react-icons/tb';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -234,6 +235,38 @@ export function AppLayout({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+        const getOnboardingStatus = async () => {
+          try {
+            if (!user || isLoading) return;
+      
+            setIsProfileLoading(true);
+            const userID = user.sub?.substring(14);
+      
+            const response = await fetch(
+              `${API_URL}/api/profile/get-onboarding-status`,
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  user_id: userID || "",
+                },
+              }
+            );
+      
+            const data = await response.json();
+            setRole(data.role);
+
+          } catch (error) {
+            console.error("Error checking profile status:", error);
+          } finally {
+            setIsProfileLoading(false);
+          }
+        };
+      
+        getOnboardingStatus();
+      }, [user, isLoading, router]);
+
   const mainNavItems = [
     { href: "/", label: "Home", icon: Home },
     { href: "/marketplace", label: "Marketplace", icon: Store },
@@ -327,6 +360,31 @@ export function AppLayout({
                     )}
                   </div>
                 </DropdownMenuItem>
+
+              {role.includes('Founder') && (
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onSelect={() => router.push('/founder-dashboard')}
+                >
+                 <div className="flex items-center">
+                    <TbDashboard className="mr-2 h-4 w-4" />
+                    Founder Dashboard
+                  </div> 
+                </DropdownMenuItem>
+              )}
+
+                {role.includes('Investor') && (
+                <DropdownMenuItem
+                  className="cursor-pointer"
+                  onSelect={() => router.push('/investor-dashboard')}
+                >
+                 <div className="flex items-center">
+                    <TbDashboard className="mr-2 h-4 w-4" />
+                    Investor Dashboard
+                  </div> 
+                </DropdownMenuItem>
+              )}
+
                 <a href="/api/auth/logout">
                   <DropdownMenuItem className="cursor-pointer">
                     <LogOut className="mr-2 h-4 w-4" />
@@ -377,7 +435,7 @@ export function AppLayout({
             <Link href="/" className="flex items-center space-x-2 pr-5">
               <Image
                 src="/onlyFounder_logo.svg"
-                alt="Optimus AI Logo"
+                alt="OnlyFouders Logo"
                 width={160}
                 height={60}
                 className="rounded-md"

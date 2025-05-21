@@ -197,9 +197,11 @@ export default function HomePage() {
       }
     }
 
+  const showBar = !showOnboardingBar && user;
+    
   return (
     <>
-    {!showOnboardingBar && user && (
+    {showBar && (
       <div className="w-full bg-slate-950 text-sm py-2 px-4 relative flex justify-center">
         <div className="flex flex-col md:flex-row items-center gap-1 text-center text-white max-w-screen-md">
           <span className="text-blue-400">Welcome to OnlyFounders!</span>

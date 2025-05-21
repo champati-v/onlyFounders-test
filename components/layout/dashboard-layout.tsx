@@ -1,6 +1,7 @@
 "use client"
 
-import type { ReactNode } from "react"
+import { API_URL } from "@/lib/config"
+import { useEffect, useState, type ReactNode } from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -32,8 +33,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const isInvestorDashboard = pathname?.startsWith("/investor-dashboard")
   const isFounderDashboard = pathname?.startsWith("/founder-dashboard")
-  const { user } = useUser()
+  const [isProfileLoading, setIsProfileLoading] = useState(false);
+  const { user, isLoading} = useUser()
   const name = user?.name
+  const [role, setRole] = useState<string>("");
 
   // Define navigation items for both dashboards
   const investorNavItems = [
@@ -64,6 +67,38 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     }
     return pathname === path || pathname?.startsWith(`${path}/`)
   }
+
+  useEffect(() => {
+          const getOnboardingStatus = async () => {
+            try {
+              if (!user || isLoading) return;
+        
+              setIsProfileLoading(true);
+              const userID = user.sub?.substring(14);
+        
+              const response = await fetch(
+                `${API_URL}/api/profile/get-onboarding-status`,
+                {
+                  method: "GET",
+                  headers: {
+                    "Content-Type": "application/json",
+                    user_id: userID || "",
+                  },
+                }
+              );
+        
+              const data = await response.json();
+              setRole(data.role);
+  
+            } catch (error) {
+              console.error("Error checking profile status:", error);
+            } finally {
+              setIsProfileLoading(false);
+            }
+          };
+        
+          getOnboardingStatus();
+        }, [user, isLoading]);
 
   return (
     <AppLayout className="">
@@ -126,13 +161,24 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <Separator className="bg-purple-800/20 my-4" />
 
               <div className="space-y-1">
-                <Link
-                  href={isInvestorDashboard ? "/founder-dashboard" : "/investor-dashboard"}
-                  className="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-purple-200/70 hover:bg-purple-900/30 hover:text-white transition-colors"
-                >
-                  {isInvestorDashboard ? <Building className="h-4 w-4" /> : <Wallet className="h-4 w-4" />}
-                  <span>{isInvestorDashboard ? "Switch to Founder" : "Switch to Investor"}</span>
-                </Link>
+                {role.includes("Founder") && isInvestorDashboard && (
+                  <Link
+                    href='/founder-dashboard'
+                    className="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-purple-200/70 hover:bg-purple-900/30 hover:text-white transition-colors"
+                  >
+                    <Building className="h-4 w-4" />
+                    <span>Switch To Founder</span>
+                  </Link>
+                )}
+                {role.includes("Investor") && isFounderDashboard && (
+                  <Link
+                    href='/investor-dashboard'
+                    className="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-purple-200/70 hover:bg-purple-900/30 hover:text-white transition-colors"
+                  >
+                    <Building className="h-4 w-4" />
+                    <span>Switch To Investor</span>
+                  </Link>
+                )}
               </div>
             </div>
           </aside>

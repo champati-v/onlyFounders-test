@@ -7,6 +7,15 @@ try {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/campaign/campaigns',
+        permanent: true, 
+      },
+    ]
+  },
   output: "standalone",
   eslint: {
     ignoreDuringBuilds: true,
