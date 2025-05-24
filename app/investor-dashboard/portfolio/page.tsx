@@ -122,7 +122,7 @@ export default function PortfolioPage() {
   // Map API data to match UI structure
   const investments = activeInvestments.investments.map((investment, index) => ({
     id: index.toString(),
-    name: investment.campaignName,
+    name: investment.campaignName || "N/A",
     logo:
       investment.startupLogo || `/placeholder.svg?height=40&width=40&text=${investment.campaignName.substring(0, 2)}`,
     category: investment.category,
@@ -137,9 +137,9 @@ export default function PortfolioPage() {
 
   // Portfolio summary stats from API
   const portfolioStats = {
-    totalInvested: investorStats.totalInvested,
+    totalInvested: investorStats.totalInvested || 0,
     totalValue: investorStats.currentValue || investorStats.totalInvested,
-    totalGrowth: investorStats.roi,
+    totalGrowth: investorStats.roi || 0,
     bestPerforming: {
       name: investorStats.bestPerformingCampaign?.campaignName || "N/A",
       growth: 0, // No growth data in API
@@ -231,8 +231,6 @@ export default function PortfolioPage() {
             </CardContent>
           </Card>
         </div>
-
-        <PortfolioAnalytics />
 
         <div className="space-y-6">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

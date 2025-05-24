@@ -59,9 +59,9 @@ export default function WatchlistPage() {
   }, [user, userLoading, router, toast])
 
   // Map API data to match the UI structure
-  const mappedWatchlistProjects = watchlistData.startups.map((startup, index) => ({
+  const mappedWatchlistProjects = watchlistData?.startups?.map((startup, index) => ({
     id: index.toString(),
-    name: startup.startupName,
+    name: startup.startupName || "N/A",
     logo: "/placeholder.svg?height=40&width=40&text=" + startup.startupName.substring(0, 2),
     category: startup.category,
     stage: startup.stage,

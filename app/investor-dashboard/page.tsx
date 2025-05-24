@@ -283,12 +283,6 @@ export default function InvestorDashboardPage() {
             <TabsTrigger value="portfolio" className="data-[state=active]:bg-black data-[state=active]:text-white">
               Portfolio
             </TabsTrigger>
-            <TabsTrigger value="watchlist" className="data-[state=active]:bg-black data-[state=active]:text-white">
-              Watchlist
-            </TabsTrigger>
-            {/* <TabsTrigger value="analytics" className="data-[state=active]:bg-black data-[state=active]:text-white">
-              Analytics
-            </TabsTrigger> */}
             <TabsTrigger value="quests" className="data-[state=active]:bg-black data-[state=active]:text-white">
               Quests
             </TabsTrigger>
@@ -415,7 +409,7 @@ export default function InvestorDashboardPage() {
                       <Button
                         variant="outline"
                         className="w-full text-white border-purple-800/20 bg-gradient-to-r from-blue-600/10 to-purple-600/10 hover:bg-purple-900/50"
-                        onClick={() => setActiveTab("portfolio")}
+                        onClick={() => router.push("/investor-dashboard/portfolio")}
                       >
                         View All Investments
                       </Button>
@@ -505,68 +499,15 @@ export default function InvestorDashboardPage() {
           <TabsContent value="portfolio">
             <PortfolioAnalytics />
           </TabsContent>
-          <TabsContent value="watchlist">
-            <div className="space-y-4">
-              {watchlistData.startups.map((project, index) => (
-                <div key={index} className="p-3 rounded-lg bg-purple-900/30 border border-purple-800/20">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full overflow-hidden relative">
-                        <Image
-                          src="/placeholder.svg?height=48&width=48"
-                          alt={project.startupName}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-1">
-                          <h4 className="font-medium text-white">{project.startupName}</h4>
-                        </div>
-                        <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/20 text-xs">
-                          {project.category}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-medium text-white">
-                        {project.deadline !== "NA" ? `${new Date(project.deadline).toLocaleDateString()}` : "No deadline"}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-purple-200/70">Raised</span>
-                      <span className="text-white">
-                        {project.totalRaised.toLocaleString()} / {project.fundingTarget.toLocaleString()} USDC
-                      </span>
-                    </div>
-                    <Progress
-                      value={project.fundingTarget > 0 ? (project.totalRaised / project.fundingTarget) * 100 : 0}
-                      className="h-2 bg-purple-900/30"
-                      indicatorClassName="bg-gradient-to-r from-blue-500 to-purple-500"
-                    />
-                  </div>
-
-                  <div className="flex justify-between mt-3">
-                    <Button
-                      variant="outline"
-                      className="text-white border-purple-800/20 bg-purple-900/30 hover:bg-purple-900/50"
-                      asChild
-                    >
-                      <Link href={`/marketplace/project/${project.startupName}`}>View</Link>
-                    </Button>
-                    <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
-                      Invest Now
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </TabsContent>
           <TabsContent value="quests">
-
+            <Card className="bg-gradient-to-br from-indigo-950/50 to-purple-900/30 border-purple-800/20">
+              <CardHeader>
+                <CardTitle className="text-xl text-white">Quests</CardTitle>
+                <CardDescription className="text-purple-200/70">
+                  Quests are coming soon! Stay tuned for exciting challenges and rewards.
+                </CardDescription>
+              </CardHeader>
+             </Card> 
           </TabsContent>
         </Tabs>
       </div>

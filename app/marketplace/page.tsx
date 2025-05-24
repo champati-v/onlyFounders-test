@@ -9,10 +9,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Bookmark, Search, TrendingUp, Users, Calendar, ArrowUpRight, CheckCircle } from "lucide-react"
+import { Bookmark, Search, TrendingUp, Users, Calendar, ArrowUpRight, CheckCircle, Loader2Icon } from "lucide-react"
+import { FaRegBookmark } from "react-icons/fa";
+import { FaBookmark } from "react-icons/fa";
 import { useUser } from "@auth0/nextjs-auth0/client"
 import {useToast} from '../../hooks/use-toast'
 import { useRouter } from "next/navigation"
+import axios from "axios";
 
 
 // Define the startup interface based on the updated API response
@@ -165,15 +168,6 @@ export default function MarketplacePage() {
     fetchStartups()
   }, [])
 
-  // Check if bookmark button should be shown
-  const shouldShowBookmark = () => {
-    // If role is still loading, default to showing the button
-    if (isRoleLoading) return true
-
-    // Hide bookmark for Founders and Service Providers
-    return userRole?.includes("Investor")   
-  }
-
   const handleCreateStartup = () => {
     if(!user){
       toast({
@@ -205,45 +199,6 @@ export default function MarketplacePage() {
 
   return (
     <div>
-      {/* Coming Soon Overlay */}
-            {/* <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/20 backdrop-blur-md">
-              <Card className="w-full max-w-md mx-4 border-purple-800/30 shadow-xl rounded-2xl relative overflow-hidden">
-                        <div
-                          className="absolute inset-0 bg-cover bg-center opacity-40"
-                          style={{ backgroundImage: "url('/coming-soon-card.gif')" }}
-                        />
-              
-                        <CardHeader className="pb-2 text-center relative z-10">
-                          <div className="mx-auto flex items-center justify-center mb-4">
-                            <Image
-                              src="/favicon.svg"
-                              alt="OnlyFounders"
-                              width={75}
-                              height={75}
-                            />
-                          </div>
-                          <CardTitle className="text-2xl md:text-3xl font-bold text-white">
-                            Coming Soon!
-                          </CardTitle>
-                          <CardDescription className="text-white text-lg">
-                            We're building something amazing
-                          </CardDescription>
-                        </CardHeader>
-              
-                        <CardContent className="space-y-6 text-center relative z-10">
-                          <p className="text-gray-300">
-                          A seamless place for founders to showcase startups and for investors to explore funding opportunities easily.
-                          </p>
-                          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                            <Button className="border-purple-800/30 text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                              <Link href="/">Return to Home</Link>
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-            </div> */}
-
-
       <div className="container mx-auto py-8 space-y-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
@@ -456,11 +411,7 @@ export default function MarketplacePage() {
                     <CardFooter className="flex gap-2">
                       <Button
                         asChild
-                        className={
-                          shouldShowBookmark()
-                            ? "flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-                            : "w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-                        }
+                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
                       > 
                         <Button onClick={() => {
                           // if (isLoggedIn) {
@@ -479,13 +430,6 @@ export default function MarketplacePage() {
                           <ArrowUpRight className="ml-1 h-4 w-4" />
                         </Button>
                       </Button>
-
-                      {shouldShowBookmark() && (
-                        <Button variant="outline" className="w-10 p-0 text-gray-400 border-gray-700">
-                          <Bookmark className="h-4 w-4" />
-                          <span className="sr-only">Bookmark</span>
-                        </Button>
-                      )}
                     </CardFooter>
                   </Card>
                 ))}
@@ -627,11 +571,7 @@ export default function MarketplacePage() {
                       <CardFooter className="flex gap-2">
                         <Button
                           asChild
-                          className={
-                            shouldShowBookmark()
-                              ? "flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-                              : "w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-                          }
+                          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
                         >
                           <Button onClick={() => {
                             // if (isLoggedIn) {
@@ -649,13 +589,6 @@ export default function MarketplacePage() {
                             <ArrowUpRight className="ml-1 h-4 w-4" />
                           </Button>
                         </Button>
-
-                        {shouldShowBookmark() && (
-                          <Button variant="outline" className="w-10 p-0 text-gray-400 border-gray-700">
-                            <Bookmark className="h-4 w-4" />
-                            <span className="sr-only">Bookmark</span>
-                          </Button>
-                        )}
                       </CardFooter>
                     </Card>
                   ))}

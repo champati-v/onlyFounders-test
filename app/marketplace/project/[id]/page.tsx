@@ -15,16 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { InvestmentTier } from "@/components/investment-tier";
+import { FaRegBookmark } from "react-icons/fa";
+import { FaBookmark } from "react-icons/fa";
 import {
   ArrowLeft,
   Bookmark,
@@ -48,6 +40,7 @@ import {
   PencilIcon,
   Trash,
   ArrowBigUp,
+  Loader2Icon,
 } from "lucide-react";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import {useToast} from '../../../../hooks/use-toast'
@@ -299,6 +292,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
   const [hasUpvoted, setHasUpvoted] = useState();
   const [upvoteLoading, setUpvoteLoading] = useState(false);
   const [upvoteCount, setUpvoteCount] = useState(0);
+  const [isBookmarkLoading, setIsBookmarkLoading] = useState(false);
   const TokenomicsPieChart = dynamic(() => import("./TokenomicsPieChart"), {
     ssr: false,
   });
@@ -315,44 +309,75 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
   
 
   //api to fetch updates
-  // useEffect(() => {
-  //   const fetchUpdates = async () => {
-  //     try {
-  //       if (!user || !projectId) return;
-  //       const userId = user?.sub?.substring(14);
-  //       const requestBody = { projectId };
-  //       console.log(requestBody);
-  //       const response = await axios.post(
-  //         `${API_URL}/api/profile/get-updates`,
-  //         requestBody,
-  //         {
-  //           headers: {
-  //             "Content-Type": "application/json", // ✅ Correct header
-  //             user_id: userId,
-  //           },
-  //         }
-  //       );
+  useEffect(() => {
+    const fetchUpdates = async () => {
+      try {
+        if (!user || !projectId) return;
+        const userId = user?.sub?.substring(14);
+        const requestBody = { projectId };
+        console.log(requestBody);
+        const response = await axios.post(
+          `${API_URL}/api/profile/get-updates`,
+          requestBody,
+          {
+            headers: {
+              "Content-Type": "application/json", // ✅ Correct header
+              user_id: userId,
+            },
+          }
+        );
 
-  //       if (response.status === 200) {
-  //         const data = await response.data;
-  //         setUpdates(data.updates);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching project ID:", error);
-  //       toast({
-  //         title: "Error",
-  //         description: "Failed to load project ID. Please refresh the page.",
-  //         variant: "destructive",
-  //       });
-  //     }
-  //   };
+        if (response.status === 200) {
+          const data = await response.data;
+          setUpdates(data.updates);
+        }
+      } catch (error) {
+        console.error("Error fetching project ID:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load project ID. Please refresh the page.",
+          variant: "destructive",
+        });
+      }
+    };
 
-  //   fetchUpdates();
-  // }, [projectId]);
+    fetchUpdates();
+  }, [projectId]);
 
   //api to get projectId
 
   //fetch project ID
+
+
+  //api to get watchlist status
+  useEffect(() => {
+    const fetchWatchlistStatus = async () => {
+    if (!user) return;
+    const userId = user?.sub?.substring(14);
+    try{
+        const response = await fetch(
+          `${API_URL}/api/startup/get-watchlist-status/${params.id}`,
+          {
+            method: "GET",
+            headers: {
+              user_id: userId,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          const data = await response.json();
+          setIsBookmarked(data.bookmarked);
+        } else {
+          console.log("Failed to fetch watchlist status");
+        }
+      } catch (error) {
+        console.log("Error fetching watchlist status:", error);
+      }
+    }
+    
+    fetchWatchlistStatus();
+  }, [user, isBookmarkLoading]);
 
   useEffect(() => {
     const fetchProjectId = async () => {
@@ -770,6 +795,45 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
     }
   };
 
+  const handleBookmark = async (startupId: string) => {
+    if (!user) {
+      toast({
+        title: "Message",
+        description: "Please login to bookmark a startup",
+        variant: "destructive",
+      });
+      return;
+    }
+  
+    try {
+      setIsBookmarkLoading(true);
+      const userID = user.sub?.substring(14);
+      
+      const response = await axios.post(
+        `${API_URL}/api/startup/add-to-watchList`,
+        { projectId: startupId },
+        {
+          headers: {
+            user_id: userID,
+          },
+        }
+      );
+  
+      if (response.status === 200) {
+        const message = await response.data.message;
+        toast({
+          title: "Success",
+          description: message,
+          variant: "default",
+        });
+      }
+    } catch (error) {
+      console.log("Error bookmarking startup:", error);
+    } finally {
+      setIsBookmarkLoading(false);
+    }
+  };
+
   const handleMilestoneComplete = async (roadmapId, index) => {
     try {
       if (!user || !projectId) return;
@@ -798,17 +862,6 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
     setShowInvestDialog(false);
     // Here you would typically handle the investment process
   };
-
-  // if (loading || !user) {
-  //   return (
-  //     <div className="flex items-center justify-center min-h-screen">
-  //       <div className="text-center">
-  //         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
-  //         <p className="text-gray-400">Loading project details...</p>
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   return (
     <div className="container mx-auto space-y-8 py-8">
@@ -1564,50 +1617,15 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
                 >
                   Invest Now
                 </Button>
-                {/* <Dialog open={showInvestDialog} onOpenChange={setShowInvestDialog}>
-                  <DialogTrigger asChild>
-                    <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border">
-                      Invest Now
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="bg-gray-900 border-gray-800 text-white">
-                    <DialogHeader>
-                      <DialogTitle>Invest in {project.title}</DialogTitle>
-                      <DialogDescription className="text-gray-400">
-                        Choose your investment amount and complete the transaction
-                      </DialogDescription>
-                    </DialogHeader>
-
-                    <InvestmentTier onInvest={handleInvest} />
-
-                    <DialogFooter>
-                      <Button
-                        variant="outline"
-                        onClick={() => setShowInvestDialog(false)}
-                        className="border-gray-700 text-white"
-                      >
-                        Cancel
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog> */}
-
                 <Button
                   variant="outline"
                   className="w-full border-gray-800 text-white"
-                  onClick={() => setIsBookmarked(!isBookmarked)}
+                  onClick={() => handleBookmark(project.id)}
                 >
-                  {isBookmarked ? (
                     <>
-                      <Bookmark className="mr-2 h-4 w-4 fill-blue-400 text-blue-400" />
-                      Bookmarked
+                      {isBookmarked? <FaBookmark className="mr-2 h-4 w-4" />  : <FaRegBookmark className="mr-2 h-4 w-4" />}
+                      {isBookmarkLoading ? <Loader2Icon className='w-4 h-4 animate-spin'/> : (isBookmarked ? "Remove from watchlist" : "Add to WatchList")}
                     </>
-                  ) : (
-                    <>
-                      <Bookmark className="mr-2 h-4 w-4" />
-                      Add to Watchlist
-                    </>
-                  )}
                 </Button>
 
                 <div className="flex items-center justify-center gap-3">

@@ -151,7 +151,7 @@ export default function InvestorsPage() {
             <CardHeader className="pb-2">
               <CardDescription className="text-purple-200/70">Investor Types</CardDescription>
               <CardTitle className="text-2xl text-white">
-                {projectStats.individualInvestors} / {projectStats.institutionalInvestor}
+                Coming Soon...
               </CardTitle>
             </CardHeader>
             <CardContent>

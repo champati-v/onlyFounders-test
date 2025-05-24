@@ -28,7 +28,6 @@ export default function ProfilePage() {
   return (
     <>
       {/* <Header /> */}
-      <AppLayout>
       <div className="container mx-auto py-8">
         {/* Breadcrumb navigation */}
         <div className="flex items-center text-sm text-gray-400 mb-6">
@@ -244,7 +243,6 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
-      </AppLayout>
     </>
   )
 }

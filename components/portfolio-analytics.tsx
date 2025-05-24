@@ -163,47 +163,12 @@ export function PortfolioAnalytics() {
               </div>
             </div>
 
-            <div className="bg-[#1F2A3D] rounded-lg border border-[#313E54] p-4 h-[350px]">
+            <div className="bg-[#19212f] rounded-lg border border-[#313E54] p-4 h-[350px]">
               <h3 className="text-white font-medium mb-4">Portfolio Performance</h3>
-              <ChartContainer
-                config={{
-                  roi: {
-                    label: "ROI (%)",
-                    color: "hsl(var(--chart-1))",
-                  },
-                  amount: {
-                    label: "Portfolio Value",
-                    color: "hsl(var(--chart-2))",
-                  },
-                }}
-              >
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={performanceData} margin={{ top: 5, right: 30, left: 20, bottom: 25 }}>
-                    <XAxis dataKey="month" stroke="#A3A8AF" />
-                    <YAxis yAxisId="left" stroke="#A3A8AF" />
-                    <YAxis yAxisId="right" orientation="right" stroke="#A3A8AF" />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Line
-                      yAxisId="left"
-                      type="monotone"
-                      dataKey="roi"
-                      stroke="var(--color-roi)"
-                      strokeWidth={2}
-                      dot={{ r: 4, strokeWidth: 2 }}
-                      activeDot={{ r: 6, strokeWidth: 2 }}
-                    />
-                    <Line
-                      yAxisId="right"
-                      type="monotone"
-                      dataKey="amount"
-                      stroke="var(--color-amount)"
-                      strokeWidth={2}
-                      dot={{ r: 4, strokeWidth: 2 }}
-                      activeDot={{ r: 6, strokeWidth: 2 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </ChartContainer>
+              <div className="flex flex-col items-center justify-center h-full">
+                <span className="text-3xl font-semibold text-white mb-2">Coming Soon...</span>
+                <span className="text-[#A3A8AF] text-sm">Portfolio performance charts are on the way!</span>
+              </div>
             </div>
           </TabsContent>
 
@@ -211,7 +176,7 @@ export function PortfolioAnalytics() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mx-auto">
               <div className="bg-[#1F2A3D] rounded-lg border border-[#313E54] p-4 h-[350px]">
                 <h3 className="text-white font-medium mb-4">Portfolio Allocation by Sector</h3>
-                <ResponsiveContainer width="100%" height="100%">
+                {/* <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie
                       data={allocationData}
@@ -229,13 +194,17 @@ export function PortfolioAnalytics() {
                     </Pie>
                     <Tooltip formatter={(value) => [`${value}%`, "Allocation"]} labelFormatter={(name) => name} />
                   </PieChart>
-                </ResponsiveContainer>
+                </ResponsiveContainer> */}
+                 <div className="flex flex-col items-center justify-center h-full">
+                <span className="text-3xl font-semibold text-white mb-2">Coming Soon...</span>
+                <span className="text-[#A3A8AF] text-sm">Portfolio Allocation charts are on the way!</span>
+              </div>
               </div>
 
               <div className="bg-[#1F2A3D] rounded-lg border border-[#313E54] p-4">
                 <h3 className="text-white font-medium mb-4">Allocation Breakdown</h3>
                 <div className="space-y-4">
-                  {allocationData.map((item, index) => (
+                  {/* {allocationData.map((item, index) => (
                     <div key={index} className="space-y-2">
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2">
@@ -254,17 +223,20 @@ export function PortfolioAnalytics() {
                         ></div>
                       </div>
                     </div>
-                  ))}
+                  ))} */}
+                  <div className="flex flex-col items-center justify-center h-full">
+                <span className="text-3xl font-semibold text-white mb-2">Coming Soon...</span>
+                <span className="text-[#A3A8AF] text-sm">Allocation Breakdown on the way!</span>
+              </div>
                 </div>
 
                 <div className="mt-6 pt-4 border-t border-[#313E54]">
                   <div className="flex justify-between items-center">
                     <span className="text-[#A3A8AF]">Diversification Score</span>
-                    <span className="text-white font-medium">7.5/10</span>
+                    <span className="text-white font-medium"></span> { /* Placeholder for diversification score */}
                   </div>
                   <p className="text-xs text-[#A3A8AF] mt-1">
-                    Your portfolio has good diversification across sectors, but could benefit from more exposure to
-                    Infrastructure projects.
+                    Diversification Score will be out soon!
                   </p>
                 </div>
               </div>
@@ -274,7 +246,7 @@ export function PortfolioAnalytics() {
           <TabsContent value="activity" className="space-y-4">
             <div className="bg-[#1F2A3D] rounded-lg border border-[#313E54] p-4 h-[350px]">
               <h3 className="text-white font-medium mb-4">Investment Activity</h3>
-              <ChartContainer
+              {/* <ChartContainer
                 config={{
                   investments: {
                     label: "Number of Investments",
@@ -296,7 +268,11 @@ export function PortfolioAnalytics() {
                     <Bar yAxisId="right" dataKey="volume" fill="var(--color-volume)" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
-              </ChartContainer>
+              </ChartContainer> */}
+               <div className="flex flex-col items-center justify-center h-full">
+                <span className="text-3xl font-semibold text-white mb-2">Coming Soon...</span>
+                <span className="text-[#A3A8AF] text-sm">Investment Activity on the way!</span>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mx-auto">

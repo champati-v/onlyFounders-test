@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
   Dialog,
   DialogContent,
@@ -27,9 +26,6 @@ import {
   Share2,
   Edit,
   Trash2,
-  ImageIcon,
-  FileUp,
-  Send,
 } from "lucide-react"
 import { useUser } from "@auth0/nextjs-auth0/client"
 import Image from 'next/image';
@@ -421,10 +417,6 @@ export default function UpdatesPage() {
                           {update.commentCount}
                         </Button>
                       </div>
-                      <Button variant="ghost" className="text-[#A3A8AF] hover:text-white">
-                        <Share2 className="mr-2 h-4 w-4" />
-                        Share
-                      </Button>
                     </div>
                   </CardFooter>
                 </Card>
@@ -436,4 +428,3 @@ export default function UpdatesPage() {
     </DashboardLayout>
   )
 }
-

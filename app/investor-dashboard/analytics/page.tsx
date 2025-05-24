@@ -192,7 +192,7 @@ export default function AnalyticsPage() {
               </CardHeader>
               <CardContent>
                 <div className="h-[350px]">
-                  <ChartContainer
+                  {/* <ChartContainer
                     config={{
                       roi: {
                         label: "ROI (%)",
@@ -231,7 +231,11 @@ export default function AnalyticsPage() {
                         />
                       </LineChart>
                     </ResponsiveContainer>
-                  </ChartContainer>
+                  </ChartContainer> */}
+                   <div className="flex flex-col items-center justify-center h-full">
+                    <span className="text-3xl font-semibold text-white mb-2">Coming Soon...</span>
+                    <span className="text-[#A3A8AF] text-sm">Portfolio Performance on the way!</span>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -245,7 +249,7 @@ export default function AnalyticsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="h-[350px]">
-                    <ResponsiveContainer width="100%" height="100%">
+                    {/* <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
                           data={allocationData}
@@ -264,7 +268,11 @@ export default function AnalyticsPage() {
                         <Tooltip formatter={(value) => [`${value}%`, "Allocation"]} labelFormatter={(name) => name} />
                         <Legend />
                       </PieChart>
-                    </ResponsiveContainer>
+                    </ResponsiveContainer> */}
+                     <div className="flex flex-col items-center justify-center h-full">
+                <span className="text-3xl font-semibold text-white mb-2">Coming Soon...</span>
+                <span className="text-[#A3A8AF] text-sm">Portfolio Allocation by Sector on the way!</span>
+              </div>
                   </div>
                 </CardContent>
               </Card>
@@ -275,7 +283,7 @@ export default function AnalyticsPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {allocationData.map((item, index) => (
+                    {/* {allocationData.map((item, index) => (
                       <div key={index} className="space-y-2">
                         <div className="flex justify-between items-center">
                           <div className="flex items-center gap-2">
@@ -294,17 +302,20 @@ export default function AnalyticsPage() {
                           ></div>
                         </div>
                       </div>
-                    ))}
+                    ))} */}
+                     <div className="flex flex-col items-center justify-center h-full">
+                <span className="text-3xl font-semibold text-white mb-2">Coming Soon...</span>
+                <span className="text-[#A3A8AF] text-sm">Allocation Breakdown on the way!</span>
+              </div>
                   </div>
 
                   <div className="mt-6 pt-4 border-t border-[#313E54]">
                     <div className="flex justify-between items-center">
                       <span className="text-[#A3A8AF]">Diversification Score</span>
-                      <span className="text-white font-medium">7.5/10</span>
+                      <span className="text-white font-medium"></span>
                     </div>
                     <p className="text-xs text-[#A3A8AF] mt-1">
-                      Your portfolio has good diversification across sectors, but could benefit from more exposure to
-                      Infrastructure projects.
+                      Diversification score will be out soon!
                     </p>
                   </div>
                 </CardContent>
@@ -322,7 +333,7 @@ export default function AnalyticsPage() {
               </CardHeader>
               <CardContent>
                 <div className="h-[350px]">
-                  <ChartContainer
+                  {/* <ChartContainer
                     config={{
                       investments: {
                         label: "Number of Investments",
@@ -350,7 +361,12 @@ export default function AnalyticsPage() {
                         <Bar yAxisId="right" dataKey="volume" fill="var(--color-volume)" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>
-                  </ChartContainer>
+                  </ChartContainer> */}
+
+                   <div className="flex flex-col items-center justify-center h-full">
+                <span className="text-3xl font-semibold text-white mb-2">Coming Soon...</span>
+                <span className="text-[#A3A8AF] text-sm">Investment Activity on the way!</span>
+              </div>
                 </div>
               </CardContent>
             </Card>

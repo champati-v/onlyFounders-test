@@ -147,18 +147,18 @@ export default function FounderDashboardPage() {
 
           const formattedMilestones: FormattedMilestone[] = (data.upcomingMilestones as MilestoneApiResponse[]).slice(0, 3).map((milestone) => {
             // Calculate progress based on requirements completion
-            const totalRequirements = milestone.requirements.length
-            const completedRequirements = milestone.requirements.filter((req) => req.status === "complete").length
-            const progress = totalRequirements > 0 ? Math.round((completedRequirements / totalRequirements) * 100) : 0
+            const totalRequirements = milestone.requirements.length || 0
+            const completedRequirements = milestone.requirements.filter((req) => req.status === "complete").length || 0
+            const progress = totalRequirements > 0 ? Math.round((completedRequirements / totalRequirements) * 100) : 0 || 0
 
             return {
               id: milestone.milestoneId,
-              title: milestone.name,
-              description: milestone.description,
-              progress: progress,
+              title: milestone.name || "Nil",
+              description: milestone.description || "No description provided",
+              progress: progress || 0,
               status:
                 milestone.milestoneStatus === "complete" ? "completed" : progress > 0 ? "in_progress" : "not_started",
-              fundPercentage: milestone.fundPercentage,
+              fundPercentage: milestone.fundPercentage || 0,
             }
           })
 
@@ -295,6 +295,10 @@ export default function FounderDashboardPage() {
                   <div className="relative z-10">
                     <LineChart className="h-12 w-12 text-purple-200/70 mx-auto mb-4" />
                     <p className="text-purple-200/70">Fundraising progress over time</p>
+                  </div>
+
+                   <div className="absolute inset-0 bg-black/70 flex items-center justify-center z-20">
+                    <span className="text-white text-4xl font-semibold">Coming Soon...</span>
                   </div>
                 </div>
 
