@@ -32,12 +32,14 @@ import {
   Send,
 } from "lucide-react"
 import { useUser } from "@auth0/nextjs-auth0/client"
+import Image from 'next/image';
 
 export default function UpdatesPage() {
   const [activeTab, setActiveTab] = useState("all")
   const [updates, setUpdates] = useState([])
   const [loading, setLoading] = useState(true)
   const { user, error, isLoading } = useUser()
+  const [fetchingUpdates, setFetchingUpdates] = useState(true)
 
   const [formData, setFormData] = useState({
     title: "",
@@ -122,10 +124,6 @@ export default function UpdatesPage() {
         body: formDataToSend,
       });
 
-      // if (!response.ok) {
-      //   throw new Error(`Error: ${response.status}`);
-      // }
-
       const result = await response.json();
 
       // Refresh the updates list
@@ -170,11 +168,12 @@ export default function UpdatesPage() {
         console.error("Error fetching updates:", error)
       } finally {
         setLoading(false)
+        setFetchingUpdates(false)
       }
     }
 
     fetchUpdates()
-  }, [user, isLoading])
+  }, [user])
 
   // Filter updates based on active tab
   const filteredUpdates =
@@ -336,7 +335,7 @@ export default function UpdatesPage() {
           </TabsList>
 
           <div className="space-y-6">
-            {loading ? (
+            {fetchingUpdates ? (
               <Card className="bg-gradient-to-br from-indigo-950/50 to-purple-900/30 border-purple-800/20">
                 <CardContent className="py-8">
                   <p className="text-center text-[#A3A8AF]">Loading updates...</p>
@@ -404,13 +403,7 @@ export default function UpdatesPage() {
                         <h4 className="text-sm font-medium text-white">Attachments</h4>
                         <div className="flex flex-wrap gap-2">
                           {update.attachments.map((attachment, index) => (
-                            <div
-                              key={attachment._id || index}
-                              className="flex items-center gap-2 p-2 rounded-md bg-[#1F2A3D] border border-[#313E54]"
-                            >
-                              <ImageIcon className="h-4 w-4 text-blue-400" />
-                              <span className="text-sm text-white">{attachment.file_name}</span>
-                            </div>
+                              <Image src={attachment.file_url} alt={attachment.name} width={50} height={50} className="rounded-md" />
                           ))}
                         </div>
                       </div>
@@ -439,119 +432,6 @@ export default function UpdatesPage() {
             )}
           </div>
         </Tabs>
-
-        {/* <Card className="bg-gradient-to-br from-indigo-950/50 to-purple-900/30 border-purple-800/20">
-          <CardHeader>
-            <CardTitle className="text-xl text-white">Investor Comments</CardTitle>
-            <CardDescription className="text-purple-200/70">Recent comments from your investors</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-4">
-              <div className="flex gap-4">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src="/placeholder.svg?height=40&width=40&text=AT" alt="Alex Thompson" />
-                  <AvatarFallback>AT</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1">
-                      <h4 className="font-medium text-white">Alex Thompson</h4>
-                      <Badge className="bg-blue-900/30 text-blue-400 border-blue-800">Investor</Badge>
-                    </div>
-                    <span className="text-xs text-[#A3A8AF]">2 hours ago</span>
-                  </div>
-                  <p className="text-[#A3A8AF]">
-                    Great progress on the mobile app! I've been testing it and the UI is very intuitive. Looking forward
-                    to the full release.
-                  </p>
-                  <div className="flex items-center gap-4 pt-1">
-                    <Button variant="ghost" size="sm" className="h-8 text-[#A3A8AF] hover:text-white">
-                      <ThumbsUp className="mr-2 h-3 w-3" />
-                      12
-                    </Button>
-                    <Button variant="ghost" size="sm" className="h-8 text-[#A3A8AF] hover:text-white">
-                      Reply
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src="/placeholder.svg?height=40&width=40&text=SC" alt="Sarah Chen" />
-                  <AvatarFallback>SC</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1">
-                      <h4 className="font-medium text-white">Sarah Chen</h4>
-                      <Badge className="bg-blue-900/30 text-blue-400 border-blue-800">Investor</Badge>
-                    </div>
-                    <span className="text-xs text-[#A3A8AF]">5 hours ago</span>
-                  </div>
-                  <p className="text-[#A3A8AF]">
-                    The partnership with BlockChain Solutions is a smart move. Their cross-chain technology will
-                    definitely give you an edge in the market.
-                  </p>
-                  <div className="flex items-center gap-4 pt-1">
-                    <Button variant="ghost" size="sm" className="h-8 text-[#A3A8AF] hover:text-white">
-                      <ThumbsUp className="mr-2 h-3 w-3" />8
-                    </Button>
-                    <Button variant="ghost" size="sm" className="h-8 text-[#A3A8AF] hover:text-white">
-                      Reply
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src="/placeholder.svg?height=40&width=40&text=QV" alt="Quantum Ventures" />
-                  <AvatarFallback>QV</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1">
-                      <h4 className="font-medium text-white">Quantum Ventures</h4>
-                      <Badge className="bg-purple-900/30 text-purple-400 border-purple-800">Institutional</Badge>
-                    </div>
-                    <span className="text-xs text-[#A3A8AF]">1 day ago</span>
-                  </div>
-                  <p className="text-[#A3A8AF]">
-                    The Q1 financials look solid. We're impressed with the reduction in user acquisition costs while
-                    improving retention. Keep up the good work!
-                  </p>
-                  <div className="flex items-center gap-4 pt-1">
-                    <Button variant="ghost" size="sm" className="h-8 text-[#A3A8AF] hover:text-white">
-                      <ThumbsUp className="mr-2 h-3 w-3" />
-                      15
-                    </Button>
-                    <Button variant="ghost" size="sm" className="h-8 text-[#A3A8AF] hover:text-white">
-                      Reply
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter className="border-t border-[#313E54] pt-4">
-            <div className="flex items-center gap-4 w-full">
-              <Avatar className="h-10 w-10">
-                <AvatarImage src="/placeholder.svg?height=40&width=40" alt="Your Avatar" />
-                <AvatarFallback>YA</AvatarFallback>
-              </Avatar>
-              <div className="flex-1 relative">
-                <Input
-                  placeholder="Write a reply..."
-                  className="pr-10 bg-[#1F2A3D] border border-[#313E54] rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <Button className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 p-0 bg-transparent hover:bg-transparent text-blue-400">
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </CardFooter>
-        </Card> */}
       </div>
     </DashboardLayout>
   )

@@ -30,7 +30,7 @@ export default function FounderDashboardPage() {
     InvesterEngagement: "Low",
     institutionalInvestor: 0,
     individualInvestors: 0,
-    activeCampaignfundingTarget: 0, // Keeping this for UI calculations
+    activeCampaignfundingTarget: 0,
   })
 
   const [loading, setLoading] = useState(true)
@@ -46,59 +46,6 @@ export default function FounderDashboardPage() {
   
   const [upcomingMilestones, setUpcomingMilestones] = useState<FormattedMilestone[]>([])
 
-  // const recentInvestors = [
-  //   {
-  //     id: "1",
-  //     name: "Alex Thompson",
-  //     avatar: "/placeholder.svg?height=48&width=48",
-  //     amount: 25000,
-  //     date: "Mar 25, 2025",
-  //     verified: true,
-  //   },
-  //   {
-  //     id: "2",
-  //     name: "Sarah Chen",
-  //     avatar: "/placeholder.svg?height=48&width=48",
-  //     amount: 15000,
-  //     date: "Mar 22, 2025",
-  //     verified: true,
-  //   },
-  //   {
-  //     id: "3",
-  //     name: "Michael Rodriguez",
-  //     avatar: "/placeholder.svg?height=48&width=48",
-  //     amount: 30000,
-  //     date: "Mar 18, 2025",
-  //     verified: false,
-  //   },
-  // ]
-
-  // const upcomingMilestones = [
-  //   {
-  //   id: "1",
-  //   title: "Mobile App Beta",
-  //   description: "Launch beta version of mobile app with core features",
-  //   dueDate: "Apr 30, 2025",
-  //   progress: 65,
-  //   status: "in_progress",
-  //   },
-  //   {
-  //   id: "2",
-  //   title: "Security Audit",
-  //   description: "Complete third-party security audit of platform",
-  //   dueDate: "May 15, 2025",
-  //   progress: 30,
-  //   status: "in_progress",
-  //   },
-  //   {
-  //   id: "3",
-  //   title: "Mainnet Launch",
-  //   description: "Full production launch on mainnet",
-  //   dueDate: "Jun 30, 2025",
-  //   progress: 10,
-  //   status: "not_started",
-  //   },
-  // ]
 
   useEffect(() => {
     const fetchFounderStats = async () => {
@@ -124,13 +71,9 @@ export default function FounderDashboardPage() {
             user_id: userId, // Using Auth0 user ID
           },
           body: JSON.stringify({
-            profileId: userId, // This should be dynamic in a real app
+            profileId: userId,
           }),
         })
-
-        // if (!response.ok) {
-        //   throw new Error("Failed to fetch founder stats")
-        // }
 
         const data = await response.json()
         setProjectStats({
@@ -138,7 +81,6 @@ export default function FounderDashboardPage() {
         })
       } catch (err) {
         console.error("Error fetching founder stats:", err)
-        // setError(err.message)
       } finally {
         setLoading(false)
       }
@@ -174,10 +116,6 @@ export default function FounderDashboardPage() {
             profileId: userId,
           }),
         })
-
-        // if (!response.ok) {
-        //   throw new Error("Failed to fetch upcoming milestones")
-        // }
 
         const data = await response.json()
 
@@ -267,15 +205,6 @@ export default function FounderDashboardPage() {
           <div>
             <h1 className="text-3xl font-bold text-white">Founder Dashboard</h1>
             <p className="text-purple-200/70">Manage your project and track fundraising progress</p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Link href="/founder-dashboard/updates">
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
-                <FileText className="mr-2 h-4 w-4" />
-                Post Update
-              </Button>
-            </Link>
           </div>
         </div>
 
@@ -410,26 +339,6 @@ export default function FounderDashboardPage() {
                       </div>
 
                       <p className="text-sm text-purple-200/70 mb-2 line-clamp-2">{milestone.description}</p>
-
-                      {/* <div className="space-y-1.5">
-                        <div className="flex justify-between text-xs">
-                          <span className="text-purple-200/70">Progress</span>
-                          <span className="text-purple-200/70">{milestone.progress}%</span>
-                        </div>
-                        <Progress
-                          value={milestone.progress}
-                          className="h-1.5 bg-purple-900/30"
-                          indicatorClassName={`
-                            ${
-                              milestone.status === "completed"
-                                ? "bg-green-500"
-                                : milestone.status === "in_progress"
-                                  ? "bg-blue-500"
-                                  : "bg-purple-500"
-                            }
-                          `}
-                        />
-                      </div> */}
                     </div>
                   ))
                 ) : loading ? (

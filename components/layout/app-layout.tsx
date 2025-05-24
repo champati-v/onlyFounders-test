@@ -1,6 +1,6 @@
 "use client";
 
-import { API_URL } from '@/lib/config';
+import { API_URL } from "@/lib/config";
 import { type ReactNode, useState, useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
@@ -39,7 +39,7 @@ import {
 import { HiOutlineSpeakerphone } from "react-icons/hi";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useAccount } from "wagmi"
+import { useAccount } from "wagmi";
 import axios from "axios";
 import { useToast } from "../ui/use-toast";
 import {
@@ -52,7 +52,7 @@ import {
 } from "../ui/navigation-menu";
 import LoginButton from "../ocidLogin-button";
 import { useOCAuth } from "@opencampus/ocid-connect-js";
-import { TbDashboard } from 'react-icons/tb';
+import { TbDashboard } from "react-icons/tb";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -186,23 +186,20 @@ export function AppLayout({
 
           setIsSent(true);
 
-          const response = await fetch(
-            `${API_URL}/api/auth/register-user`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
+          const response = await fetch(`${API_URL}/api/auth/register-user`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              userInput: {
+                username: user.given_name || "Unknown User",
+                email: user.email,
+                user_id: trimmedUserId,
+                walletAddress: " ",
               },
-              body: JSON.stringify({
-                userInput: {
-                  username: user.given_name || "Unknown User",
-                  email: user.email,
-                  user_id: trimmedUserId,
-                  walletAddress: " ",
-                },
-              }),
-            }
-          );
+            }),
+          });
 
           if (response.ok) {
             console.log("✅ User data sent successfully!");
@@ -236,57 +233,48 @@ export function AppLayout({
   }, []);
 
   useEffect(() => {
-        const getOnboardingStatus = async () => {
-          try {
-            if (!user || isLoading) return;
-      
-            setIsProfileLoading(true);
-            const userID = user.sub?.substring(14);
-      
-            const response = await fetch(
-              `${API_URL}/api/profile/get-onboarding-status`,
-              {
-                method: "GET",
-                headers: {
-                  "Content-Type": "application/json",
-                  user_id: userID || "",
-                },
-              }
-            );
-      
-            const data = await response.json();
-            setRole(data.role);
+    const getOnboardingStatus = async () => {
+      try {
+        if (!user || isLoading) return;
 
-          } catch (error) {
-            console.error("Error checking profile status:", error);
-          } finally {
-            setIsProfileLoading(false);
+        setIsProfileLoading(true);
+        const userID = user.sub?.substring(14);
+
+        const response = await fetch(
+          `${API_URL}/api/profile/get-onboarding-status`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              user_id: userID || "",
+            },
           }
-        };
-      
-        getOnboardingStatus();
-      }, [user, isLoading, router]);
+        );
+
+        const data = await response.json();
+        setRole(data.role);
+      } catch (error) {
+        console.error("Error checking profile status:", error);
+      } finally {
+        setIsProfileLoading(false);
+      }
+    };
+
+    getOnboardingStatus();
+  }, [user, isLoading, router]);
 
   const mainNavItems = [
     { href: "/", label: "Home", icon: Home },
     { href: "/marketplace", label: "Marketplace", icon: Store },
-    { href: "/campaign/campaigns", label: "Campaigns", icon: HiOutlineSpeakerphone },
+    {
+      href: "/campaign/campaigns",
+      label: "Campaigns",
+      icon: HiOutlineSpeakerphone,
+    },
     { href: "/network", label: "Network", icon: Users },
     { href: "/resources", label: "Resources", icon: BookOpen },
     { href: "/quests", label: "Quests", icon: Trophy },
   ];
-
-  const dashboardNavItems = [
-    { href: "/", label: "Investor Dashboard", icon: Wallet },
-    { href: "/", label: "Founder Dashboard", icon: Building },
-  ];
-
-  const isActive = (path: string) => {
-    if (path === "/") {
-      return pathname === "/";
-    }
-    return pathname === path || pathname.startsWith(`${path}/`);
-  };
 
   // Render auth-related UI elements based on loading state
   const renderAuthUI = () => {
@@ -303,34 +291,32 @@ export function AppLayout({
     return (
       <>
         <div className="hidden md:flex items-center gap-2">
-        {user ? (
-          <ConnectButton.Custom>
-          {({ account, openConnectModal, openAccountModal, mounted }) => {
-            const connected = mounted && account;
-            return (
-              <button
-                onClick={
-                  connected ? openAccountModal : openConnectModal
-                }
-                className="flex items-center justify-center rounded-md w-full bg-gradient-to-r px-2 py-1.5 from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-              >
-                <Wallet className="mr-2 h-4 w-4" />
-                <span className="block md:hidden">
-                  {connected
-                    ? `${address?.slice(0, 6)}...${address?.slice(-4)}`
-                    : "Connect"}
-                </span>
-                <span className="hidden md:block">
-                  {connected
-                    ? `${address?.slice(0, 6)}...${address?.slice(-4)}`
-                    : "Connect Wallet"}
-                </span>
-              </button>
-            );
-          }}
-        </ConnectButton.Custom>
-        ) : null}
-        
+          {user ? (
+            <ConnectButton.Custom>
+              {({ account, openConnectModal, openAccountModal, mounted }) => {
+                const connected = mounted && account;
+                return (
+                  <button
+                    onClick={connected ? openAccountModal : openConnectModal}
+                    className="flex items-center justify-center rounded-md w-full bg-gradient-to-r px-2 py-1.5 from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                  >
+                    <Wallet className="mr-2 h-4 w-4" />
+                    <span className="block md:hidden">
+                      {connected
+                        ? `${address?.slice(0, 6)}...${address?.slice(-4)}`
+                        : "Connect"}
+                    </span>
+                    <span className="hidden md:block">
+                      {connected
+                        ? `${address?.slice(0, 6)}...${address?.slice(-4)}`
+                        : "Connect Wallet"}
+                    </span>
+                  </button>
+                );
+              }}
+            </ConnectButton.Custom>
+          ) : null}
+
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -350,7 +336,7 @@ export function AppLayout({
                 <DropdownMenuSeparator className="bg-gray-800" />
                 <DropdownMenuItem
                   className="cursor-pointer"
-                  onSelect={() => router.push('/profile-page/combined')}
+                  onSelect={() => router.push("/profile-page/combined")}
                 >
                   <div className="flex items-center">
                     <Shield className="mr-2 h-4 w-4" />
@@ -361,29 +347,29 @@ export function AppLayout({
                   </div>
                 </DropdownMenuItem>
 
-              {role.includes('Founder') && (
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onSelect={() => router.push('/founder-dashboard')}
-                >
-                 <div className="flex items-center">
-                    <TbDashboard className="mr-2 h-4 w-4" />
-                    Founder Dashboard
-                  </div> 
-                </DropdownMenuItem>
-              )}
+                {role.includes("Founder") && (
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onSelect={() => router.push("/founder-dashboard")}
+                  >
+                    <div className="flex items-center">
+                      <TbDashboard className="mr-2 h-4 w-4" />
+                      Founder Dashboard
+                    </div>
+                  </DropdownMenuItem>
+                )}
 
-                {role.includes('Investor') && (
-                <DropdownMenuItem
-                  className="cursor-pointer"
-                  onSelect={() => router.push('/investor-dashboard')}
-                >
-                 <div className="flex items-center">
-                    <TbDashboard className="mr-2 h-4 w-4" />
-                    Investor Dashboard
-                  </div> 
-                </DropdownMenuItem>
-              )}
+                {role.includes("Investor") && (
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onSelect={() => router.push("/investor-dashboard")}
+                  >
+                    <div className="flex items-center">
+                      <TbDashboard className="mr-2 h-4 w-4" />
+                      Investor Dashboard
+                    </div>
+                  </DropdownMenuItem>
+                )}
 
                 <a href="/api/auth/logout">
                   <DropdownMenuItem className="cursor-pointer">
@@ -403,14 +389,6 @@ export function AppLayout({
                   Login
                 </Button>
               </a>
-              {/* <a href="/early-access">
-              <Button
-                className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-                variant="outline"
-              >
-               Early Access
-              </Button>
-            </a> */}
             </div>
           )}
         </div>
@@ -434,74 +412,27 @@ export function AppLayout({
           <div className="flex items-center gap-4 md:gap-4">
             <Link href="/" className="flex items-center space-x-2 pr-5">
               <Image
-                src="/onlyFounder_logo.svg"
+                src="https://f3ai.blob.core.windows.net/frontend-picture-storage/onlyFounder_logo.svg"
                 alt="OnlyFouders Logo"
                 width={160}
                 height={60}
                 className="rounded-md"
+                loading="lazy"
               />
             </Link>
 
             <nav className="hidden md:flex items-center gap-6">
-              {/* {mainNavItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center text-sm font-medium transition-colors hover:text-primary",
-                    isActive(item.href) ? "text-white" : "text-muted-foreground",
-                  )}
-                >
-                  {item.label}
-                </Link>
-              ))} */}
-
               <NavigationMenu>
                 <NavigationMenuList className="flex gap-2">
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger className="bg-transparent">
-                      Marketplace
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-2">
-                        <span className="row-span-3">
-                          <NavigationMenuLink asChild>
-                            <a
-                              className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-indigo-500/50 to-purple-500/50 p-6 no-underline outline-none focus:shadow-md"
-                              href="/marketplace"
-                            >
-                              <div className="mb-2 mt-4 text-lg font-medium text-white">
-                                Startup Bazaar
-                              </div>
-                              <p className="text-sm leading-tight text-white/90">
-                                Where dreams are sold and wallets are emptied
-                              </p>
-                            </a>
-                          </NavigationMenuLink>
-                        </span>
-                        <a
-                          href="/marketplace"
-                          title="Hot Right Now"
-                          className="p-2 rounded-md hover:cursor-pointer hover:bg-slate-900"
-                        >
-                          Startups that investors are fighting over
-                        </a>
-                        <a
-                          href="/marketplace"
-                          title="Fresh Meat"
-                          className="p-2 rounded-md hover:cursor-pointer hover:bg-slate-900"
-                        >
-                          Newly hatched startups seeking funding
-                        </a>
-                        <a
-                          href="/marketplace"
-                          title="Categories"
-                          className="p-2 rounded-md hover:cursor-pointer hover:bg-slate-900"
-                        >
-                          From "Actually Useful" to "Pure Speculation"
-                        </a>
-                      </div>
-                    </NavigationMenuContent>
+                    <NavigationMenuLink className="bg-transparent" asChild>
+                      <a
+                        href="/marketplace"
+                        className="py-2.5 px-3 text-[15px] rounded-md hover:cursor-pointer hover:bg-gray-800"
+                      >
+                        Marketplace
+                      </a>
+                    </NavigationMenuLink>
                   </NavigationMenuItem>
 
                   <NavigationMenuItem>
@@ -516,79 +447,25 @@ export function AppLayout({
                   </NavigationMenuItem>
 
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger className="bg-transparent">
-                      Resources
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                        <a
-                          href="/resources"
-                          title="Survival Guides"
-                          className="p-2 rounded-md hover:cursor-pointer hover:bg-slate-900"
-                        >
-                          How to pitch without crying
-                        </a>
-                        <a
-                          href="/resources"
-                          title="War Stories"
-                          className="p-2 rounded-md hover:cursor-pointer hover:bg-slate-900"
-                        >
-                          Tales from the startup trenches
-                        </a>
-                        <a
-                          href="/resources"
-                          title="Networking Parties"
-                          className="p-2 rounded-md hover:cursor-pointer hover:bg-slate-900"
-                        >
-                          Free food and awkward conversations
-                        </a>
-                        <a
-                          href="/resources"
-                          title="Dumb Questions"
-                          className="p-2 rounded-md hover:cursor-pointer hover:bg-slate-900"
-                        >
-                          There are no dumb questions (except these)
-                        </a>
-                      </div>
-                    </NavigationMenuContent>
+                    <NavigationMenuLink className="bg-transparent" asChild>
+                      <a
+                        href="/resources"
+                        className="py-2.5 px-3 text-[15px] rounded-md hover:cursor-pointer hover:bg-gray-800"
+                      >
+                        Resources
+                      </a>
+                    </NavigationMenuLink>
                   </NavigationMenuItem>
 
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger className="bg-transparent">
-                      Network
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                        <a
-                          href="/network"
-                          title="Money People"
-                          className="p-2 rounded-md hover:cursor-pointer hover:bg-slate-900"
-                        >
-                          They have cash, you need cash
-                        </a>
-                        <a
-                          href="/network"
-                          title="Fellow Dreamers"
-                          className="p-2 rounded-md hover:cursor-pointer hover:bg-slate-900"
-                        >
-                          Other sleep-deprived entrepreneurs
-                        </a>
-                        <a
-                          href="/network"
-                          title="Been There, Done That"
-                          className="p-2 rounded-md hover:cursor-pointer hover:bg-slate-900"
-                        >
-                          Learn from their expensive mistakes
-                        </a>
-                        <a
-                          href="/network"
-                          title="Useful Connections"
-                          className="p-2 rounded-md hover:cursor-pointer hover:bg-slate-900"
-                        >
-                          People who might actually help you
-                        </a>
-                      </div>
-                    </NavigationMenuContent>
+                    <NavigationMenuLink className="bg-transparent" asChild>
+                      <a
+                        href="/network"
+                        className="py-2.5 px-3 text-[15px] rounded-md hover:cursor-pointer hover:bg-gray-800"
+                      >
+                        Network
+                      </a>
+                    </NavigationMenuLink>
                   </NavigationMenuItem>
 
                   <NavigationMenuItem>
@@ -602,42 +479,8 @@ export function AppLayout({
                     </NavigationMenuLink>
                   </NavigationMenuItem>
 
-                  {/* <Link href="/quests" className="flex items-center gap-3 px-3 py-2 bg-slate-950 text-sm rounded-md">
-                    Quests
-                </Link> */}
-
-                  {/* {authReady && user && (
-                    <NavigationMenuItem>
-                      <NavigationMenuTrigger className="bg-transparent">
-                        Dashboards
-                      </NavigationMenuTrigger>
-                      <NavigationMenuContent>
-                        <div className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                          <NavigationMenuLink asChild>
-                            <a
-                              className="p-2 rounded-md hover:cursor-pointer hover:bg-slate-900"
-                              href="/"
-                            >
-                              Investor Dashboard
-                            </a>
-                          </NavigationMenuLink>
-                          <NavigationMenuLink asChild>
-                            <a
-                              className="p-2 rounded-md hover:cursor-pointer hover:bg-slate-900"
-                              href="/"
-                            >
-                              Founder Dashboard
-                            </a>
-                          </NavigationMenuLink>
-                        </div>
-                      </NavigationMenuContent>
-                    </NavigationMenuItem>
-                  )} */}
-
                   {authState.isAuthenticated ? (
-                    <p>
-                      Connected! {JSON.stringify(ocAuth.getAuthState())}
-                    </p>
+                    <p>Connected! {JSON.stringify(ocAuth.getAuthState())}</p>
                   ) : (
                     <LoginButton />
                   )}
@@ -697,8 +540,7 @@ export function AppLayout({
 
                       {authState.isAuthenticated ? (
                         <p>
-                          Connected!{" "}
-                          {JSON.stringify(ocAuth.getAuthState())}
+                          Connected! {JSON.stringify(ocAuth.getAuthState())}
                         </p>
                       ) : (
                         <LoginButton />
@@ -714,14 +556,35 @@ export function AppLayout({
                             Account
                           </h4>
                         </div>
-                        <div className="grid gap-1 px-2">
+                        <div className="grid gap-1 px-2 py-4">
                           <Button
                             className="bg-gray-800 flex items-center justify-start gap-3 px-3"
-                            onClick={() => router.push("/profile-page/combined")}
+                            onClick={() =>
+                              router.push("/profile-page/combined")
+                            }
                           >
-                            <CircleUserIcon />
+                            <CircleUserIcon className="mr-2 h-4 w-4" />
                             Profile
                           </Button>
+                          {role.includes("Founder") && (
+                            <Button
+                              className="bg-gray-800 flex items-center justify-start gap-3 px-3"
+                              onClick={() => router.push("/founder-dashboard")}
+                            >
+                              <TbDashboard className="mr-2 h-4 w-4" />
+                              Founder Dashboard
+                            </Button>
+                          )}
+
+                          {role.includes("Investor") && (
+                            <Button
+                              className="bg-gray-800 flex items-center justify-start gap-3 px-3"
+                              onClick={() => router.push("/investor-dashboard")}
+                            >
+                              <TbDashboard className="mr-2 h-4 w-4" />
+                              Investor Dashboard
+                            </Button>
+                          )}
                         </div>
                       </>
                     )}
@@ -735,18 +598,27 @@ export function AppLayout({
                     ) : user ? (
                       <div className="w-full">
                         <ConnectButton.Custom>
-                          {({ account, openConnectModal, openAccountModal, mounted }) => {
+                          {({
+                            account,
+                            openConnectModal,
+                            openAccountModal,
+                            mounted,
+                          }) => {
                             const connected = mounted && account;
                             return (
                               <Button
                                 onClick={
-                                  connected ? openAccountModal : openConnectModal
+                                  connected
+                                    ? openAccountModal
+                                    : openConnectModal
                                 }
                                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
                               >
                                 <Wallet className="mr-2 h-4 w-4" />
                                 {connected
-                                  ? `${address?.slice(0, 6)}...${address?.slice(-4)}`
+                                  ? `${address?.slice(0, 6)}...${address?.slice(
+                                      -4
+                                    )}`
                                   : "Connect Wallet"}
                               </Button>
                             );
