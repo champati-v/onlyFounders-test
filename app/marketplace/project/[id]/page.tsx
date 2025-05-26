@@ -19,7 +19,6 @@ import { FaRegBookmark } from "react-icons/fa";
 import { FaBookmark } from "react-icons/fa";
 import {
   ArrowLeft,
-  Bookmark,
   Calendar,
   Check,
   ExternalLink,
@@ -48,16 +47,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import { FaPeopleGroup } from "react-icons/fa6";
-import { DropdownMenuCheckboxItemProps, DropdownMenuItem } from "@radix-ui/react-dropdown-menu"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+
 
 interface TeamMember {
   name: string;
@@ -834,28 +824,6 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
     }
   };
 
-  const handleMilestoneComplete = async (roadmapId, index) => {
-    try {
-      if (!user || !projectId) return;
-      const userId = user?.sub?.substring(14);
-      const requestBody = { startupId: projectId, teamMemberId: memberId };
-      console.log(JSON.stringify(requestBody));
-
-      const response = await axios.delete(
-        `${API_URL}/`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            user_id: userId,
-          },
-          data: requestBody,
-        }
-      );
-    } catch (error) {
-      console.error("Error deleting team member:", error);
-    } finally {
-    }
-  };
 
   const handleInvest = (amount: number) => {
     console.log(`Investing ${amount} USDC in ${project.title}`);
