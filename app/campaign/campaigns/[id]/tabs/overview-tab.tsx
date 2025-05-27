@@ -289,8 +289,8 @@ export function OverviewTab({ campaign }: OverviewTabProps) {
                 <div className="space-y-2">
                   {traction.others.map((metric, index) => (
                     <div key={index} className="flex justify-between items-center bg-[#131e32] p-3 rounded">
-                      <span className="text-gray-300 text-sm">{metric.name}</span>
-                      <span className="font-bold">{metric.value}</span>
+                      <span className="text-gray-300 text-sm">{metric.metricName}</span>
+                      <span className="font-bold">{metric.metricValue}</span>
                     </div>
                   ))}
                 </div>

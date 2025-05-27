@@ -15,7 +15,7 @@ export function UpdatesTab({ campaign }: UpdatesTabProps) {
       <h2 className="text-xl sm:text-2xl font-bold mb-1">Project Updates</h2>
       <p className="text-gray-400 text-xs sm:text-sm mb-4 sm:mb-6">Latest news and announcements</p>
 
-      {updates.length > 0 ? (
+      {updates? (
         <div className="space-y-4 sm:space-y-6">
           {updates.map((update) => (
             <div key={update.id} className="bg-[#0f1a2c] rounded-lg p-4 sm:p-5 border border-[#1e293b]">
