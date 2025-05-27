@@ -270,15 +270,15 @@ useEffect(() => {
   }
 
   const handleInvest = () => {
-    if (!isConnected) {
-      toast({
-        title: "Connect Wallet",
-        description: "Please connect your wallet to invest in this campaign.",
-        variant: "destructive",
-      })
-      return
-    }
-    else if (!onboardingStatus) {
+    // if (!isConnected) {
+    //   toast({
+    //     title: "Connect Wallet",
+    //     description: "Please connect your wallet to invest in this campaign.",
+    //     variant: "destructive",
+    //   })
+    //   return
+    // }
+    if (!onboardingStatus) {
       toast({
         title: "Complete Onboarding",
         description: "Please complete your onboarding before investing.",
