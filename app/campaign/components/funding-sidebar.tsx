@@ -9,6 +9,7 @@ import { useAccount } from "wagmi"
 import { useToast } from "@/hooks/use-toast"
 import { ethers } from "ethers"
 import { FaSpinner } from "react-icons/fa6"
+import axios from "axios"
 
 
 interface FundingSidebarProps {
@@ -270,15 +271,15 @@ useEffect(() => {
   }
 
   const handleInvest = () => {
-    // if (!isConnected) {
-    //   toast({
-    //     title: "Connect Wallet",
-    //     description: "Please connect your wallet to invest in this campaign.",
-    //     variant: "destructive",
-    //   })
-    //   return
-    // }
-    if (!onboardingStatus) {
+    if (!isConnected) {
+      toast({
+        title: "Connect Wallet",
+        description: "Please connect your wallet to invest in this campaign.",
+        variant: "destructive",
+      })
+      return
+    }
+    else if (!onboardingStatus) {
       toast({
         title: "Complete Onboarding",
         description: "Please complete your onboarding before investing.",
@@ -321,27 +322,37 @@ useEffect(() => {
     await tx.wait();
 
     setStatus('Deposit successful! Recording investment...');
-     const walletAddress = await signer.getAddress();
 
-    const response = await fetch('https://ofStaging.azurewebsites.net/api/startup/add-investment', {
-      method: 'POST',
+    const response = await axios.post('https://ofStaging.azurewebsites.net/api/startup/add-investment', {
+        campaign_id: campaign._id,
+        amount: parseFloat(amount), // Convert to number
+        walletAddress: address,
+      } ,{
       headers: {
         user_id : user_id,
       },
-      body: JSON.stringify({
-        campaign_id: campaign._id,
-        amount: parseFloat(amount), // Convert to number
-        walletAddress: walletAddress,
-      })
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || 'Failed to record investment');
+    if (response.status != 200) {
+      const errorData = await response;
+      console.log('Error response:', errorData);
+      toast({
+        title: "⚠️ Error",
+        description: `Failed to record investment: ${errorData.data.message || 'Unknown error'}`,
+        variant: "destructive", 
+      });
     }
 
-    const result = await response.json();
-    setStatus(`Investment recorded! ID: ${result._id}`);
+    const result = await response;
+    setStatus(`Investment recorded! ID: ${result.data._id}`);
+
+    if(response.status === 200) {
+    toast({
+      title: "✅ Investment Successful",
+      description: `You have successfully invested ${amount} USDC in ${campaign.campaignName}.`
+    });
+  }
+
   } catch (error) {
     console.error(error);
     setStatus('Error: ' + error);
@@ -547,7 +558,7 @@ useEffect(() => {
                   {agreedToTerms && <Check className="w-4 h-4 text-black" />}
                 </button>
                 <span className="text-white font-poppins font-normal text-left">
-                  I agree to the <span className="text-[#0DF] cursor-pointer hover:underline">Terms & Conditions</span>
+                  I agree to the <a href="/terms" target="_blank" className="text-[#0DF] cursor-pointer hover:underline">Terms & Conditions</a>
                 </span>
               </div>
 
