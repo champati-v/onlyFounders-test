@@ -29,6 +29,8 @@ import {
 } from "lucide-react"
 import { useUser } from "@auth0/nextjs-auth0/client"
 import Image from 'next/image';
+import axios from 'axios';
+import { useToast } from '@/hooks/use-toast';
 
 export default function UpdatesPage() {
   const [activeTab, setActiveTab] = useState("all")
@@ -36,7 +38,6 @@ export default function UpdatesPage() {
   const [loading, setLoading] = useState(true)
   const { user, error, isLoading } = useUser()
   const [fetchingUpdates, setFetchingUpdates] = useState(true)
-
   const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -45,6 +46,8 @@ export default function UpdatesPage() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [deletingUpdate, setDeletingUpdate] = useState(false)
+  const { toast } = useToast()
 
   const handleFormChange = (e) => {
     const { name, value } = e.target
@@ -170,6 +173,38 @@ export default function UpdatesPage() {
 
     fetchUpdates()
   }, [user])
+
+  const handleDeleteUpdate = async (updateId) => {
+    if(!user || isLoading) return
+    const userID = user?.sub?.substring(14)
+
+    try{
+      setDeletingUpdate(true)
+      const response = await axios.delete('https://ofStaging.azurewebsites.net/api/profile/delete-update', {
+        headers: {
+          user_id: userID,
+        },
+        data: { update_id: updateId },
+      })
+
+      if(response.status === 200) {
+        setUpdates((prevUpdates) => prevUpdates.filter((update) => update._id !== updateId))
+        toast({
+          title: "Update Deleted",
+          description: "The update has been successfully deleted.",
+        })
+      }
+    }catch (error) {
+      console.error("Error deleting update:", error)
+      toast({
+        title: "Error",
+        description: "Failed to delete update. Please try again.",
+        variant: "destructive",
+      })
+    } finally{
+      setDeletingUpdate(false)  
+    }
+  }
 
   // Filter updates based on active tab
   const filteredUpdates =
@@ -382,11 +417,8 @@ export default function UpdatesPage() {
                         <CardTitle className="text-xl text-white">{update.title}</CardTitle>
                       </div>
                       <div className="flex items-center gap-1">
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-[#A3A8AF] hover:text-white">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-[#A3A8AF] hover:text-white">
-                          <Trash2 className="h-4 w-4" />
+                        <Button onClick={() => handleDeleteUpdate(update._id)} variant="ghost" size="icon" className="h-8 w-8 text-[#A3A8AF] hover:text-white">
+                          {deletingUpdate? 'Deleting...' : <Trash2 className="h-4 w-4" />}
                         </Button>
                       </div>
                     </div>

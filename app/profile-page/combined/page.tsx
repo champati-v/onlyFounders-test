@@ -209,7 +209,7 @@ const CombinedProfile = () => {
       </Button>
       {renderProfileContent()}
 
-      {!onboardingStatus && (
+       {!isLoading && !onboardingStatus && (
         <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/10">
           <div className="w-2/5 flex flex-col items-center bg-gray-900 p-6 rounded-lg shadow-lg">
             <div className='flex items-center mb-6'>

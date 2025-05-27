@@ -1498,7 +1498,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
                     {updates.map((update, index) => (
                       <div key={index} className="space-y-4">
                         <div className="flex items-center justify-between">
-                          <h3 className="text-lg font-medium text-white">
+                          <h3 className="flex items-center gap-2 text-lg font-medium text-white">
                             {update.title} <Badge>{update.updateType}</Badge>
                           </h3>
                           <Badge
@@ -1506,7 +1506,11 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
                             className="bg-gray-800/50 text-gray-300 border-gray-700"
                           >
                             <Calendar className="mr-1 h-3 w-3" />
-                            {update.createdAt}
+                            {new Date (update.createdAt).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })}
                           </Badge>
                         </div>
 
@@ -1515,15 +1519,16 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
                             <p className="text-gray-300">{update.content}</p>
                           </div>
                           <div className="relative h-40 rounded-lg overflow-hidden">
-                            {/* {updates?.attachments?.map((attachment, index) => (
-                            <Image
-                            key={index}
-                            src={attachment.file_url || "/placeholder.svg"}
-                            alt={attachment.file_name}
-                            fill
-                            className="object-cover"
-                          />
-                          ))}   */}
+                            {Array.isArray(update.attachments) && update.attachments.length > 0 ? (
+                              update.attachments.map((img: any, i: number) => (
+                                <img
+                                  key={i}
+                                  src={img.file_url}
+                                  alt={`attachment-${i}`}
+                                  className="object-cover rounded-lg h-full w-full"
+                                />
+                              ))
+                            ) : null}
                           </div>
                         </div>
 

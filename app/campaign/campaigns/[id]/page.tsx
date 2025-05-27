@@ -14,6 +14,8 @@ import { TeamTab } from "./tabs/team-tab"
 import { TokenomicsTab } from "./tabs/tokenomics-tab"
 import { FaqTab } from "./tabs/faq-tab"
 import { UpdatesTab } from "./tabs/updates-tab"
+import axios from "axios";
+import { useToast } from "@/hooks/use-toast";
 
 // Define the campaign interface based on the API response
 interface Milestone {
@@ -99,6 +101,8 @@ export default function CampaignDetailPage() {
   const [error, setError] = useState<string | null>(null)
   const { user, isLoading: isUserLoading } = useUser()
   const [isOwner, setIsOwner] = useState(false)
+  const {toast} = useToast()
+  const [updates, setUpdates] = useState<any[]>([]); // Adjust type as needed
 
   // Fetch campaign details from API
   useEffect(() => {

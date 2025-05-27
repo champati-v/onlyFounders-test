@@ -479,9 +479,9 @@ export default function InvestorDashboardPage() {
                             className="text-white border-purple-800/20 bg-purple-900/30 hover:bg-purple-900/50"
                             asChild
                           >
-                            <Link href={`/marketplace/project/${project.startupName}`}>View</Link>
+                            View
                           </Button>
-                          <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
+                          <Button onClick={() => router.push('/campaign/campaigns')} className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
                             Invest Now
                           </Button>
                         </div>

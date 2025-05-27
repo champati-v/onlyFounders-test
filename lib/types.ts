@@ -134,4 +134,5 @@ export interface CampaignDetail extends Campaign {
   medium?: string
   telegram?: string
   demoVideo?: string
+  project_id?: string
 }

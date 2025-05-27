@@ -1,9 +1,14 @@
 "use client"
 
 import { useParams } from "next/navigation"
-import { CalendarDays, MessageCircle, ThumbsUp } from "lucide-react"
-
+import { Badge, Calendar, CalendarDays, MessageCircle, ThumbsUp } from "lucide-react"
+import { API_URL } from "@/lib/config"
 import { PageLayout } from "../../../layout/page-layout"
+import { useEffect, useState } from "react"
+import { useUser } from "@auth0/nextjs-auth0/client"
+import { useToast } from "@/hooks/use-toast"
+import { Separator } from "@radix-ui/react-separator"
+import axios from "axios"
 
 // Mock updates data for each campaign
 const campaignUpdatesData = {
@@ -116,12 +121,62 @@ const campaignUpdatesData = {
   ],
 }
 
-export default function UpdatesPage() {
+  interface Update {
+    campaign: any
+    id: number
+    title: string
+    date?: string
+    content: string
+    likes?: number
+    comments?: number
+    updateType?: string
+    createdAt?: string
+    // Add other fields as needed
+  }
+
+export default function UpdatesPage({campaign} : Update) {
+  const {user, isLoading} = useUser()
   const params = useParams()
   const campaignId = params.id as string
+  const project_id = campaign?.project_id
+  const [updates, setUpdates] = useState<Update[]>([])
+  const { toast } = useToast()
 
-  // Get updates data or use default if not found
-  const updates = campaignUpdatesData[campaignId as keyof typeof campaignUpdatesData] || []
+      useEffect(() => {
+      const fetchUpdates = async () => {
+        try {
+          if (!user || !project_id) return;
+          const userId = user?.sub?.substring(14);
+          const requestBody = { project_id };
+          console.log(requestBody);
+          const response = await axios.post(
+            `${API_URL}/api/profile/get-updates`,
+            requestBody,
+            {
+              headers: {
+                "Content-Type": "application/json", // ✅ Correct header
+                user_id: userId,
+              },
+            }
+          );
+  
+          if (response.status === 200) {
+            const data = await response.data;
+            setUpdates(data.updates);
+          }
+        } catch (error) {
+          console.error("Error fetching project ID:", error);
+          toast({
+            title: "Error",
+            description: "Failed to load project ID. Please refresh the page.",
+            variant: "destructive",
+          });
+        }
+      };
+  
+      fetchUpdates();
+    }, [campaign?.project_id]);
+
 
   return (
     <PageLayout currentPage="updates" campaignId={campaignId}>
@@ -132,28 +187,43 @@ export default function UpdatesPage() {
 
         {updates.length > 0 ? (
           <div className="space-y-6">
-            {updates.map((update) => (
-              <div key={update.id} className="bg-[#0f1a2c] rounded-lg p-5 border border-[#1e293b]">
-                <div className="flex justify-between items-start mb-3">
-                  <h3 className="text-lg font-bold">{update.title}</h3>
-                  <div className="flex items-center text-gray-400 text-sm">
-                    <CalendarDays size={14} className="mr-1" />
-                    {update.date}
-                  </div>
-                </div>
-                <p className="text-gray-300 mb-4">{update.content}</p>
-                <div className="flex gap-4 text-sm text-gray-400">
-                  <button className="flex items-center gap-1 hover:text-[#39e7f5]">
-                    <ThumbsUp size={14} />
-                    <span>{update.likes} Likes</span>
-                  </button>
-                  <button className="flex items-center gap-1 hover:text-[#39e7f5]">
-                    <MessageCircle size={14} />
-                    <span>{update.comments} Comments</span>
-                  </button>
-                </div>
-              </div>
-            ))}
+           {updates.map((update, index) => (
+                      <div key={index} className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-lg font-medium text-white">
+                            {update.title} <Badge>{update.updateType}</Badge>
+                          </h3>
+                          <Badge
+                            variant="outline"
+                            className="bg-gray-800/50 text-gray-300 border-gray-700"
+                          >
+                            <Calendar className="mr-1 h-3 w-3" />
+                            {update.createdAt}
+                          </Badge>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="md:col-span-2">
+                            <p className="text-gray-300">{update.content}</p>
+                          </div>
+                          <div className="relative h-40 rounded-lg overflow-hidden">
+                            {/* {updates?.attachments?.map((attachment, index) => (
+                            <Image
+                            key={index}
+                            src={attachment.file_url || "/placeholder.svg"}
+                            alt={attachment.file_name}
+                            fill
+                            className="object-cover"
+                          />
+                          ))}   */}
+                          </div>
+                        </div>
+
+                        {index < updates.length - 1 && (
+                          <Separator className="bg-gray-800" />
+                        )}
+                      </div>
+                    ))}
           </div>
         ) : (
           <div className="bg-[#0f1a2c] rounded-lg p-8 text-center">
