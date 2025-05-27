@@ -394,7 +394,7 @@ export default function NetworkPage() {
       try {
         setLoading(true);
         if (!user || isLoading) return;
-        console.log("Calling API now...");
+        if(founderData.length === 0) { // Prevent multiple calls if data already exists
         const response = await axios.get(
           `${API_URL}/api/network/list-profile-by-role/Founder`,
           {
@@ -409,6 +409,7 @@ export default function NetworkPage() {
           console.log("Founder data:", data.profiles);
           setFounderData(data.profiles);
         }
+      }
       } catch (error) {
         console.error("Error fetching founder data:", error);
       }
@@ -423,7 +424,7 @@ export default function NetworkPage() {
       try {
         setLoading(true);
         if (!user || isLoading) return;
-        console.log("Calling API now...");
+        if(investorData.length === 0){
         const response = await axios.get(
           `${API_URL}/api/network/list-profile-by-role/Investor`,
           {
@@ -438,6 +439,7 @@ export default function NetworkPage() {
           console.log("Investor data:", data.profiles);
           setInvestorData(data.profiles);
         }
+      }
       } catch (error) {
         console.error("Error fetching investor data:", error);
       }
@@ -455,6 +457,7 @@ export default function NetworkPage() {
       try {
         setLoading(true);
         if (!user || isLoading) return;
+        if(ServiceProviderData.length === 0) {
         const response = await axios.get(
           `${API_URL}/api/network/list-profile-by-role/ServiceProvider`,
           {
@@ -467,6 +470,7 @@ export default function NetworkPage() {
         if (response.status === 200) {
           const data = await response.data;
           setServiceProviderData(data.profiles);
+        }
         }
       } catch (error) {
         console.error("Error fetching ServiceProvider data:", error);

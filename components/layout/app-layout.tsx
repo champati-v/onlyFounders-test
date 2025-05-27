@@ -22,37 +22,32 @@ import {
 import { Footer } from "@/components/footer";
 import {
   BookOpen,
-  Building,
   Home,
   LogOut,
   Menu,
-  MessageSquare,
-  Settings,
   Shield,
   Store,
   Trophy,
   Users,
   Wallet,
-  Info,
   CircleUserIcon,
 } from "lucide-react";
 import { HiOutlineSpeakerphone } from "react-icons/hi";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount } from "wagmi";
+import { useDisconnect } from "wagmi";
 import axios from "axios";
-import { useToast } from "../ui/use-toast";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "../ui/navigation-menu";
 import LoginButton from "../ocidLogin-button";
 import { useOCAuth } from "@opencampus/ocid-connect-js";
 import { TbDashboard } from "react-icons/tb";
+import { useToast } from "@/hooks/use-toast";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -74,8 +69,11 @@ export function AppLayout({
   const requestSent = useRef(false);
   const { user, isLoading } = useUser();
   const { address, isConnected } = useAccount();
+  const { disconnect } = useDisconnect();
   const [onboardingStatus, setOnboardingStatus] = useState<boolean>(false);
   const [role, setRole] = useState<string>("");
+  const { toast } = useToast();
+
 
   //ocid button
   const { isInitialized, authState, ocAuth } = useOCAuth();
@@ -160,16 +158,33 @@ export function AppLayout({
               },
             }
           );
+          console.log("✅ Wallet address sent successfully!");
 
-          console.log("Address sent successfully", response.data);
         } catch (error) {
-          console.error("Error sending address:", error);
+        if (axios.isAxiosError(error) && error.response) {
+          const status = error.response.status;
+          const message = error.response.data?.message;
+          const address = error.response.data?.walletAddress;
+
+          if (status === 400) {
+            toast({
+              title: "⚠️ Error Connecting Wallet",
+              description:`${message} ${address?.slice(0, 6)}...${address?.slice(-4)}`,
+              variant: "destructive",
+            });
+            disconnect();
+          } else {
+            console.error(`❌ Error ${status}:`, error.response.data);
+          }
+          } else {
+            console.error("❌ Unknown error:", error);
+          }
         }
       }
     };
 
     sendWalletAddress();
-  }, [user, isConnected, address]);
+  }, [address]);
 
   //sending user data to the backend after user registered.
   useEffect(() => {
@@ -252,7 +267,10 @@ export function AppLayout({
         );
 
         const data = await response.json();
-        setRole(data.role);
+        if(data && data.role) {
+          setRole(data.role);
+        }
+        
       } catch (error) {
         console.error("Error checking profile status:", error);
       } finally {
@@ -347,7 +365,7 @@ export function AppLayout({
                   </div>
                 </DropdownMenuItem>
 
-                {role.includes("Founder") && (
+                {role?.includes("Founder") && (
                   <DropdownMenuItem
                     className="cursor-pointer"
                     onSelect={() => router.push("/founder-dashboard")}
@@ -359,7 +377,7 @@ export function AppLayout({
                   </DropdownMenuItem>
                 )}
 
-                {role.includes("Investor") && (
+                {role?.includes("Investor") && (
                   <DropdownMenuItem
                     className="cursor-pointer"
                     onSelect={() => router.push("/investor-dashboard")}

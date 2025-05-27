@@ -47,6 +47,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import { FaPeopleGroup } from "react-icons/fa6";
+import { useAccount } from "wagmi"
 
 
 interface TeamMember {
@@ -283,9 +284,14 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
   const [upvoteLoading, setUpvoteLoading] = useState(false);
   const [upvoteCount, setUpvoteCount] = useState(0);
   const [isBookmarkLoading, setIsBookmarkLoading] = useState(false);
+    const [investModalOpen, setInvestModalOpen] = useState(false)
+    const [amount, setAmount] = useState("")
+    const [agreedToTerms, setAgreedToTerms] = useState(true)
   const TokenomicsPieChart = dynamic(() => import("./TokenomicsPieChart"), {
     ssr: false,
   });
+  const { isConnected } = useAccount();
+  const [onboardingStatus, setOnboardingStatus] = useState(false);
   const userId = user?.sub?.substring(14);
 
   //twitter share code
@@ -686,6 +692,55 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
         milestones: [],
       };
 
+  useEffect(() => {
+    const getOnboardingStatus = async () => {
+            try {
+              if (!user || isLoading) return;
+              const userID = user.sub?.substring(14);
+        
+              const response = await fetch(
+                `${API_URL}/api/profile/get-onboarding-status`,
+                {
+                  method: "GET",
+                  headers: {
+                    "Content-Type": "application/json",
+                    user_id: userID || "",
+                  },
+                }
+              );
+        
+              const data = await response.json();
+              setOnboardingStatus(data.status);
+            } catch (error) {
+              console.error("Error checking profile status:", error);
+            }
+          };
+        
+          getOnboardingStatus();
+  }, [])
+
+  const handleInvest = () => {
+    if (!isConnected) {
+      toast({
+        title: "Connect Wallet",
+        description: "Please connect your wallet to invest in this campaign.",
+        variant: "destructive",
+      })
+      return
+    }
+    else if (!onboardingStatus) {
+      toast({
+        title: "Complete Onboarding",
+        description: "Please complete your onboarding before investing.",
+        variant: "destructive",
+      })
+      return
+    }
+    else {
+      setInvestModalOpen(true)
+    }
+  }
+
   //delete a team member
   const handleDeleteMember = async (memberId) => {
     try {
@@ -824,12 +879,6 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
     }
   };
 
-
-  const handleInvest = (amount: number) => {
-    console.log(`Investing ${amount} USDC in ${project.title}`);
-    setShowInvestDialog(false);
-    // Here you would typically handle the investment process
-  };
 
   return (
     <div className="container mx-auto space-y-8 py-8">
@@ -1572,16 +1621,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
               <div className="flex flex-col gap-3">
                 <Button
                   className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white border py-2"
-                  onClick={() => {
-                    if (!user) {
-                      toast({
-                        title: "Login Required",
-                        description: "Please login to invest in this project.",
-                      });
-                    } else {
-                      window.open("https://spring.net/discover/onlyfounders", "_blank");
-                    }
-                  }}
+                  onClick={() => handleInvest()}
                 >
                   Invest Now
                 </Button>
@@ -1686,6 +1726,79 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
           </Card>
         </div>
       </div>
+
+      
+            {investModalOpen && (
+              <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center px-4">
+                <div className="relative bg-[#1C232D] rounded-2xl p-6 w-full max-w-xl text-white font-poppins shadow-xl">
+                  {/* Close Button */}
+                  <button
+                    onClick={() => setInvestModalOpen(false)}
+                    className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+      
+                  <div className="flex-1 flex flex-col items-center justify-center px-4">
+                  <div className="w-full max-w-[650px] flex flex-col items-center">
+                    {/* Title */}
+                    <h1 className="text-white text-center font-poppins text-3xl mb-[60px]">
+                      Invest in <span className="text-[#0DF]">{project.title}</span>
+                    </h1>
+      
+                    {/* Amount Input */}
+                    <div className="w-full flex items-center rounded-xl border border-[#222531] bg-[#191E25] mb-6">
+                      <input
+                        type="number"
+                        placeholder="Enter Amount to Invest (min 100 USDC)"
+                        value={amount}
+                        onChange={(e) => setAmount(e.target.value)}
+                        className="flex-1 bg-transparent pl-4 py-4 pr-2 text-white placeholder-gray-400 outline-none font-poppins text-left"
+                      />
+                      <div className="flex items-center gap-2 bg-[#222531] px-5 py-4 rounded-r-xl">
+                        <div className="w-6 h-6 bg-[#0DF] rounded-full flex items-center justify-center">
+                          <span className="text-black text-xs font-bold font-poppins">$</span>
+                        </div>
+                        <span className="text-white font-poppins font-medium">USDC</span>
+                      </div>
+                    </div>
+      
+                    {/* Terms & Conditions */}
+                    <div className="w-full flex items-center gap-3 mb-[100px] px-1">
+                      <button
+                        onClick={() => setAgreedToTerms(!agreedToTerms)}
+                        className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors flex-shrink-0 ${
+                          agreedToTerms ? "bg-[#0DF] border-[#0DF]" : "border-gray-400 bg-transparent"
+                        }`}
+                      >
+                        {agreedToTerms && <Check className="w-4 h-4 text-black" />}
+                      </button>
+                      <span className="text-white font-poppins font-normal text-left">
+                        I agree to the <span className="text-[#0DF] cursor-pointer hover:underline">Terms & Conditions</span>
+                      </span>
+                    </div>
+      
+                    {/* Pay & Invest Button */}
+                    <button
+                      className="w-full flex items-center justify-center gap-2.5 px-4 py-2 rounded-xl bg-[#0DF] text-black font-poppins font-semibold text-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+                      disabled={!agreedToTerms || !amount}
+                    >
+                      Pay & Invest
+                      <ArrowLeft className="w-5 h-5 rotate-180" />
+                    </button>
+                  </div>
+                </div>
+                </div>
+              </div>
+            )}
     </div>
   );
 }

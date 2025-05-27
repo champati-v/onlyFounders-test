@@ -1,19 +1,234 @@
 "use client"
 
-import { useState } from "react"
-import { Bookmark, Info, MessageSquare, Pencil, Share2, ShieldCheck, Users } from "lucide-react"
+import { API_URL } from "@/lib/config"
+import { useEffect, useState } from "react"
+import { ArrowLeft, Bookmark, Check, Info, MessageSquare, Pencil, Share2, ShieldCheck, Users } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import Link from 'next/link'
+import { useUser } from "@auth0/nextjs-auth0/client"
+import { useAccount } from "wagmi"
+import { useToast } from "@/hooks/use-toast"
+import { ethers } from "ethers"
+import { FaSpinner } from "react-icons/fa6"
+
 
 interface FundingSidebarProps {
   campaign: any // Using any for now as the full type is defined in the parent component
 }
 
+const usdcAbi = [
+  {
+    "constant": false,
+    "inputs": [
+      { "name": "spender", "type": "address" },
+      { "name": "amount", "type": "uint256" }
+    ],
+    "name": "approve",
+    "outputs": [{ "name": "", "type": "bool" }],
+    "type": "function",
+    "stateMutability": "nonpayable"
+  },
+  {
+    "constant": false,
+    "inputs": [
+      { "name": "sender", "type": "address" },
+      { "name": "recipient", "type": "address" },
+      { "name": "amount", "type": "uint256" }
+    ],
+    "name": "transferFrom",
+    "outputs": [{ "name": "", "type": "bool" }],
+    "type": "function",
+    "stateMutability": "nonpayable"
+  }
+];
+
+
+const InvestorUSDCDepositABI= [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_usdcAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_multisigWallet",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "investor",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Deposited",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "MINIMUM_DEPOSIT",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "admin",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "deposit",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "deposits",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "investor",
+          "type": "address"
+        }
+      ],
+      "name": "getDeposit",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "multisigWallet",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "usdc",
+      "outputs": [
+        {
+          "internalType": "contract IERC20",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ];
+
+const CONTRACT_ADDRESS = '0x1FcF94E9245b1BbC6adC7222F9e06fc871221424';
+const USDC_ADDRESS = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238'; // Must match constructor param
+
+
 export function FundingSidebar({ campaign }: FundingSidebarProps) {
   const [copied, setCopied] = useState(false)
-
-  // Check if user is the owner of the campaign
+  const [investModalOpen, setInvestModalOpen] = useState(false)
+  const [amount, setAmount] = useState("")
+  const [agreedToTerms, setAgreedToTerms] = useState(true)
+  const {user, isLoading } = useUser()
+  const [onboardingStatus, setOnboardingStatus] = useState<boolean>(false)  // Check if user is the owner of the campaign
+  const { address, isConnected } = useAccount();
   const isOwner = campaign.isOwner || false
+  const {toast} = useToast()
+  const [status, setStatus] = useState("")
+  const [depositing, setDepositing] = useState(false)
+
+  const user_id = user?.sub?.substring(14) || "" 
+
+useEffect(() => {
+  const getOnboardingStatus = async () => {
+          try {
+            if (!user || isLoading) return;
+            const userID = user.sub?.substring(14);
+      
+            const response = await fetch(
+              `${API_URL}/api/profile/get-onboarding-status`,
+              {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                  user_id: userID || "",
+                },
+              }
+            );
+      
+            const data = await response.json();
+            setOnboardingStatus(data.status);
+          } catch (error) {
+            console.error("Error checking profile status:", error);
+          }
+        };
+      
+        getOnboardingStatus();
+}, [])
+
 
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -53,6 +268,85 @@ export function FundingSidebar({ campaign }: FundingSidebarProps) {
       setTimeout(() => setCopied(false), 2000)
     }
   }
+
+  const handleInvest = () => {
+    if (!isConnected) {
+      toast({
+        title: "Connect Wallet",
+        description: "Please connect your wallet to invest in this campaign.",
+        variant: "destructive",
+      })
+      return
+    }
+    else if (!onboardingStatus) {
+      toast({
+        title: "Complete Onboarding",
+        description: "Please complete your onboarding before investing.",
+        variant: "destructive",
+      })
+      return
+    }
+    else {
+      setInvestModalOpen(true)
+    }
+  }
+
+ const handleDeposit = async () => {
+  if (!window.ethereum) return alert('MetaMask not found');
+
+  const provider = new ethers.BrowserProvider(window.ethereum);
+  const signer = await provider.getSigner();
+
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, InvestorUSDCDepositABI, signer);
+  const usdc = new ethers.Contract(USDC_ADDRESS, usdcAbi, signer);
+
+  const parsedAmount = ethers.parseUnits(amount, 6); // USDC has 6 decimals
+
+  if (parsedAmount < ethers.parseUnits('5', 6)) {
+    return alert('Minimum deposit is $100');
+  }
+
+  try {
+    setDepositing(true);
+    setStatus('Approving USDC...');
+    const approveTx = await usdc.approve(CONTRACT_ADDRESS, parsedAmount);
+    await approveTx.wait();
+
+    setStatus('Depositing...');
+    const tx = await contract.deposit(parsedAmount);
+    await tx.wait();
+
+    setStatus('Deposit successful! Recording investment...');
+
+    const response = await fetch('https://ofStaging.azurewebsites.net/api/startup/add-investment', {
+      method: 'POST',
+      headers: {
+        user_id : user_id,
+      },
+      body: JSON.stringify({
+        campaign_id: campaign._id,
+        amount: parseFloat(amount), // Convert to number
+        walletAddress: address,
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Failed to record investment');
+    }
+
+    const result = await response.json();
+    setStatus(`Investment recorded! ID: ${result._id}`);
+  } catch (error) {
+    console.error(error);
+    setStatus('Error: ' + error);
+  } finally {
+    setDepositing(false);
+    setAmount("");
+    setAgreedToTerms(true);
+    setInvestModalOpen(false);
+  }
+};
 
   return (
     <div className="bg-[#0c1425] rounded-lg p-6 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
@@ -94,11 +388,11 @@ export function FundingSidebar({ campaign }: FundingSidebarProps) {
         </div>
       </div>
 
-      <Link href="https://spring.net/discover/onlyfounders">
-        <Button className="w-full bg-gradient-to-r from-[#4361ff] to-[#7e5bf8] text-white py-4 rounded-md font-medium mb-3 shadow-sm hover:shadow-md transition-shadow">
+        <Button 
+          onClick={() => handleInvest()} 
+          className="w-full bg-gradient-to-r from-[#4361ff] to-[#7e5bf8] text-white py-4 rounded-md font-medium mb-3 shadow-sm hover:shadow-md transition-shadow">
           Invest Now
         </Button>
-      </Link>
 
       {isOwner && (
         <Button className="w-full bg-[#10b981] hover:bg-[#10b981]/90 text-white py-4 rounded-md font-medium mb-3 shadow-sm hover:shadow-md transition-shadow flex items-center justify-center gap-2">
@@ -190,6 +484,86 @@ export function FundingSidebar({ campaign }: FundingSidebarProps) {
           score based on team credentials, code quality, and tokenomics model.
         </p>
       </div>
+
+      {investModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center px-4">
+          <div className="relative bg-[#1C232D] rounded-2xl p-6 w-full max-w-xl text-white font-poppins shadow-xl">
+            {/* Close Button */}
+            <button
+              onClick={() => setInvestModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <div className="flex-1 flex flex-col items-center justify-center px-4">
+            <div className="w-full max-w-[650px] flex flex-col items-center">
+              {/* Title */}
+              <h1 className="text-white text-center font-poppins text-3xl mb-[60px]">
+                Invest in <span className="text-[#0DF]">{campaign.campaignName}</span>
+              </h1>
+
+              {/* Amount Input */}
+              <div className="w-full flex items-center rounded-xl border border-[#222531] bg-[#191E25] mb-6">
+                <input
+                  type="number"
+                  placeholder="Enter Amount to Invest (min 100 USDC)"
+                  value={amount}
+                  disabled={depositing}
+                  min="100"
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="flex-1 bg-transparent pl-4 py-4 pr-2 text-white placeholder-gray-400 outline-none font-poppins text-left"
+                />
+                <div className="flex items-center gap-2 bg-[#222531] px-5 py-4 rounded-r-xl">
+                  <div className="w-6 h-6 bg-[#0DF] rounded-full flex items-center justify-center">
+                    <span className="text-black text-xs font-bold font-poppins">$</span>
+                  </div>
+                  <span className="text-white font-poppins font-medium">USDC</span>
+                </div>
+              </div>
+
+              {/* Terms & Conditions */}
+              <div className="w-full flex items-center gap-3 mb-[100px] px-1">
+                <button
+                  onClick={() => setAgreedToTerms(!agreedToTerms)}
+                  disabled={depositing}
+                  className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors flex-shrink-0 ${
+                    agreedToTerms ? "bg-[#0DF] border-[#0DF]" : "border-gray-400 bg-transparent"
+                  }`}
+                >
+                  {agreedToTerms && <Check className="w-4 h-4 text-black" />}
+                </button>
+                <span className="text-white font-poppins font-normal text-left">
+                  I agree to the <span className="text-[#0DF] cursor-pointer hover:underline">Terms & Conditions</span>
+                </span>
+              </div>
+
+              {/* Pay & Invest Button */}
+              <button
+                onClick={() => handleDeposit()}
+                  className="w-full flex items-center justify-center gap-2.5 px-4 py-2 rounded-xl bg-[#0DF] text-black font-poppins font-semibold text-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+                  disabled={!agreedToTerms || !amount}
+                >
+                Pay & Invest
+                {depositing ? <FaSpinner className="animate-spin" /> : <ArrowLeft className="w-5 h-5 rotate-180" />}
+              </button>
+            </div>
+          </div>
+          </div>
+        </div>
+      )}
+
     </div>
   )
+
+  
+
 }

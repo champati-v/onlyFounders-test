@@ -7,7 +7,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import Providers from "../web3/Providers";
 import "@rainbow-me/rainbowkit/styles.css";
 import AuthTracking from "./MIXPanel/AuthTracking";
-import AuthProvider from "../components/AuthProvider"; // Use AuthProvider instead of UserProvider
+import {UserProvider as Auth0Provider} from "@auth0/nextjs-auth0/client";
+import { UserProvider } from "../components/AuthProvider";
 import { Toaster } from "@/components/ui/toaster";
 import Script from "next/script";
 import OCConnectWrapper from "../components/OCConnectWrapper";
@@ -75,7 +76,8 @@ export default function RootLayout({
         </Script>
       </head>
       <body className={inter.className}>
-        <AuthProvider>
+        <Auth0Provider>
+          <UserProvider>
           <AuthTracking /> {/* Tracking user login */}
           <Providers>
             <OCConnectWrapper opts={opts} sandboxMode={false}>
@@ -85,7 +87,8 @@ export default function RootLayout({
             <SpeedInsights />
             <Toaster />
           </Providers>
-        </AuthProvider>
+          </UserProvider>
+        </Auth0Provider>
       </body>
     </html>
   );
