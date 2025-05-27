@@ -303,7 +303,11 @@ useEffect(() => {
   const parsedAmount = ethers.parseUnits(amount, 6); // USDC has 6 decimals
 
   if (parsedAmount < ethers.parseUnits('5', 6)) {
-    return alert('Minimum deposit is $100');
+    toast({
+      title: "⚠️ Minimum Deposit",
+      description: "The minimum deposit amount is 5 USDC.",
+      variant: "destructive",
+    });
   }
 
   try {
@@ -317,6 +321,7 @@ useEffect(() => {
     await tx.wait();
 
     setStatus('Deposit successful! Recording investment...');
+     const walletAddress = await signer.getAddress();
 
     const response = await fetch('https://ofStaging.azurewebsites.net/api/startup/add-investment', {
       method: 'POST',
@@ -326,7 +331,7 @@ useEffect(() => {
       body: JSON.stringify({
         campaign_id: campaign._id,
         amount: parseFloat(amount), // Convert to number
-        walletAddress: address,
+        walletAddress: walletAddress,
       })
     });
 
