@@ -51,7 +51,7 @@ export function TokenomicsTab({ campaign }: TokenomicsTabProps) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            user_id: userId,
+            // user_id: userId,
           },
           body: JSON.stringify({ campaignId: campaign._id }),
         })
@@ -73,7 +73,7 @@ export function TokenomicsTab({ campaign }: TokenomicsTabProps) {
     if (campaign._id) {
       fetchTokenomics()
     }
-  }, [campaign._id, user])
+  }, [campaign._id])
 
   // Default usecases if none are provided
   const defaultUsecases = [

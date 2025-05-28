@@ -156,7 +156,7 @@ export function PortfolioAnalytics() {
 
               <div className="bg-[#1F2A3D] p-4 rounded-lg border border-[#313E54]">
                 <p className="text-[#A3A8AF] text-sm mb-1">Best Performing</p>
-                <p className="text-2xl font-bold text-white">{investorStats.bestPerformingCampaign.campaignName}</p>
+                <p className="text-2xl font-bold text-white">{investorStats?.bestPerformingCampaign?.campaignName || 'N/A'}</p>
                 <div className="flex items-center text-xs text-green-500 mt-1">
                   <span>+{investorStats.bestPerformingCampaign.completedMilestones} milestones completed</span>
                 </div>

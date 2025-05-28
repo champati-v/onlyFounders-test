@@ -40,6 +40,8 @@ import {
   Trash,
   ArrowBigUp,
   Loader2Icon,
+  Heart,
+  ThumbsUp,
 } from "lucide-react";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import {useToast} from '../../../../hooks/use-toast'
@@ -48,6 +50,16 @@ import axios from "axios";
 import dynamic from "next/dynamic";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { useAccount } from "wagmi"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Textarea } from '@/components/ui/textarea';
 
 
 interface TeamMember {
@@ -284,11 +296,16 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
   const [upvoteLoading, setUpvoteLoading] = useState(false);
   const [upvoteCount, setUpvoteCount] = useState(0);
   const [isBookmarkLoading, setIsBookmarkLoading] = useState(false);
+  const [upvotingUpdate, setUpvotingUpdate] = useState(false);
+  const [updateIdForComment, setUpdateIdForComment] = useState<string | null>(null);
+  const [commentDialogOpen, setCommentDialogOpen] = useState(false);
+  const [content, setContent] = useState("");
+  const [isCommentSubmitting, setisCommentSubmitting] = useState(false);
 
   const TokenomicsPieChart = dynamic(() => import("./TokenomicsPieChart"), {
     ssr: false,
   });
-  const { isConnected } = useAccount();
+
   const [onboardingStatus, setOnboardingStatus] = useState(false);
   const userId = user?.sub?.substring(14);
 
@@ -337,11 +354,6 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
 
     fetchUpdates();
   }, [projectId]);
-
-  //api to get projectId
-
-  //fetch project ID
-
 
   //api to get watchlist status
   useEffect(() => {
@@ -855,6 +867,60 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
       setIsBookmarkLoading(false);
     }
   };
+
+  const handleLikeUpdate = async (updateId: string) => {
+    if(!user || isLoading) return
+
+    try{
+      setUpvotingUpdate(true)
+      const response = await axios.post('https://onlyfounders.azurewebsites.net/api/profile/like-update', {update_id: updateId},{
+        headers:{
+          user_id: userId,
+        }
+      })
+    }catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to like the update. Please try again.",
+        variant: "destructive",
+      });
+    }finally{
+      setUpvotingUpdate(false)
+    }
+  }
+
+  const handleComment = async (updateId: string) => {
+    setUpdateIdForComment(updateId);
+    setCommentDialogOpen(true);
+  }
+
+  const handleCommentSubmit = async () => {
+    if(!user || isLoading || !content) return
+
+    try {
+      setisCommentSubmitting(true);
+      const response = await axios.post('', {
+        updateId: updateIdForComment,
+        content: content,
+      }, {
+        headers:{
+          user_id: userId,
+        }
+      })
+    } catch(error){
+      console.log("Error submitting comment:", error);
+      toast({
+        title: "Error",
+        description: "Failed to submit comment. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setisCommentSubmitting(false);
+      setContent("");
+      setCommentDialogOpen(false);
+      setUpdateIdForComment(null);
+    }
+  }
 
 
   return (
@@ -1506,7 +1572,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
                             className="bg-gray-800/50 text-gray-300 border-gray-700"
                           >
                             <Calendar className="mr-1 h-3 w-3" />
-                            {new Date (update.createdAt).toLocaleDateString("en-US", {
+                            {new Date(update.createdAt).toLocaleDateString("en-US", {
                               month: "short",
                               day: "numeric",
                               year: "numeric",
@@ -1514,28 +1580,40 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
                           </Badge>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="md:col-span-2">
-                            <p className="text-gray-300">{update.content}</p>
-                          </div>
-                          <div className="relative h-40 rounded-lg overflow-hidden">
-                            {Array.isArray(update.attachments) && update.attachments.length > 0 ? (
-                              update.attachments.map((img: any, i: number) => (
-                                <img
-                                  key={i}
-                                  src={img.file_url}
-                                  alt={`attachment-${i}`}
-                                  className="object-cover rounded-lg h-full w-full"
-                                />
-                              ))
-                            ) : null}
-                          </div>
-                        </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                              <div className="md:col-span-2">
+                                <p className="text-gray-300">{update.content}</p>
+                              </div>
+                              <div className="relative h-40 rounded-lg overflow-hidden">
+                                {Array.isArray(update.attachments) && update.attachments.length > 0 ? (
+                                  update.attachments.map((img: any, i: number) => (
+                                    <img
+                                      key={i}
+                                      src={img.file_url}
+                                      alt={`attachment-${i}`}
+                                      className="object-cover rounded-lg h-full w-full"
+                                    />
+                                  ))
+                                ) : null}
+                              </div>
+                            </div>
 
-                        {index < updates.length - 1 && (
-                          <Separator className="bg-gray-800" />
-                        )}
-                      </div>
+                            {/* Like and Comment buttons */}
+                            <div className="flex gap-4 mt-2">
+                              <button onClick={() => handleLikeUpdate(update._id)} className="flex items-center gap-1 text-gray-300 hover:text-white transition">
+                                <ThumbsUp className="w-4 h-4" />
+                                {upvotingUpdate? '...' : <span>Like</span>}
+                              </button>
+                                    <button onClick={() => handleComment(update._id)} className="flex items-center gap-1 text-gray-300 hover:text-white transition">
+                                      <MessageCircle className="w-4 h-4" />
+                                      <span>Comment</span>
+                                    </button>
+                            </div>  
+
+                            {index < updates.length - 1 && (
+                              <Separator className="bg-gray-800" />
+                            )}
+                          </div>
                     ))}
                   </div>
                 </CardContent>
@@ -1708,6 +1786,36 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
           </Card>
         </div>
       </div>
+      
+      {commentDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/50">
+          <div className="bg-gray-900 border border-gray-700 p-6 rounded-lg w-full max-w-md mx-4">
+            <h2 className="text-white text-lg font-semibold mb-4">Add a Comment</h2>
+
+            <textarea
+              className="w-full min-h-[100px] p-3 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-white"
+              placeholder="Write your comment..."
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+            />
+
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                onClick={() => setCommentDialogOpen(false)}
+                className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleCommentSubmit()}
+                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
+              >
+                Publish Comment {isCommentSubmitting? <Loader2Icon className='w-4 h-4 animate-spin'/> : null}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

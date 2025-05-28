@@ -11,7 +11,7 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: '/campaign/campaigns',
+        destination: '/marketplace',
         permanent: true, 
       },
     ]

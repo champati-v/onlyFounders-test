@@ -114,13 +114,13 @@ export default function CampaignDetailPage() {
         }
 
         // Get user ID for the API request header
-        const userId = user?.sub?.substring(14) || "guest-user"
+        const userId = user?.sub?.substring(14)
 
         const response = await fetch(`${API_URL}/api/startup/get-campaign`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            user_id: userId,
+            // user_id: userId,
           },
           body: JSON.stringify({ campaignId }),
         })
@@ -131,7 +131,9 @@ export default function CampaignDetailPage() {
         console.log("Campaign Data:", data.campaign)
 
         // Check if the current user is the owner of the campaign
-        setIsOwner(data.campaign.user_id === userId)
+        if(user){
+          setIsOwner(data.campaign.user_id === userId)
+        }
  
 
       } catch (err) {
@@ -142,9 +144,8 @@ export default function CampaignDetailPage() {
       }
     }
 
-    if (!isUserLoading) {
       fetchCampaignDetails()
-    }
+
   }, [campaignId, user, isUserLoading])
 
 

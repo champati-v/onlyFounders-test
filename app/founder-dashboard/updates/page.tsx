@@ -31,6 +31,7 @@ import { useUser } from "@auth0/nextjs-auth0/client"
 import Image from 'next/image';
 import axios from 'axios';
 import { useToast } from '@/hooks/use-toast';
+import { FaSpinner } from 'react-icons/fa6';
 
 export default function UpdatesPage() {
   const [activeTab, setActiveTab] = useState("all")
@@ -418,7 +419,7 @@ export default function UpdatesPage() {
                       </div>
                       <div className="flex items-center gap-1">
                         <Button onClick={() => handleDeleteUpdate(update._id)} variant="ghost" size="icon" className="h-8 w-8 text-[#A3A8AF] hover:text-white">
-                          {deletingUpdate? 'Deleting...' : <Trash2 className="h-4 w-4" />}
+                          {deletingUpdate? <FaSpinner className='animate-spin' /> : <Trash2 className="h-4 w-4" />}
                         </Button>
                       </div>
                     </div>
@@ -437,20 +438,6 @@ export default function UpdatesPage() {
                       </div>
                     )}
                   </CardContent>
-                  <CardFooter className="border-t border-[#313E54] pt-4">
-                    <div className="flex items-center justify-between w-full">
-                      <div className="flex items-center gap-4">
-                        <Button variant="ghost" className="text-[#A3A8AF] hover:text-white">
-                          <ThumbsUp className="mr-2 h-4 w-4" />
-                          {update.likes}
-                        </Button>
-                        <Button variant="ghost" className="text-[#A3A8AF] hover:text-white">
-                          <MessageSquare className="mr-2 h-4 w-4" />
-                          {update.commentCount}
-                        </Button>
-                      </div>
-                    </div>
-                  </CardFooter>
                 </Card>
               ))
             )}

@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button"
 import { CampaignCard } from "../components/campaign-card"
 import { useRouter } from "next/navigation"
 import {useToast} from '../../../hooks/use-toast'
-import { Separator } from "@radix-ui/react-separator"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { AppLayout } from "@/components/layout/app-layout"
 
@@ -50,8 +49,6 @@ export default function CampaignsPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { user, isLoading: isUserLoading } = useUser()
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  // State for storing the user's current campaign
   const [currentUserCampaign, setCurrentUserCampaign] = useState<Campaign | null>(null)
   const [haveStartup, setHaveStartup] = useState(false)
   const router = useRouter()
@@ -66,7 +63,7 @@ export default function CampaignsPage() {
         const getOnboardingStatus = async () => {
           try {
             if (!user || isLoading) return;
-            const userID = user.sub?.substring(14);
+            const userID = user?.sub?.substring(14);
       
             const response = await fetch(
               `${API_URL}/api/profile/get-onboarding-status`,
@@ -104,22 +101,22 @@ export default function CampaignsPage() {
       }, [user, isLoading, router]);
 
 
-  useEffect(() => {
-    const checkLoggedIn = async () => {
-      if (!isUserLoading && !user) {
-        setIsLoggedIn(false)
-      } else {
-        setIsLoggedIn(true)
-      }
-    }
+  // useEffect(() => {
+  //   const checkLoggedIn = async () => {
+  //     if (!isUserLoading && !user) {
+  //       setIsLoggedIn(false)
+  //     } else {
+  //       setIsLoggedIn(true)
+  //     }
+  //   }
 
-    checkLoggedIn()
-  }, [isUserLoading, user])
+  //   checkLoggedIn()
+  // }, [isUserLoading, user])
 
   useEffect(() => {
     const checkStartup = async () => {
+      if (!user || isLoading) return
       const userId = user?.sub?.substring(14)
-      if (!userId) return
 
       const response = await fetch(`${API_URL}/api/startup/get-projectId`, {
         headers: {
@@ -213,8 +210,7 @@ useEffect(() => {
     setError("") // Clear previous error
 
     try {
-      if (!user || isUserLoading) return
-      const userId = user.sub?.substring(14)
+      const userId = user?.sub?.substring(14)
 
       const endpoint =
         filter === "all"
@@ -223,7 +219,6 @@ useEffect(() => {
 
       const response = await fetch(endpoint, {
         headers: {
-          user_id: userId,
         },
       })
 
@@ -244,7 +239,6 @@ useEffect(() => {
         isOwner: userId ? campaign.user_id === userId : false,
       }))
 
-      console.log("isOwner", campaignsWithOwnership.map(c => c.isOwner))
       setCampaigns(campaignsWithOwnership)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch campaigns")
@@ -254,9 +248,7 @@ useEffect(() => {
     }
   }
 
-  if (user && !isUserLoading) {
-    fetchCampaigns()
-  }
+  fetchCampaigns()
 }, [user, isUserLoading, filter])
 
 // User campaign fetch with 404/204 handling
@@ -316,32 +308,6 @@ useEffect(() => {
     setVisibleCampaigns((prev) => Math.min(prev + 3, filteredCampaigns.length))
   }
 
-  // Handle login redirect
-  if (!user && !isUserLoading) {
-    return (
-      <>
-        <div className="bg-[#050914] text-white">
-          <div className="container mx-auto px-4 py-8">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-              <div>
-                <h1 className="text-3xl sm:text-4xl font-bold mb-1">Campaigns</h1>
-                <p className="text-gray-400">Explore and support innovative blockchain projects</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col gap-4 justify-center items-center">
-          <p className="text-lg text-gray-400">Please login to view campaigns</p>
-          <Button
-            onClick={() => router.push("/api/auth/login")}
-            className="bg-[#4361ff] hover:bg-[#4361ff]/90 text-white py-2 px-4 rounded-md font-medium mb-4"
-          >
-            Login
-          </Button>
-        </div>
-      </>
-    )
-  }
 
   return (
     <>
@@ -374,14 +340,14 @@ useEffect(() => {
             <p className="text-gray-400">Explore and support innovative blockchain projects</p>
           </div>
             <div className="flex gap-2 flex-col md:flex-row mt-4 sm:mt-0">
-              {currentCampaignId && (
+              {currentCampaignId && user && (
                 <Link href={`/campaign/campaigns/${currentCampaignId}`}>
                   <Button className="bg-[#4361ff] hover:bg-[#4361ff]/90 text-white py-2 px-4 rounded-md font-medium w-full sm:w-auto">
                     View Current Campaign
                   </Button>
                 </Link>
               )}
-              {!isLoading &&
+              {!isLoading && user &&
                 <Button 
                 disabled={currentUserCampaign}
                 onClick={!haveStartup ? () => 
@@ -420,7 +386,8 @@ useEffect(() => {
             >
               All Campaigns
             </Button>
-            <Button
+           {user && 
+           <Button
               className={`${filter === "my" ? "bg-[#4361ff]" : "bg-transparent"} hover:bg-[#4361ff]/90 text-white px-6 py-2 rounded-md`}
               onClick={() => {
                 setFilter("my")
@@ -429,6 +396,7 @@ useEffect(() => {
             >
               My Campaigns
             </Button>
+            }
           </div>
         </div>
 

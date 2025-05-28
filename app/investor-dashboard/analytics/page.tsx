@@ -129,7 +129,7 @@ export default function AnalyticsPage() {
           <Card className="bg-gradient-to-br from-indigo-950/50 to-purple-900/30 border-purple-800/20">
             <CardHeader className="pb-2">
               <CardDescription className="text-purple-200/70">Total Value</CardDescription>
-              <CardTitle className="text-2xl text-white">76,500 USDC</CardTitle>
+              <CardTitle className="text-2xl text-white">{investorStats?.totalInvested || '0'}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-sm text-green-500 flex items-center">
@@ -142,7 +142,7 @@ export default function AnalyticsPage() {
           <Card className="bg-gradient-to-br from-indigo-950/50 to-purple-900/30 border-purple-800/20">
             <CardHeader className="pb-2">
               <CardDescription className="text-purple-200/70">Average ROI</CardDescription>
-              <CardTitle className="text-2xl text-white">{investorStats.roi}</CardTitle>
+              <CardTitle className="text-2xl text-white">{investorStats?.roi || '0'}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-sm text-green-500 flex items-center">
@@ -155,12 +155,12 @@ export default function AnalyticsPage() {
           <Card className="bg-gradient-to-br from-indigo-950/50 to-purple-900/30 border-purple-800/20">
             <CardHeader className="pb-2">
               <CardDescription className="text-purple-200/70">Best Performing</CardDescription>
-              <CardTitle className="text-2xl text-white">{investorStats.bestPerformingCampaign.campaignName}</CardTitle>
+              <CardTitle className="text-2xl text-white">{investorStats?.bestPerformingCampaign?.campaignName || 'N/A'}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-sm text-green-500 flex items-center">
                 <TrendingUp className="mr-1 h-4 w-4" />
-                <span>{investorStats.bestPerformingCampaign.completedMilestones} milestones completed</span>
+                <span>{investorStats?.bestPerformingCampaign?.completedMilestones || 'N/A'} milestones completed</span>
               </div>
             </CardContent>
           </Card>

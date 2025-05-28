@@ -27,7 +27,7 @@ export function CampaignHeader({ campaign }: CampaignHeaderProps) {
   
   // Ensure campaignId is available
   const campaignId = campaign?._id 
-  const userId = user.sub?.substring(14)
+  const userId = user?.sub?.substring(14)
   console.log("Component rendered with:", { campaignId })
 
   // Fetch initial upvote count and status

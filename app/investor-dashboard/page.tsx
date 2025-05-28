@@ -422,7 +422,7 @@ export default function InvestorDashboardPage() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-xl text-white">Watchlist</CardTitle>
-                    <Button variant="link" className="text-blue-400" onClick={() => setActiveTab("watchlist")}>
+                    <Button variant="link" className="text-blue-400" onClick={() => router.push('/investor-dashboard/watchlist')}>
                       View All
                     </Button>
                   </div>

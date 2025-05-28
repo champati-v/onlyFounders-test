@@ -25,8 +25,8 @@ export function UpdatesTab({ campaign }: UpdatesTabProps) {
     useEffect(() => {
         const fetchUpdates = async () => {
           try {
-            if (!user || !project_id) return;
-            const userId = user?.sub?.substring(14);
+            // if (!user || !project_id) return;
+            // const userId = user?.sub?.substring(14);
 
             if(updates.length === 0){
             const response = await axios.post(
@@ -35,7 +35,7 @@ export function UpdatesTab({ campaign }: UpdatesTabProps) {
               {
                 headers: {
                   "Content-Type": "application/json", // ✅ Correct header
-                  user_id: userId,
+                  // user_id: userId,
                 },
               }
             );

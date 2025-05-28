@@ -46,7 +46,7 @@ export function OverviewTab({ campaign }: OverviewTabProps) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            user_id: userId,
+            // user_id: userId,
           },
           body: JSON.stringify({ campaignId: campaign._id}),
         })

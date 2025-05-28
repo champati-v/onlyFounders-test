@@ -123,10 +123,6 @@ export default function WatchlistPage() {
                 className="pl-10 pr-4 py-2 bg-[#1F2A3D] border border-[#313E54] rounded-md text-white w-full md:w-[250px] focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <Button variant="outline" className="text-white border-[#3D4E6B] bg-[#1F2A3D] hover:bg-[#29305F]">
-              <Filter className="mr-2 h-4 w-4" />
-              Filter
-            </Button>
           </div>
         </div>
 
@@ -139,7 +135,7 @@ export default function WatchlistPage() {
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="bg-[#1F2A3D] p-2 rounded-lg">
+                    {/* <div className="bg-[#1F2A3D] p-2 rounded-lg">
                       <Image
                         src={project.logo || "/placeholder.svg"}
                         alt={project.name}
@@ -147,7 +143,7 @@ export default function WatchlistPage() {
                         height={40}
                         className="rounded-lg"
                       />
-                    </div>
+                    </div> */}
                     <div>
                       <div className="flex items-center gap-1">
                         <h3 className="font-medium text-white">{project.name}</h3>
@@ -187,14 +183,7 @@ export default function WatchlistPage() {
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex gap-2">
-                <Button
-                  variant="outline"
-                  className="flex-1 text-white border-[#3D4E6B] bg-[#1F2A3D] hover:bg-[#29305F]"
-                  asChild
-                >
-                  <Link href={`/marketplace/project/${project.id}`}>View</Link>
-                </Button>
+              <CardFooter className="flex">
                 <Button className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
                   Invest Now
                 </Button>
