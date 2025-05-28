@@ -166,16 +166,16 @@ export function OverviewTab({ campaign }: OverviewTabProps) {
             </a>
           )}
 
-          {socialLinks.medium && (
+          {campaign.pitchDeckUrl && (
             <a 
-              href={socialLinks.medium} 
+              href={campaign.pitchDeckUrl} 
               target="_blank" 
               rel="noopener noreferrer"
               className="bg-[#131e32] rounded p-3 flex justify-between items-center hover:bg-[#1e293b] transition-colors"
             >
               <div className="flex items-center gap-2">
                 <MessageSquareText size={18} className="text-[#39e7f5]" />
-                <span className="text-sm sm:text-base">Medium Blog</span>
+                <span className="text-sm sm:text-base">Ptich Deck</span>
               </div>
               <ArrowUpRight size={16} className="text-gray-400" />
             </a>

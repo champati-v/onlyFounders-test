@@ -412,7 +412,7 @@ useEffect(() => {
 
         <Button 
           onClick={() => handleInvest()} 
-          disabled={campaign.campaignStatus === "Completed"}
+          disabled={campaign.campaignStatus === "Completed" || campaign.campaignStatus === "Pending"}
           className="w-full bg-gradient-to-r from-[#4361ff] to-[#7e5bf8] text-white py-4 rounded-md font-medium mb-3 shadow-sm hover:shadow-md transition-shadow">
           Invest Now
         </Button>
