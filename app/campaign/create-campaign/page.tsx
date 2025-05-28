@@ -280,18 +280,8 @@ export default function CreateCampaignPage() {
   useEffect(() => {
     const fetchProjectId = async () => {
       try {
-        if (!user) return // Wait until user is fully loaded
+        if (!user || isUserLoading ) return // Wait until user is fully loaded
         const userId = user?.sub?.substring(14)
-
-        if (!userId) {
-          toast({
-            title: "Authentication error",
-            description: "Please sign in again to continue.",
-            variant: "destructive",
-          })
-          router.push("/api/auth/login")
-          return
-        }
 
         const response = await fetch(`${API_URL}/api/startup/get-projectId`, {
           method: "GET",
@@ -341,18 +331,8 @@ export default function CreateCampaignPage() {
       setIsLoading(true)
       try {
         if (!projectId) return
-        if (!user) return // Wait until user is fully loaded
+        if (!user || isUserLoading) return // Wait until user is fully loaded
         const userId = user?.sub?.substring(14)
-
-        if (!userId) {
-          toast({
-            title: "Authentication error",
-            description: "Please sign in again to continue.",
-            variant: "destructive",
-          })
-          router.push("/api/auth/login")
-          return
-        }
 
         const response = await fetch(`${API_URL}/api/startup/view-startup`, {
           method: "POST",
@@ -590,12 +570,6 @@ export default function CreateCampaignPage() {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       if (!user) {
-        toast({
-          title: "Authentication error",
-          description: "Please sign in to continue.",
-          variant: "destructive",
-        })
-        router.push("/api/auth/login")
         return
       }
 
@@ -608,20 +582,10 @@ export default function CreateCampaignPage() {
       if (currentStep === 1) {
         // Step 1: Submit basic campaign details
         try {
-          if (!user) return
+          if (!user || isUserLoading) return
           const userId = user?.sub?.substring(14)
 
           setSubmitLoading(true)
-
-          if (!userId) {
-            toast({
-              title: "Authentication error",
-              description: "Please sign in again to continue.",
-              variant: "destructive",
-            })
-            router.push("/api/auth/login")
-            return
-          }
 
           // If we already have a campaignId, don't create a new one
           // if (hasCreatedCampaign && campaignId) {
@@ -1047,11 +1011,7 @@ export default function CreateCampaignPage() {
   //       <p className="text-lg">Loading...</p>
   //     </div>
   //   )
-  // }
-  if (!user) {
-    router.push("/api/auth/login")
-  }
-
+  // 
   return (
     <div className="min-h-screen bg-[#0a0b14] text-white p-6">
       <div className="max-w-4xl mx-auto">
@@ -1507,9 +1467,9 @@ export default function CreateCampaignPage() {
                           </FormControl>
                           <SelectContent className="bg-[#1a1b2e] border-[#2e2f45] text-white">
                             <SelectItem value="usdc">USDC</SelectItem>
-                            <SelectItem value="usdt">USDT</SelectItem>
+                            {/* <SelectItem value="usdt">USDT</SelectItem>
                             <SelectItem value="eth">ETH</SelectItem>
-                            <SelectItem value="bnb">BNB</SelectItem>
+                            <SelectItem value="bnb">BNB</SelectItem> */}
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -2000,7 +1960,7 @@ export default function CreateCampaignPage() {
                                     </div>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <Button
+                                    {/* <Button
                                       type="button"
                                       variant="ghost"
                                       size="sm"
@@ -2008,7 +1968,7 @@ export default function CreateCampaignPage() {
                                       className="h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-[#2e2f45]"
                                     >
                                       <Edit className="h-4 w-4" />
-                                    </Button>
+                                    </Button> */}
                                     <Button
                                       type="button"
                                       variant="ghost"

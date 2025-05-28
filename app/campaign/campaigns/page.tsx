@@ -89,8 +89,6 @@ export default function CampaignsPage() {
             // Navigate based on the fetched status
               if (!data.role || (Array.isArray(data.role) && data.role.length === 0)) {
               setShowOnboardingModal(true);
-              } else {
-              router.push("/");
               }
           } catch (error) {
             console.error("Error checking profile status:", error);

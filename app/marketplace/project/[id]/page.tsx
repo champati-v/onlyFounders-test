@@ -141,6 +141,7 @@ interface Startup {
   reviews: any[]; // Define properly if reviews have a structure
   milestones: Milestone[];
   telegram?: string;
+  pitchDeck?: string;
   verifiedStatus: string;
   waitlistSignups: string;
   strategicPartners: string;
@@ -169,6 +170,7 @@ interface SocialLinks {
   medium?: string;
   linkedin?: string;
   telegram?: string;
+  pitchDeck: string;
 }
 
 interface Traction {
@@ -568,6 +570,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
         medium: startupData.socialLinks?.medium || "#",
         whitepaper: startupData.whitepaper_Url || "#",
         demoVideo: startupData.pitchDemoVideo_Url,
+        pitchDeck: startupData.pitchDeck_Url || "#",
 
         //traction
         waitlistSignups: startupData.traction.waitlistSignups,
@@ -1188,12 +1191,12 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
                         className="w-full justify-start text-gray-300 border-gray-700"
                       >
                         <a
-                          href={project.medium}
+                          href={project.pitchDeck}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
                           <Book className="mr-2 h-4 w-4 text-gray-400" />
-                          Medium Blog
+                          Pitch Deck
                           <ExternalLink className="ml-auto h-4 w-4 text-gray-500" />
                         </a>
                       </Button>

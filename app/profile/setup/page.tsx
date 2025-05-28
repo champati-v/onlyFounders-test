@@ -76,20 +76,20 @@ export default function ProfileSetupPage() {
       })
 
     
-      const sendWallet = await axios.post(
-        `${API_URL}/api/profile/add-walletAddress`,
-        { walletAddress: address },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            user_id: userId,
-          },
-        }
-      );
+      // const sendWallet = await axios.post(
+      //   `${API_URL}/api/profile/add-walletAddress`,
+      //   { walletAddress: address },
+      //   {
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       user_id: userId,
+      //     },
+      //   }
+      // );
 
-      if(sendWallet.status == 200) {
-        console.log("Wallet address sent successfully")
-      }
+      // if(sendWallet.status == 200) {
+      //   console.log("Wallet address sent successfully")
+      // }
 
       const roleData = await getRole.json()
       // Navigate to the next page based on the first selected role (0th index)
@@ -229,7 +229,7 @@ export default function ProfileSetupPage() {
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col items-start">
-                <CardDescription className="text-lg text-gray-400 mb-2">Connect Your Wallet</CardDescription>
+                {/* <CardDescription className="text-lg text-gray-400 mb-2">Connect Your Wallet</CardDescription>
                 <div className="mb-4 w-full flex flex-col items-center gap-4">
                   <ConnectButton.Custom>
                             {({ account, openConnectModal, openAccountModal, mounted }) => {
@@ -255,21 +255,22 @@ export default function ProfileSetupPage() {
                                 </button>
                               );
                             }}
-                  </ConnectButton.Custom>
+                  </ConnectButton.Custom> */}
                 <Button
-                  onClick={() => 
-                    {isConnected? handleContinue() : toast({
-                      title: "Wallet not connected",
-                      description: "Please connect your wallet to continue.",
-                      variant: "destructive",
-                    })}}
+                  // onClick={() => 
+                  //   {isConnected? handleContinue() : toast({
+                  //     title: "Wallet not connected",
+                  //     description: "Please connect your wallet to continue.",
+                  //     variant: "destructive",
+                  //   })}}
+                  onClick={() => handleContinue()}
                   disabled={selectedTypes.length === 0 || isSubmitting}
                   className="w-full bg-black hover:bg-gray-900 text-white border border-gray-800"
                 >
                   {isSubmitting ? "Submitting..." : "Continue"}
                   {!isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}
                 </Button>
-                </div>
+                {/* </div> */}
               </CardFooter>
             </Card>
           </div>

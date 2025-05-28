@@ -287,6 +287,14 @@ useEffect(() => {
       })
       return
     }
+    else if (!user){
+      toast({
+        title: "Complete Onboarding",
+        description: "Please complete your onboarding before investing.",
+        variant: "destructive",
+      })
+      return
+    }
     else {
       setInvestModalOpen(true)
     }

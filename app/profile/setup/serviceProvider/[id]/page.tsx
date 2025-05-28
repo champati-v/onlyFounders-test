@@ -1240,7 +1240,7 @@ export default function ServiceProviderProfileSetupPage({ params }: { params: { 
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => router.push("/profile")}
+                      onClick={() => router.back()}
                       className="border-gray-700 text-white"
                       disabled={isSubmitting || onboardingStatus === true}
                     >

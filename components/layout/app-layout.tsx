@@ -284,11 +284,7 @@ export function AppLayout({
   const mainNavItems = [
     { href: "/", label: "Home", icon: Home },
     { href: "/marketplace", label: "Marketplace", icon: Store },
-    {
-      href: "/campaign/campaigns",
-      label: "Campaigns",
-      icon: HiOutlineSpeakerphone,
-    },
+    { href: "/campaign/campaigns", label: "Campaigns", icon: HiOutlineSpeakerphone},
     { href: "/network", label: "Network", icon: Users },
     { href: "/resources", label: "Resources", icon: BookOpen },
     { href: "/quests", label: "Quests", icon: Trophy },

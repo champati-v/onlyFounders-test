@@ -868,9 +868,9 @@ export default function FounderProfileSetupPage({params, }: { params: { id: numb
                       <Button
                         type="button"
                         variant="outline"
-                        onClick={() => router.push("/profile")}
+                        onClick={() => router.back()}
                         className="border-gray-700 text-white"
-                        disabled={isSubmitting || onboardingStatus === true}
+                        disabled={isSubmitting}
                       >
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back

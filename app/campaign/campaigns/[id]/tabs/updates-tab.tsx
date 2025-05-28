@@ -48,9 +48,8 @@ export function UpdatesTab({ campaign }: UpdatesTabProps) {
           } catch (error) {
             console.error("Error fetching project ID:", error);
             toast({
-              title: "Error",
-              description: "Failed to load project ID. Please refresh the page.",
-              variant: "destructive",
+              title: "Login Required",
+              description: "Please log in to view updates.",
             });
           }
         };

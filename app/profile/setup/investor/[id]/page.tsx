@@ -963,9 +963,9 @@ export default function InvestorProfileSetupPage({params, }: { params: { id: num
                       <Button
                         type="button"
                         variant="outline"
-                        onClick={() => router.push("/profile/setup")}
+                        onClick={() => router.back()}
                         className="border-gray-700 text-white"
-                        disabled={isSubmitting || onboardingStatus === true}
+                        disabled={isSubmitting}
                       >
                         <ArrowLeft className="mr-2 h-4 w-4" />
                         Back
