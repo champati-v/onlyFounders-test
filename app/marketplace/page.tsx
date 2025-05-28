@@ -379,15 +379,20 @@ export default function MarketplacePage() {
                     <CardContent className="space-y-4">
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
-                          <span className="text-gray-400">Yet to raise</span>
+                          <span className="text-gray-400">
+                              {startup.goal
+                                ? `${Math.min(100, ((startup.totalRaised / startup.goal) * 100)).toFixed(0)}%`
+                                : "0%"}
+                          </span>
                           <span className="text-white font-medium">
-                            ${startup.totalRaised.toLocaleString()} / ${startup.goal?.toLocaleString() || "N/A"}
+                            {startup.totalRaised.toLocaleString()} USDC / {startup.goal?.toLocaleString() || 0} USDC
                           </span>
                         </div>
                         <Progress
                           value={startup.goal ? (startup.totalRaised / startup.goal) * 100 : 0}
-                          className="h-2 bg-gray-800"
-                          indicatorClassName="bg-gradient-to-r from-blue-500 to-purple-500"
+                          // value={50}
+                          className="h-2 bg-slate-800"
+                          indicatorClassName="bg-purple-500"
                         />
                       </div>
 
@@ -403,7 +408,7 @@ export default function MarketplacePage() {
                         <div className="space-y-1">
                           <div className="text-sm text-gray-400">Deadline</div>
                           <div className="text-white font-medium">
-                            {startup.deadline ? new Date(startup.deadline).toLocaleDateString() : "N/A"}
+                            {startup.deadline ? new Date(startup.deadline).toLocaleDateString() : "No deadline"}
                           </div>
                         </div>
                       </div>
@@ -545,13 +550,18 @@ export default function MarketplacePage() {
 
                         <div className="space-y-1">
                           <div className="flex justify-between text-xs">
-                            <span className="text-gray-400">Yet to raise</span>
+                            <span className="text-gray-400">
+                                {startup.goal
+                                ? `${Math.min(100, ((startup.totalRaised / startup.goal) * 100)).toFixed(0)}%`
+                                : "0%"}
+                          </span>
                             <span className="text-white">
-                              ${startup.totalRaised.toLocaleString()} / ${startup.goal?.toLocaleString() || "N/A"}
+                              {startup.totalRaised.toLocaleString()} USDC / {startup.goal?.toLocaleString() || 0} USDC
                             </span>
                           </div>
                           <Progress
-                            value={startup.goal ? (startup.totalRaised / startup.goal) * 100 : 0}
+                            value={startup.goal ? (startup.totalRaised / startup.goal) * 100: 0}
+                            // value={50}
                             className="h-1.5 bg-gray-800"
                             indicatorClassName="bg-gradient-to-r from-blue-500 to-purple-500"
                           />
@@ -618,4 +628,3 @@ export default function MarketplacePage() {
     </div>
   )
 }
-

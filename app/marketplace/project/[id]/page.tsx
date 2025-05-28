@@ -274,6 +274,9 @@ interface StartupAPI {
   nodeOperators: string;
   growthMetrics: string;
   storageCapacity: string;
+  totalRaisedOnPlatform: number;
+  fundingTarget: number;
+  fundingDeadline: string;
 }
 
 interface APIResponse {
@@ -539,6 +542,13 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
     fetchUpvoteCounts();
   }, [projectId, user]);
 
+const deadlineDate: Date = new Date(startupData?.fundingDeadline);
+const currentDate: Date = new Date();
+
+const timeDiff: number = deadlineDate.getTime() - currentDate.getTime();
+const daysLeft: number = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+
+
   const project: Startup = startupData
     ? {
         id: startupData._id,
@@ -556,11 +566,10 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
           "/placeholder.svg?height=100&width=100",
         category: startupData.category,
         tags: startupData.blockchainPlatforms || [],
-        raised: startupData.totalRaised || 0,
-        goal: startupData.totalRaised, // This might need to come from the API in the future
-        progress: 0,
+        raised: startupData.totalRaisedOnPlatform || 0,
+        goal: startupData.fundingTarget, // This might need to come from the API in the future
+        progress: startupData.totalRaisedOnPlatform/startupData.fundingTarget * 100 || 0,
         investors: startupData.investers?.length || 0,
-        daysLeft: 14, // This might need to come from the API in the future
         minInvestment: 100, // This might need to come from the API in the future
         website: startupData.socialLinks?.website || "#",
         github: startupData.socialLinks?.github || "#",
@@ -1638,8 +1647,8 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Raised</span>
                     <span className="text-white font-medium">
-                      {project.raised.toLocaleString()} /{" "}
-                      {project.goal.toLocaleString()} USDC
+                      {project.raised?.toLocaleString()} /{" "}
+                      {project.goal?.toLocaleString()} USDC
                     </span>
                   </div>
                   <Progress
@@ -1649,10 +1658,10 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
                   />
                   <div className="flex justify-between text-xs">
                     <span className="text-gray-400">
-                      {project.progress}% funded
+                      {project.progress > 100 ? 100 : project.progress}% funded
                     </span>
                     <span className="text-amber-400">
-                      {daysRemaining} days left
+                      {daysLeft < 0 ? 0 : daysLeft } days left
                     </span>
                   </div>
                 </div>
@@ -1672,7 +1681,7 @@ export default function ProjectDetailPage({params, }: { params: { id: string }; 
                   </div>
                   <div className="text-center">
                     <div className="text-2xl font-bold text-white">
-                      {daysRemaining}
+                      {daysLeft < 0 ? 0 : daysLeft }
                     </div>
                     <div className="text-xs text-gray-400">Days Left</div>
                   </div>

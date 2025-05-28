@@ -249,6 +249,7 @@ export function CampaignHeader({ campaign }: CampaignHeaderProps) {
           className="w-full h-full object-cover"
         />
       </div>
+         <div className="absolute inset-0 z-10 bg-gradient-to-t from-black to-transparent"></div>
 
       {/* Project Info */}
       <div className="px-6 py-4 flex items-start gap-4 absolute bottom-0 left-0 right-0 z-10">

@@ -50,6 +50,7 @@ export default function InvestorDashboardPage() {
     message: "",
     startups: [],
   })
+  const [fetchingWatchlist, setFetchingWatchlist] = useState(false)
 
   useEffect(() => {
     const fetchActiveInvestments = async () => {
@@ -86,6 +87,7 @@ export default function InvestorDashboardPage() {
       if (userLoading || !user) return
 
       try {
+        setFetchingWatchlist(true)
         const userId = user.sub?.substring(14)
 
         if (!userId) {
@@ -106,6 +108,8 @@ export default function InvestorDashboardPage() {
         setWatchlistData(response.data)
       } catch (error) {
         console.error("Error fetching watchlist:", error)
+      } finally {
+        setFetchingWatchlist(false)
       }
     }
     fetchWatchlist()
@@ -429,7 +433,13 @@ export default function InvestorDashboardPage() {
                 </CardHeader>
                <CardContent>
                   <div className="space-y-4">
-                    {watchlistData.startups.slice(0, 2).map((project, index) => (
+                    {fetchingWatchlist ? (
+                      <div className="text-center">
+                        Loading watchlist...
+                      </div>
+                    ) : (
+                      <>
+                           {watchlistData.startups.slice(0, 2).map((project, index) => (
                       <div key={index} className="p-3 rounded-lg bg-purple-900/30 border border-purple-800/20">
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center gap-3">
@@ -474,19 +484,15 @@ export default function InvestorDashboardPage() {
                         </div>
 
                         <div className="flex justify-between mt-3">
-                          <Button
-                            variant="outline"
-                            className="text-white border-purple-800/20 bg-purple-900/30 hover:bg-purple-900/50"
-                            asChild
-                          >
-                            View
-                          </Button>
                           <Button onClick={() => router.push('/campaign/campaigns')} className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
                             Invest Now
                           </Button>
                         </div>
                       </div>
                     ))}
+                      </>
+                    )}
+                 
                   </div>
                 </CardContent>
               </Card>

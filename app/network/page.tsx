@@ -393,13 +393,13 @@ export default function NetworkPage() {
     const fetchFounderData = async () => {
       try {
         setLoading(true);
-        if (!user || isLoading) return;
+        // if (!user || isLoading) return;
         if(founderData.length === 0) { // Prevent multiple calls if data already exists
         const response = await axios.get(
           `${API_URL}/api/network/list-profile-by-role/Founder`,
           {
             headers: {
-              user_id: userId,
+              // user_id: userId,
             },
           }
         );
@@ -423,13 +423,13 @@ export default function NetworkPage() {
     const fetchInvestorData = async () => {
       try {
         setLoading(true);
-        if (!user || isLoading) return;
+        // if (!user || isLoading) return;
         if(investorData.length === 0){
         const response = await axios.get(
           `${API_URL}/api/network/list-profile-by-role/Investor`,
           {
             headers: {
-              user_id: userId,
+              // user_id: userId,
             },
           }
         );
@@ -456,13 +456,13 @@ export default function NetworkPage() {
     const fetchServiceProviderData = async () => {
       try {
         setLoading(true);
-        if (!user || isLoading) return;
+        // if (!user || isLoading) return;
         if(ServiceProviderData.length === 0) {
         const response = await axios.get(
           `${API_URL}/api/network/list-profile-by-role/ServiceProvider`,
           {
             headers: {
-              user_id: userId,
+              // user_id: userId,
             },
           }
         );
@@ -628,17 +628,8 @@ export default function NetworkPage() {
               </Select>
             </div>
 
-              {!user ? (
-                  <div className="items-center justify-center flex flex-col space-y-4">
-                    <p className="text-center text-lg text-gray-400">Please login to view profiles.</p>
-                    <Button 
-                      onClick={() => router.push('/api/auth/login')}
-                      className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
-                      Login
-                    </Button>
-                  </div>
-              ): 
-              loading? (
+              
+              {loading? (
                 <div className="text-center">
                   <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
                   <p className="text-gray-400">Loading Data ...</p>

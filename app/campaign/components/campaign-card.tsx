@@ -103,7 +103,7 @@ export function CampaignCard({ campaign }: CampaignProps) {
             <div className="flex justify-between text-sm mb-1">
               <span className="text-gray-400">Raised</span>
               <span className="font-medium">
-                {formatCurrency(campaign.fundingRaised)} / {formatCurrency(campaign.fundingGoal)}
+                {campaign.fundingRaised} USDC / {campaign.fundingGoal} USDC
               </span>
             </div>
             <Progress value={progressPercentage} className="h-2 bg-[#1e293b]" indicatorClassName="bg-[#39e7f5]" />

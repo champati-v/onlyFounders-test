@@ -1,6 +1,5 @@
 "use client"
 
-
 import { useState, useEffect } from "react"
 import { ArrowRight, ArrowUpRightFromSquareIcon, Building, CheckCircle, Router, Search, User, Wallet, X } from "lucide-react"
 import Link from "next/link"

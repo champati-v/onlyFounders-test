@@ -271,11 +271,10 @@ useEffect(() => {
   }
 
   const handleInvest = () => {
-    if (!isConnected) {
+    if (!user){
       toast({
-        title: "Connect Wallet",
-        description: "Please connect your wallet to invest in this campaign.",
-        variant: "destructive",
+        title: "Login and Complete Profile",
+        description: " To invest, please log in and finish setting up your profile (just takes 2 mins).",
       })
       return
     }
@@ -287,10 +286,10 @@ useEffect(() => {
       })
       return
     }
-    else if (!user){
+    else if (!isConnected) {
       toast({
-        title: "Complete Onboarding",
-        description: "Please complete your onboarding before investing.",
+        title: "Connect Wallet",
+        description: "Please connect your wallet to invest in this campaign.",
         variant: "destructive",
       })
       return
@@ -381,8 +380,7 @@ useEffect(() => {
         <div className="flex justify-between mb-1">
           <span>Raised</span>
           <span className="font-medium">
-            {formatCurrency(campaign.totalRaisedOnPlatform)} / {formatCurrency(campaign.fundingTarget)}{" "}
-            {campaign.acceptedCurrencyType?.toUpperCase() || "USDC"}
+            {campaign.totalRaisedOnPlatform} USDC / {campaign.fundingTarget}{" "} USDC
           </span>
         </div>
         <div className="w-full bg-[#1e293b] rounded-full h-1.5">
@@ -425,14 +423,6 @@ useEffect(() => {
           Edit Campaign
         </Button>
       )}
-
-      <Button
-        variant="outline"
-        className="w-full border border-[#1e293b] bg-transparent text-white py-3 rounded-md font-medium mb-3 flex items-center justify-center gap-2 hover:bg-[#131e32] transition-colors"
-      >
-        <Bookmark size={16} />
-        Add to Watchlist
-      </Button>
 
       <div className="grid grid-cols-2 gap-3 mb-8">
         <Button
