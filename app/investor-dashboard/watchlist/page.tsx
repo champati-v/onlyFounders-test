@@ -76,24 +76,7 @@ export default function WatchlistPage() {
   }))
 
   // Keep the mock data as fallback
-  const watchlistProjects =
-    mappedWatchlistProjects.length > 0
-      ? mappedWatchlistProjects
-      : [
-          {
-            id: "1",
-            name: "Loading",
-            logo: "/placeholder.svg?height=40&width=40&text=VR",
-            category: "Loading",
-            description: "Loading",
-            raisedAmount: 0,
-            targetAmount: 0,
-            backers: 0,
-            daysLeft: 0,
-            starred: true,
-            notifications: true,
-          },
-        ]
+  const watchlistProjects = mappedWatchlistProjects
 
   // Filter projects based on search query
   const filteredProjects = watchlistProjects.filter(
@@ -127,6 +110,11 @@ export default function WatchlistPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {mappedWatchlistProjects.length === 0 && !loading && (
+            <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center text-xl mt-10 text-gray-500">
+              <p>No projects in your watchlist.</p>
+            </div>
+          )}
           {filteredProjects.map((project) => (
             <Card
               key={project.id}

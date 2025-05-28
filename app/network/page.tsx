@@ -723,11 +723,12 @@ export default function NetworkPage() {
                         </div>
                       </div>
                       <Button 
-                      onClick={() => 
-                        {user ? router.push(`/network-profile/founder/${member.user_id}`) 
-                          : toast({title: "Login Required", 
-                            description: "Please login to view profiles.", 
-                            variant: "destructive"})}}
+                      // onClick={() => 
+                      //   {user ? router.push(`/network-profile/founder/${member.user_id}`) 
+                      //     : toast({title: "Login Required", 
+                      //       description: "Please login to view profiles.", 
+                      //       variant: "destructive"})}}
+                      onClick={() => router.push(`/network-profile/founder/${member.user_id}`)}
                        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
                         View Profile
                       </Button>
@@ -853,11 +854,12 @@ export default function NetworkPage() {
                    {/* Bottom Button */}
                    <div className="pt-4">
                      <Button 
-                    onClick={() => 
-                      {user ? router.push(`/network-profile/investor/${member.user_id}`) 
-                        : toast({title: "Login Required", 
-                          description: "Please login to view profiles.", 
-                          variant: "destructive"})}}
+                    // onClick={() => 
+                    //   {user ? router.push(`/network-profile/investor/${member.user_id}`) 
+                    //     : toast({title: "Login Required", 
+                    //       description: "Please login to view profiles.", 
+                    //       variant: "destructive"})}}
+                    onClick={() => router.push(`/network-profile/founder/${member.user_id}`)}
                       className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
                        View Profile
                      </Button>
@@ -991,11 +993,12 @@ export default function NetworkPage() {
                    {/* Bottom Button */}
                    <div className="pt-4">
                      <Button 
-                     onClick={() => 
-                        {user ? router.push(`/network-profile/serviceProvider/${member.user_id}`) 
-                          : toast({title: "Login Required", 
-                            description: "Please login to view profiles.", 
-                            variant: "destructive"})}}
+                    //  onClick={() => 
+                    //     {user ? router.push(`/network-profile/serviceProvider/${member.user_id}`) 
+                    //       : toast({title: "Login Required", 
+                    //         description: "Please login to view profiles.", 
+                    //         variant: "destructive"})}}
+                    onClick={() => router.push(`/network-profile/founder/${member.user_id}`)}
                       className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white">
                        View Profile
                      </Button>

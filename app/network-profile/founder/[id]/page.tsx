@@ -64,16 +64,16 @@ export default function FounderProfilePage({
       try {
         setIsProfileLoading(true);
 
-        if (!user) {
-          return;
-        }
+        // if (!user) {
+        //   return;
+        // }
 
         const response = await fetch(
           `${API_URL}/api/network/get-profile-data/${founderId}/Founder`,
           {
             method: "GET",
             headers: {
-              user_id: userId,
+              // user_id: userId,
             },
           }
         );
@@ -105,7 +105,7 @@ export default function FounderProfilePage({
     fetchProfile();
   }, [user]);
 
-  if (isProfileLoading || isLoading) {
+  if (isProfileLoading ) {
     return (
       <div className="w-full max-w-4xl mx-auto p-10">
         <Skeleton className="h-48 w-full rounded-md bg-blue-600" />
