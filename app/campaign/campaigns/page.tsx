@@ -215,8 +215,9 @@ useEffect(() => {
           : `${API_URL}/api/startup/list-my-campaigns`
 
       const response = await fetch(endpoint, {
-        headers: {
-        },
+        headers: filter === "my"
+          ? { user_id: userId }
+          : {},
       })
 
       if (response.status === 204 || response.status === 404) {
