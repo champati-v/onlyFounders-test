@@ -184,8 +184,8 @@ const InvestorUSDCDepositABI= [
     }
   ];
 
-const CONTRACT_ADDRESS = '0x1FcF94E9245b1BbC6adC7222F9e06fc871221424';
-const USDC_ADDRESS = '0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238'; // Must match constructor param
+const CONTRACT_ADDRESS = '0x0a69744B3f791A33c37521ec68149828bc2c0ca5';
+const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'; // Must match constructor param
 
 
 export function FundingSidebar({ campaign }: FundingSidebarProps) {
@@ -310,10 +310,10 @@ useEffect(() => {
 
   const parsedAmount = ethers.parseUnits(amount, 6); // USDC has 6 decimals
 
-  if (parsedAmount < ethers.parseUnits('5', 6)) {
+  if (parsedAmount < ethers.parseUnits('100', 6)) {
     toast({
       title: "⚠️ Minimum Deposit",
-      description: "The minimum deposit amount is 5 USDC.",
+      description: "The minimum deposit amount is 100 USDC.",
       variant: "destructive",
     });
   }
