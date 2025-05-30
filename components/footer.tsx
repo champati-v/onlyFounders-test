@@ -124,21 +124,6 @@ export function Footer() {
                 />
                 <span className="sr-only">Mail</span>
               </Link>
-              <Link
-                href="https://spring.net/discover/onlyfounders"
-                className="text-gray-400 hover:text-white px-2"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Image
-                  src="/Spring.svg"
-                  alt="spring"
-                  width={80}
-                  height={80}
-                  priority
-                />
-                <span className="sr-only">Spring</span>
-              </Link>
             </div>
           </div>
 
@@ -147,7 +132,9 @@ export function Footer() {
               <ul className="space-y-2">
               <li>
                   <Link
-                    href="/about"
+                    href="https://www.onlyfounders.xyz/about"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-gray-400 hover:text-white"
                   >
                     About
@@ -190,9 +177,9 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="https://only-founder.gitbook.io/only-founder-docs/onlyfounders-documentations/onlyfounders-intelligent-capital-infrastructure" target="_blank"
+                  <Link href="https://www.onlyfounders.xyz/blogs" target="_blank"
                     rel="noopener noreferrer" className="text-gray-400 hover:text-white">
-                    Whitepaper
+                    Blogs
                   </Link>
                 </li>
                 <li>

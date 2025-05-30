@@ -368,7 +368,7 @@ export default function CreateCampaignPage() {
           form.setValue("headerImage", startup.bannerImage.file_url)
 
           // Set default fundraising wallet (this would typically come from the user's wallet)
-          form.setValue("fundraisingWallet", address || "0x123hsokf3o45odinfv")
+          form.setValue("fundraisingWallet", address)
 
           if (startup.bannerImage.file_url) {
             setBannerSrc(startup.bannerImage.file_url)
@@ -1439,13 +1439,12 @@ export default function CreateCampaignPage() {
                     name="fundraisingWallet"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Fundraising Wallet (immutable)</FormLabel>
+                        <FormLabel>Fundraising Wallet</FormLabel>
                         <FormControl>
                           <Input
                             {...field}
-                            placeholder="0x..."
+                            placeholder="Enter your fundraising wallet address"
                             className="bg-[#1a1b2e] border-[#2e2f45] text-white"
-                            disabled
                           />
                         </FormControl>
                         <FormMessage />

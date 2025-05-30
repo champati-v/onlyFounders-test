@@ -9,13 +9,12 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { Bookmark, Search, TrendingUp, Users, Calendar, ArrowUpRight, CheckCircle, Loader2Icon } from "lucide-react"
-import { FaRegBookmark } from "react-icons/fa";
-import { FaBookmark } from "react-icons/fa";
+import { Bookmark, Search, TrendingUp, Users, Calendar, ArrowUpRight, CheckCircle, Loader2Icon, ArrowUpRightFromSquareIcon, X, Building, Wallet, User, ArrowRight } from "lucide-react"
 import { useUser } from "@auth0/nextjs-auth0/client"
 import {useToast} from '../../hooks/use-toast'
 import { useRouter } from "next/navigation"
 import axios from "axios";
+import { AppLayout } from '@/components/layout/app-layout';
 
 
 // Define the startup interface based on the updated API response
@@ -52,8 +51,123 @@ export default function MarketplacePage() {
   const [hasStartup, setHasStartup] = useState(false);
   const [startupLoading, setStartupLoading] = useState(false)
   const [searchItem, setSearchItem] = useState<string>("")
+  const [onBoardingStatus, setOnboardingStatus] = useState<string | null>(null)
+  const [showOnboardingBar, setShowOnboardingBar] = useState(false)
+  const [showOnboardingModal, setShowOnboardingModal] = useState(false)
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([])
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
   const router = useRouter()
+
+
+  
+      useEffect(() => {
+          const getOnboardingStatus = async () => {
+            try {
+              if (!user || isLoading) return;
+              const userID = user?.sub?.substring(14);
+        
+              const response = await fetch(
+                `${API_URL}/api/profile/get-onboarding-status`,
+                {
+                  method: "GET",
+                  headers: {
+                    "Content-Type": "application/json",
+                    user_id: userID || "",
+                  },
+                }
+              );
+        
+              // if (!response.ok) {
+              //   throw new Error(`API error: ${response.status}`);
+              // }
+        
+              const data = await response.json();
+              setOnboardingStatus(data.status);
+              if (data.status === false) {
+                setShowOnboardingBar(true);
+              }
+    
+              // Navigate based on the fetched status
+                if (!data.role || (Array.isArray(data.role) && data.role.length === 0)) {
+                setShowOnboardingModal(true);
+                }
+            } catch (error) {
+              console.error("Error checking profile status:", error);
+            }
+          };
+        
+          getOnboardingStatus();
+        }, [user, isLoading, router]);
+
+
+ const handleRoleToggle = (role: string) => {
+    setSelectedTypes((prev) => {
+      // If role is already selected, remove it
+      if (prev.includes(role)) {
+        return prev.filter((r) => r !== role)
+      }
+      // Otherwise add it to the array
+      return [...prev, role]
+    })
+  }
+
+  const handleContinue = async () => {
+        if (selectedTypes.length === 0) return
+    
+        setIsSubmitting(true)
+    
+        try {
+          const userId = user?.sub?.substring(14)
+    
+          if (!userId) {
+            toast({
+              title: "Authentication error",
+              description: "Please sign in again to continue.",
+              variant: "destructive",
+            })
+            router.push("/api/auth/login")
+            return
+          }
+    
+          const response = await fetch(`${API_URL}/api/profile/submit-role`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              user_id: userId,
+            },
+            body: JSON.stringify({
+              role: selectedTypes,
+            }),
+          })
+  
+          if(response.status === 200) {
+            toast({
+              title: "Success",
+              description: "Your role has been saved successfully.",
+              variant: "default",
+            })
+            setShowOnboardingModal(false)
+          }
+    
+          // const getRole = await fetch(`${API_URL}/api/profile/get-onboarding-status`, {
+          //   method: "GET",
+          //   headers: {
+          //     user_id: user?.sub?.substring(14),
+          //   },
+          // })
+    
+        } catch (error) {
+          console.error("Error submitting role:", error)
+          toast({
+            title: "Something went wrong",
+            description: "Failed to save your role. Please try again.",
+            variant: "destructive",
+          })
+        } finally {
+          setIsSubmitting(false)
+        }
+      }
 
   useEffect(() => {
     const checkLoggedIn = async () => {
@@ -198,6 +312,28 @@ export default function MarketplacePage() {
   const featuredStartups = startups?.filter((startup) => startup.featuredStatus === "Featured")
 
   return (
+    <>
+    {showOnboardingBar && (
+      <div className="w-full bg-slate-800 text-sm py-2 px-4 relative flex justify-center">
+        <div className="flex flex-col md:flex-row items-center gap-1 text-center text-white max-w-screen-md">
+          <span className="text-blue-400">Welcome to OnlyFounders!</span>
+          <div className="flex items-center gap-1">
+            <span>To get full access to our platform,</span>
+            <span onClick={() => router.push('/profile/setup')} className="inline-flex items-center justify-center underline text-blue-400 cursor-pointer">
+              complete your profile now
+              <ArrowUpRightFromSquareIcon className="w-4 h-4 ml-1" />
+            </span>
+          </div>
+        </div>
+        
+        {/* Close Button */}
+        <button onClick={() => setShowOnboardingBar(true)} className="absolute right-3 md:right-4 top-4 md:top-1/2 -translate-y-1/2 text-white sm:right-6">
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+    )}
+
+    <AppLayout className=''>
     <div>
       <div className="container mx-auto py-8 space-y-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -625,6 +761,123 @@ export default function MarketplacePage() {
           </>
         )}
       </div>
+
+            {/* {showOnboardingModal && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-black/10">
+              <div className="space-y-6">
+              <div className="space-y-2 text-center">
+                <h1 className="text-3xl font-bold text-white">Welcome to OnlyFounders</h1>
+                <p className="text-gray-400 max-w-2xl mx-auto">
+                  Complete your profile to get started with our Web3 fundraising platform
+                </p>
+              </div>
+      
+              <div className="flex justify-center">
+                <div className="w-full max-w-md">
+                  <Card className="bg-gray-900 border-gray-800">
+                    <CardHeader>
+                      <CardTitle className="text-xl text-white">Choose Your Role(s)</CardTitle>
+                      <CardDescription className="text-gray-400">
+                        Select how you want to use OnlyFounders
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div
+                        className={`flex items-start p-4 rounded-lg border cursor-pointer transition-colors ${
+                          selectedTypes.includes("Founder")
+                            ? "border-blue-600 bg-blue-950/20"
+                            : "border-gray-800 bg-gray-800/50 hover:border-gray-700"
+                        }`}
+                        onClick={() => handleRoleToggle("Founder")}
+                      >
+                        <div className="mr-4 p-2 rounded-full bg-blue-900/30">
+                          <Building className="h-6 w-6 text-blue-400" />
+                        </div>
+                        <div>
+                          <div className="flex items-center justify-between">
+                            <h3 className="text-lg font-medium text-white">I'm a Founder</h3>
+                            {selectedTypes.includes("Founder")? (
+                              <CheckCircle className="h-5 w-5 text-green-500" />
+                            ): (
+                              <div className="bg-gray-600 rounded-full h-5 w-5" />
+                            )}
+                          </div>
+                          <p className="text-gray-400 text-sm mt-1">
+                            Raise funds for your Web3 project, connect with investors, and grow your startup
+                          </p>
+                        </div>
+                      </div>
+      
+                      <div
+                        className={`flex items-start p-4 rounded-lg border cursor-pointer transition-colors ${
+                          selectedTypes.includes("Investor")
+                            ? "border-purple-600 bg-purple-950/20"
+                            : "border-gray-800 bg-gray-800/50 hover:border-gray-700"
+                        }`}
+                        onClick={() => handleRoleToggle("Investor")}
+                      >
+                        <div className="mr-4 p-2 rounded-full bg-purple-900/30">
+                          <Wallet className="h-6 w-6 text-purple-400" />
+                        </div>
+                        <div>
+                          <div className="flex items-center justify-between">
+                            <h3 className="text-lg font-medium text-white">I'm an Investor</h3>
+                            {selectedTypes.includes("Investor")? (
+                                <CheckCircle className="h-5 w-5 text-green-500" />
+                              ): (
+                                <div className="bg-gray-600 rounded-full h-5 w-5" />
+                              )}
+                          </div>
+                          <p className="text-gray-400 text-sm mt-1">
+                            Discover promising Web3 projects, invest in blockchain startups, and track your portfolio
+                          </p>
+                        </div>
+                      </div>
+      
+                      <div
+                        className={`flex items-start p-4 rounded-lg border cursor-pointer transition-colors ${
+                          selectedTypes.includes("ServiceProvider")
+                            ? "border-amber-600 bg-amber-950/20"
+                            : "border-gray-800 bg-gray-800/50 hover:border-gray-700"
+                        }`}
+                        onClick={() => handleRoleToggle("ServiceProvider")}
+                      >
+                        <div className="mr-4 p-2 rounded-full bg-amber-900/30">
+                          <User className="h-6 w-6 text-amber-400" />
+                        </div>
+                        <div>
+                          <div className="flex items-center justify-between">
+                            <h3 className="text-lg font-medium text-white">I'm a Service Provider</h3>
+                            {selectedTypes.includes("ServiceProvider")? (
+                                  <CheckCircle className="h-5 w-5 text-green-500" />
+                                ): (
+                                  <div className="bg-gray-600 rounded-full h-5 w-5" />
+                                )}
+                          </div>
+                          <p className="text-gray-400 text-sm mt-1">
+                            Connect with Startups, Mentor, Scale, Support and Build.
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                    <CardFooter>
+                      <div className="mb-4 w-full flex flex-col items-center"> 
+                        <Button
+                          onClick={() => handleContinue()} 
+                          className="w-full bg-black hover:bg-gray-800 text-white border border-gray-800">
+                           {isSubmitting ? "Submitting..." : "Continue"}
+                           {!isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}
+                        </Button>
+                      </div>
+                    </CardFooter>
+                  </Card>
+                </div>
+              </div>
+            </div>
+            </div>
+          )} */}
     </div>
+    </AppLayout>
+    </>
   )
 }

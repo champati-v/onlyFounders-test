@@ -520,8 +520,8 @@ export default function ResourcesPage() {
             <AIAgents />
           </TabsContent>
 
-          {/* <TabsContent id="blogs" value="blogs">
-            <div className="space-y-8">
+          <TabsContent id="blogs" value="blogs">
+            {/* <div className="space-y-8">
               <div className="flex flex-col space-y-4 sm:space-y-0 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex flex-wrap gap-2">
                   <Button
@@ -633,8 +633,8 @@ export default function ResourcesPage() {
                   </Card>
                 ))}
               </div>
-            </div>
-          </TabsContent> */}
+            </div> */}
+          </TabsContent>
 
           <TabsContent value="videos">
             <div className="space-y-8">
@@ -980,7 +980,7 @@ export default function ResourcesPage() {
           </TabsContent>
         </Tabs>
 
-        <Card className="bg-gray-900 border-gray-800">
+        {/* <Card className="bg-gray-900 border-gray-800">
           <CardContent className="p-8">
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="flex-1">
@@ -1009,7 +1009,7 @@ export default function ResourcesPage() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
   );
 }

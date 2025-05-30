@@ -14,8 +14,6 @@ import {
   Home,
   LayoutDashboard,
   LineChart,
-  MessageSquare,
-  Settings,
   Users,
   Wallet,
   Star,
@@ -33,10 +31,10 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const isInvestorDashboard = pathname?.startsWith("/investor-dashboard")
   const isFounderDashboard = pathname?.startsWith("/founder-dashboard")
-  const [isProfileLoading, setIsProfileLoading] = useState(false);
-  const { user, isLoading} = useUser()
+  const [isProfileLoading, setIsProfileLoading] = useState(false)
+  const { user, isLoading } = useUser()
   const name = user?.name
-  const [role, setRole] = useState<string>("");
+  const [role, setRole] = useState<string>("")
 
   // Define navigation items for both dashboards
   const investorNavItems = [
@@ -57,48 +55,43 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   // Select the appropriate navigation items based on the current dashboard
   const sidebarNavItems = isInvestorDashboard ? investorNavItems : founderNavItems
 
-  // Function to check if a path is active
+  // Fixed isActive function to ensure only the selected tab is active
   const isActive = (path: string) => {
-    if (path === "/investor-dashboard" && pathname === "/investor-dashboard") {
-      return true
+    // For root dashboard paths, only match exactly
+    if (path === "/investor-dashboard" || path === "/founder-dashboard") {
+      return pathname === path
     }
-    if (path === "/founder-dashboard" && pathname === "/founder-dashboard") {
-      return true
-    }
-    return pathname === path || pathname?.startsWith(`${path}/`)
+    // For other paths, match exactly or check if it's the current path
+    return pathname === path
   }
 
   useEffect(() => {
-          const getOnboardingStatus = async () => {
-            try {
-              if (!user || isLoading) return;
-        
-              setIsProfileLoading(true);
-              const userID = user.sub?.substring(14);
-        
-              const response = await fetch(
-                `${API_URL}/api/profile/get-onboarding-status`,
-                {
-                  method: "GET",
-                  headers: {
-                    "Content-Type": "application/json",
-                    user_id: userID || "",
-                  },
-                }
-              );
-        
-              const data = await response.json();
-              setRole(data.role);
-  
-            } catch (error) {
-              console.error("Error checking profile status:", error);
-            } finally {
-              setIsProfileLoading(false);
-            }
-          };
-        
-          getOnboardingStatus();
-        }, [user, isLoading]);
+    const getOnboardingStatus = async () => {
+      try {
+        if (!user || isLoading) return
+
+        setIsProfileLoading(true)
+        const userID = user.sub?.substring(14)
+
+        const response = await fetch(`${API_URL}/api/profile/get-onboarding-status`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            user_id: userID || "",
+          },
+        })
+
+        const data = await response.json()
+        setRole(data.role)
+      } catch (error) {
+        console.error("Error checking profile status:", error)
+      } finally {
+        setIsProfileLoading(false)
+      }
+    }
+
+    getOnboardingStatus()
+  }, [user, isLoading])
 
   return (
     <AppLayout className="">
@@ -130,7 +123,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <div className="bg-gradient-to-br from-indigo-950/50 to-purple-900/30 border border-purple-800/20 rounded-lg p-4">
               <div className="flex items-center gap-3 mb-6">
                 <div className="h-10 w-10 rounded-full overflow-hidden relative">
-                  <Image src={user?.picture} alt="User Avatar" fill className="object-cover" />
+                  <Image src={user?.picture || "/placeholder.svg"} alt="User Avatar" fill className="object-cover" />
                 </div>
                 <div>
                   <h3 className="text-white font-medium">{name}</h3>
@@ -163,7 +156,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <div className="space-y-1">
                 {role.includes("Founder") && isInvestorDashboard && (
                   <Link
-                    href='/founder-dashboard'
+                    href="/founder-dashboard"
                     className="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-purple-200/70 hover:bg-purple-900/30 hover:text-white transition-colors"
                   >
                     <Building className="h-4 w-4" />
@@ -172,7 +165,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 )}
                 {role.includes("Investor") && isFounderDashboard && (
                   <Link
-                    href='/investor-dashboard'
+                    href="/investor-dashboard"
                     className="flex items-center gap-3 px-3 py-2 text-sm rounded-md text-purple-200/70 hover:bg-purple-900/30 hover:text-white transition-colors"
                   >
                     <Building className="h-4 w-4" />
@@ -189,4 +182,3 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     </AppLayout>
   )
 }
-

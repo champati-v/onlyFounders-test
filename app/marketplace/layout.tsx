@@ -33,9 +33,9 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <AppLayout className="">
+    <>
         {children}
-    </AppLayout>
+    </>
   );
 };
 

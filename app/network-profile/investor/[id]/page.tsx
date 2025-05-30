@@ -201,20 +201,25 @@ export default function InvestorProfilePage({
                   {profile.professionalTitle}
                 </p>
                 <span className="text-gray-300">•</span>
-                <span className="text-gray-300 bg-[#1e1a3c] px-2 py-0.5 rounded text-sm">
-                  {profile.role}
-                </span>
+                {profile.role.map((role, index) => (
+                  <span
+                    key={index}
+                    className="text-gray-300 bg-[#1e1a3c] px-2 py-0.5 rounded text-sm"
+                  >
+                    {role}
+                  </span>
+                ))}
               </div>
               <div className="mt-1">
                 <Badge
                   variant="outline"
                   className={`text-white border-none px-2 py-0.5 rounded ${
-                    profile.status === "Verified"
+                    profile.status === "verified"
                       ? "bg-green-700"
                       : "bg-yellow-700"
                   }`}
                 >
-                  {profile.status}
+                  {profile.status === "verified" ? "Verified" : "Unverified"}
                 </Badge>
               </div>
             </div>
