@@ -211,7 +211,7 @@ useEffect(() => {
 
       const data = await response.json()
       const activeCampaign = data.campaigns.find(
-        (campaign: Campaign) => campaign.campaignStatus === "Active"
+        (campaign: Campaign) => campaign.campaignStatus === "Active"|| campaign.campaignStatus === "Pending"
       )
 
       setCurrentUserCampaign(activeCampaign || null)

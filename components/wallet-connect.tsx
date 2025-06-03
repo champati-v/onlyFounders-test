@@ -57,7 +57,7 @@ export function WalletConnect() {
     setWalletAddress("")
     setSelectedWallet("")
   }
-
+  console.log("wallet connected status",isConnected);
   if (isConnected) {
     return (
       <Dialog>
