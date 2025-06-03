@@ -309,7 +309,7 @@ const handleDeposit = async () => {
   const ETHEREUM_MAINNET_CHAIN_ID = "0x1"; // hex for chainId 1
 
   try {
-    const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
+    let currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
 
     if (currentChainId !== ETHEREUM_MAINNET_CHAIN_ID) {
       try {
@@ -317,6 +317,19 @@ const handleDeposit = async () => {
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: ETHEREUM_MAINNET_CHAIN_ID }],
         });
+
+        // 🆕 Re-check after switching
+      currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
+
+      if (currentChainId !== ETHEREUM_MAINNET_CHAIN_ID) {
+        toast({
+          title: "⚠️ Still on Wrong Network",
+          description: "Please switch to Ethereum Mainnet in MetaMask manually.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       } catch (switchError: any) {
         if (switchError.code === 4902) {
           toast({
