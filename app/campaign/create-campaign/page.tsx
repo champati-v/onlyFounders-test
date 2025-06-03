@@ -126,7 +126,9 @@ const step1Schema = z.object({
   campaignOverview: z.string().min(1, "Campaign overview is required"),
   tagline: z.string().min(1, "Tagline is required"),
   category: z.string().min(1, "Category is required"),
-  startupStage: z.string().min(1, "Startup stage is required"),
+  startupStage:  z
+  .string({ required_error: "Startup stage is required" })
+  .min(1, "Startup stage is required"),
   logo: z.string().min(1, "Logo is required"),
   banner: z.string().min(1, "Banner is required"),
   website: z.string().url("Please enter a valid URL").optional().or(z.literal("")),
