@@ -214,6 +214,18 @@ export default function TermsConditions() {
               2.4 You must not be a resident of or located in any jurisdiction where participation in token offerings or
               cryptocurrency transactions is prohibited.
             </p>
+            <p
+              className="text-[#B8B8B8]"
+              style={{
+                fontSize: "20px",
+                fontWeight: 400,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              2.5 Founders must have legal authority to represent the Web3 project they are fundraising for.
+            </p>
+
           </div>
         </div>
 
@@ -1088,7 +1100,7 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              7.1 Platform Content
+              7.1 Platform IP
             </h3>
 
             <p
@@ -1100,8 +1112,7 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              7.1.1 All content on the Platform, including text, graphics, logos, and software, is the property of
-              OnlyFounders Inc. or its licensors.
+              7.1.1 All Platform content, including logos, trademarks, and software, is the property of OnlyFounders Inc.
             </p>
 
             <p
@@ -1113,8 +1124,7 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              7.1.2 Users may not copy, modify, distribute, or create derivative works from Platform content without
-              express written permission.
+              7.1.2 Users may not copy, modify, or distribute Platform content without explicit permission.
             </p>
 
             <h3
@@ -1126,7 +1136,7 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              7.2 User Content
+              7.2 Project IP
             </h3>
 
             <p
@@ -1138,7 +1148,7 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              7.2.1 Users retain ownership of content they submit to the Platform.
+              7.2.1 Founders retain all intellectual property rights to their projects.
             </p>
 
             <p
@@ -1150,8 +1160,8 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              7.2.2 By submitting content, users grant the Platform a non-exclusive license to use, display, and
-              distribute the content.
+              7.2.2 By listing a project, Founders grant the Platform a non-exclusive
+              license to display project information.
             </p>
 
             <p
@@ -1163,9 +1173,55 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              7.2.3 Users warrant that they have the rights to grant such licenses and that their content does not
-              infringe on any third-party rights.
+              7.2.3 Investors do not acquire intellectual property rights through their
+              investments unless explicitly stated in investment agreements.
             </p>
+
+            <h3
+              className="text-white"
+              style={{
+                fontSize: "18px",
+                fontWeight: 500,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              7.3 Open Source Considerations
+            </h3>
+            <p
+              className="text-[#B8B8B8]"
+              style={{
+                fontSize: "20px",
+                fontWeight: 400,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              7.3.1 Founders must disclose whether their project uses open-source components.
+            </p>
+            <p
+              className="text-[#B8B8B8]"
+              style={{
+                fontSize: "20px",
+                fontWeight: 400,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              7.3.2 Founders must comply with all open-source license requirements.
+            </p>
+            <p
+              className="text-[#B8B8B8]"
+              style={{
+                fontSize: "20px",
+                fontWeight: 400,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              7.3.3 Founders must disclose whether their own code will be open-sourced and under what license.
+            </p>
+
           </div>
         </div>
 
@@ -1180,7 +1236,7 @@ export default function TermsConditions() {
               fontFamily: "Poppins, sans-serif",
             }}
           >
-            8. DISCLAIMERS
+            8. PRIVACY AND DATA
           </h2>
 
           <div className="space-y-4">
@@ -1193,7 +1249,7 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              8.1 No Warranty
+              8.1 Data Collection
             </h3>
 
             <p
@@ -1205,8 +1261,7 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              8.1.1 The Platform is provided "as is" and "as available" without any warranties of any kind, either
-              express or implied.
+              8.1.1 The Platform collects user data as described in the Privacy Policy.
             </p>
 
             <p
@@ -1218,8 +1273,8 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              8.1.2 The Platform disclaims all warranties, including but not limited to warranties of merchantability,
-              fitness for a particular purpose, and non-infringement.
+              8.1.2 Users consent to the collection and processing of their data for Platform
+              operations.
             </p>
 
             <h3
@@ -1231,7 +1286,7 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              8.2 No Investment Advice
+              8.2 Blockchain Transparency
             </h3>
 
             <p
@@ -1243,8 +1298,7 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              8.2.1 The Platform does not provide investment advice, and information on the Platform should not be
-              construed as such.
+              8.2.1 Users acknowledge that blockchain transactions are publicly visible.
             </p>
 
             <p
@@ -1256,7 +1310,7 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              8.2.2 Users are solely responsible for making their own investment decisions.
+              8.2.2 The Platform cannot remove or modify information recorded on public blockchains.
             </p>
 
             <h3
@@ -1268,7 +1322,7 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              8.3 No Guarantee of Project Success
+              8.3 KYC/AML Information
             </h3>
 
             <p
@@ -1280,7 +1334,7 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              8.3.1 The Platform does not guarantee the success of any Web3 project listed on the Platform.
+              8.3.1 The Platform collects identity verification information for compliance purposes.
             </p>
 
             <p
@@ -1292,7 +1346,7 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              8.3.2 Investors acknowledge that they may lose their entire investment.
+              8.3.2 The Platform may share KYC/AML information with regulatory authorities when legally required.
             </p>
           </div>
         </div>
@@ -1308,7 +1362,7 @@ export default function TermsConditions() {
               fontFamily: "Poppins, sans-serif",
             }}
           >
-            9. LIMITATION OF LIABILITY
+            9. RISK DISCLOSURES
           </h2>
 
           <div className="space-y-4">
@@ -1321,7 +1375,7 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              9.1 Exclusion of Damages
+              9.1 Technology Risks
             </h3>
 
             <p
@@ -1333,8 +1387,7 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              9.1.1 The Platform shall not be liable for any indirect, incidental, special, consequential, or punitive
-              damages.
+              9.1.1 Web3 technologies are experimental and may contain unknown vulnerabilities.
             </p>
 
             <p
@@ -1346,7 +1399,20 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              9.1.2 This includes damages for loss of profits, data, or other intangible losses.
+              9.1.2 Smart contracts may contain bugs or security flaws despite audits.
+            </p>
+
+            <p
+              className="text-[#B8B8B8]"
+              style={{
+                fontSize: "20px",
+                fontWeight: 400,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              9.1.3 Blockchain networks may experience congestion, forks, or other technical
+              issues.
             </p>
 
             <h3
@@ -1358,7 +1424,7 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              9.2 Maximum Liability
+              9.2 Market Risks
             </h3>
 
             <p
@@ -1370,9 +1436,179 @@ export default function TermsConditions() {
                 fontFamily: "Poppins, sans-serif",
               }}
             >
-              9.2.1 The Platform's maximum liability to any user shall not exceed the amount of fees paid by the user to
-              the Platform in the 12 months preceding the claim.
+              9.2.1 Digital assets may experience extreme price volatility.
             </p>
+
+            <p
+              className="text-[#B8B8B8]"
+              style={{
+                fontSize: "20px",
+                fontWeight: 400,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              9.2.2 Liquidity for tokens may be limited or non-existent.
+            </p>
+
+            <p
+              className="text-[#B8B8B8]"
+              style={{
+                fontSize: "20px",
+                fontWeight: 400,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              9.2.3 Market manipulation may occur despite preventative measures.
+            </p>
+
+            <h3
+              className="text-white"
+              style={{
+                fontSize: "18px",
+                fontWeight: 500,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              9.3 Regulatory Risks
+            </h3>
+
+            <p
+              className="text-[#B8B8B8]"
+              style={{
+                fontSize: "20px",
+                fontWeight: 400,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              9.3.1 Regulations regarding digital assets are evolving and may change rapidly.
+            </p>
+
+
+            <p
+              className="text-[#B8B8B8]"
+              style={{
+                fontSize: "20px",
+                fontWeight: 400,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              9.3.2 Future regulatory changes may adversely affect Web3 projects or token values.
+            </p>
+
+
+            <p
+              className="text-[#B8B8B8]"
+              style={{
+                fontSize: "20px",
+                fontWeight: 400,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              9.3.3 Regulatory actions may require the Platform to delist projects or restrict certain activities.
+            </p>
+
+
+            <h3
+              className="text-white"
+              style={{
+                fontSize: "18px",
+                fontWeight: 500,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              9.4 Project Risks
+            </h3>
+
+
+            <p
+              className="text-[#B8B8B8]"
+              style={{
+                fontSize: "20px",
+                fontWeight: 400,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              9.4.1 Web3 projects may fail to deliver on their roadmap.
+            </p>
+            <p
+              className="text-[#B8B8B8]"
+              style={{
+                fontSize: "20px",
+                fontWeight: 400,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              9.4.2 Team members may leave projects, affecting development.
+            </p>
+
+
+            <p
+              className="text-[#B8B8B8]"
+              style={{
+                fontSize: "20px",
+                fontWeight: 400,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              9.4.3 Projects may pivot or change their business model.
+            </p>
+
+             <h3
+              className="text-white"
+              style={{
+                fontSize: "18px",
+                fontWeight: 500,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+             9.5 Security Risks
+            </h3>
+              <p
+              className="text-[#B8B8B8]"
+              style={{
+                fontSize: "20px",
+                fontWeight: 400,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              9.5.1 Digital assets may be vulnerable to hacking, phishing, or other attacks.
+            </p>
+
+                <p
+              className="text-[#B8B8B8]"
+              style={{
+                fontSize: "20px",
+                fontWeight: 400,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              9.5.2 Private keys, if lost or stolen, may result in permanent loss of assets.
+            </p>
+                 <p
+              className="text-[#B8B8B8]"
+              style={{
+                fontSize: "20px",
+                fontWeight: 400,
+                lineHeight: "normal",
+                fontFamily: "Poppins, sans-serif",
+              }}
+            >
+              9.5.3 Smart contracts may be exploited despite security measures.
+            </p>
+
           </div>
         </div>
 

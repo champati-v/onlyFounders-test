@@ -610,7 +610,7 @@ const handleDeposit = async () => {
                   {agreedToTerms && <Check className="w-4 h-4 text-black" />}
                 </button>
                 <span className="text-white font-poppins font-normal text-left">
-                  I agree to the <a href="/terms" target="_blank" className="text-[#0DF] cursor-pointer hover:underline">Terms & Conditions</a>
+                  I agree to the <a href="https://foundershub.notion.site/Legal-Terms-and-Conditions-207f8b9deb7980799a4ec9148380184a?source=copy_link" target="_blank" className="text-[#0DF] cursor-pointer hover:underline">Terms & Conditions</a>
                 </span>
               </div>
 
