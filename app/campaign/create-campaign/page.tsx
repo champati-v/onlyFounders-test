@@ -119,7 +119,7 @@ interface Milestone {
   isExpanded?: boolean
   isPredefined?: boolean
 }
-
+// comment
 // Define form schemas for each step
 const step1Schema = z.object({
   startupName: z.string().min(1, "Startup name is required"),
