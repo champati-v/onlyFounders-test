@@ -299,8 +299,36 @@ useEffect(() => {
     }
   }
 
+
+  const ETHEREUM_MAINNET_CHAIN_ID = '0x1'; // Hexadecimal for chainId 1
  const handleDeposit = async () => {
   if (!window.ethereum) return alert('MetaMask not found');
+
+  const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
+
+  if (currentChainId !== ETHEREUM_MAINNET_CHAIN_ID) {
+    try {
+      await window.ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: ETHEREUM_MAINNET_CHAIN_ID }],
+      });
+    } catch (switchError : any) {
+      if (switchError.code === 4902) {
+        toast({
+          title: "⚠️ Unsupported Network",
+          description: "Please add Ethereum Mainnet to your MetaMask.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "⚠️ Network Switch Failed",
+          description: "Please switch to Ethereum Mainnet manually in MetaMask.",
+          variant: "destructive",
+        });
+      }
+      return; // Don't proceed if network isn't correct
+    }
+  }
 
   const provider = new ethers.BrowserProvider(window.ethereum);
   const signer = await provider.getSigner();
