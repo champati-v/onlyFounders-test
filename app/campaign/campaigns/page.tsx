@@ -237,7 +237,7 @@ useEffect(() => {
     setVisibleCampaigns((prev) => Math.min(prev + 3, filteredCampaigns.length))
   }
 
-
+console.log("haveStartup:", haveStartup);
   return (
     <>
     <AppLayout className="">

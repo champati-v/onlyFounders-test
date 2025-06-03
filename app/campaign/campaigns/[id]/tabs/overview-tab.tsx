@@ -175,7 +175,7 @@ export function OverviewTab({ campaign }: OverviewTabProps) {
             >
               <div className="flex items-center gap-2">
                 <MessageSquareText size={18} className="text-[#39e7f5]" />
-                <span className="text-sm sm:text-base">Ptich Deck</span>
+                <span className="text-sm sm:text-base">Pitch Deck</span>
               </div>
               <ArrowUpRight size={16} className="text-gray-400" />
             </a>
