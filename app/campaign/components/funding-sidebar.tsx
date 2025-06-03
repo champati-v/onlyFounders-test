@@ -301,103 +301,7 @@ useEffect(() => {
 
 
   const ETHEREUM_MAINNET_CHAIN_ID = '0x1'; // Hexadecimal for chainId 1
- const handleDeposit = async () => {
-  if (!window.ethereum) return alert('MetaMask not found');
-
-  const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
-
-  if (currentChainId !== ETHEREUM_MAINNET_CHAIN_ID) {
-    try {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: ETHEREUM_MAINNET_CHAIN_ID }],
-      });
-    } catch (switchError : any) {
-      if (switchError.code === 4902) {
-        toast({
-          title: "⚠️ Unsupported Network",
-          description: "Please add Ethereum Mainnet to your MetaMask.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "⚠️ Network Switch Failed",
-          description: "Please switch to Ethereum Mainnet manually in MetaMask.",
-          variant: "destructive",
-        });
-      }
-      return; // Don't proceed if network isn't correct
-    }
-  }
-
-  const provider = new ethers.BrowserProvider(window.ethereum);
-  const signer = await provider.getSigner();
-
-  const contract = new ethers.Contract(CONTRACT_ADDRESS, InvestorUSDCDepositABI, signer);
-  const usdc = new ethers.Contract(USDC_ADDRESS, usdcAbi, signer);
-
-  const parsedAmount = ethers.parseUnits(amount, 6); // USDC has 6 decimals
-
-  if (parsedAmount < ethers.parseUnits('100', 6)) {
-    toast({
-      title: "⚠️ Minimum Deposit",
-      description: "The minimum deposit amount is 100 USDC.",
-      variant: "destructive",
-    });
-  }
-
-  try {
-    setDepositing(true);
-    setStatus('Approving USDC...');
-    const approveTx = await usdc.approve(CONTRACT_ADDRESS, parsedAmount);
-    await approveTx.wait();
-
-    setStatus('Depositing...');
-    const tx = await contract.deposit(parsedAmount);
-    await tx.wait();
-
-    setStatus('Deposit successful! Recording investment...');
-
-    const response = await axios.post('https://ofStaging.azurewebsites.net/api/startup/add-investment', {
-        campaign_id: campaign._id,
-        amount: parseFloat(amount), // Convert to number
-        walletAddress: address,
-      } ,{
-      headers: {
-        user_id : user_id,
-      },
-    });
-
-    if (response.status != 200) {
-      const errorData = await response;
-      console.log('Error response:', errorData);
-      toast({
-        title: "⚠️ Error",
-        description: `Failed to record investment: ${errorData.data.message || 'Unknown error'}`,
-        variant: "destructive", 
-      });
-    }
-
-    const result = await response;
-    setStatus(`Investment recorded! ID: ${result.data._id}`);
-
-    if(response.status === 200) {
-    toast({
-      title: "✅ Investment Successful",
-      description: `You have successfully invested ${amount} USDC in ${campaign.campaignName}.`
-    });
-  }
-
-  } catch (error) {
-    console.error(error);
-    setStatus('Error: ' + error);
-  } finally {
-    setDepositing(false);
-    setAmount("");
-    setAgreedToTerms(true);
-    setInvestModalOpen(false);
-  }
-};const handleDeposit = async () => {
+const handleDeposit = async () => {
   if (!window.ethereum) {
     return alert('MetaMask not found');
   }
@@ -491,7 +395,7 @@ useEffect(() => {
 
   } catch (error) {
     console.error(error);
-    setStatus('Error: ' + (error as any)?.message || error);
+    setStatus('Error: ' + error);
     toast({
       title: "⚠️ Unexpected Error",
       description: "Something went wrong while processing your investment.",
@@ -503,7 +407,8 @@ useEffect(() => {
     setAgreedToTerms(true);
     setInvestModalOpen(false);
   }
-};
+}
+
 
 
   return (
