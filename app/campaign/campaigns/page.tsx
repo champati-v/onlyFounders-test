@@ -108,27 +108,34 @@ export default function CampaignsPage() {
   //   checkLoggedIn()
   // }, [isUserLoading, user])
 
-  useEffect(() => {
-    const checkStartup = async () => {
-      if (!user || isLoading) return
-      const userId = user?.sub?.substring(14)
+ useEffect(() => {
+  const checkStartup = async () => {
+    if (!user || isUserLoading) return;
 
+    const userId = user?.sub?.substring(14);
+
+    try {
       const response = await fetch(`${API_URL}/api/startup/get-projectId`, {
         headers: {
           user_id: userId,
         },
-      })
-      if (response.status === 200) {
-        setHaveStartup(true)
-      }else {
-        setHaveStartup(false)
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data?.projectId) {
+        setHaveStartup(true);
+      } else {
+        setHaveStartup(false);
       }
+    } catch (error) {
+      console.error("Failed to check startup:", error);
+      setHaveStartup(false);
     }
+  };
 
-    checkStartup()
-  }, [isUserLoading, user])
-
-
+  checkStartup();
+}, [isUserLoading, user]);
 
   // Fetch campaigns from API
 // Main fetchCampaigns with 404/204 fix
