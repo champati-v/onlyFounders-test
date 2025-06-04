@@ -15,7 +15,7 @@ import OCConnectWrapper from "../components/OCConnectWrapper";
 
 const opts = {
   clientId: "90083ac5-8ae6-4912-8884-641a62c4880c",
-  redirectUri: "https://app.onlyfounders.xyz/auth/redirect", // Adjust this URL
+  redirectUri: "https://app.onlyfounders.xyz/auth/redirect", // Adjust this URL added redirect
   referralCode: "ONLYFOUNDERS", // Assign partner code
 };
 
