@@ -14,8 +14,8 @@ import Script from "next/script";
 import OCConnectWrapper from "../components/OCConnectWrapper";
 
 const opts = {
-  // clientId: "90083ac5-8ae6-4912-8884-641a62c4880c",
-  redirectUri: "https://only-founders-test.vercel.app/auth/redirect", // Adjust this URL added redirect
+  clientId: "90083ac5-8ae6-4912-8884-641a62c4880c",
+  redirectUri: "https://only-founders-test.vercel.app/marketplace", // Adjust this URL added redirect
   referralCode: "ONLYFOUNDERS", // Assign partner code
 };
 
