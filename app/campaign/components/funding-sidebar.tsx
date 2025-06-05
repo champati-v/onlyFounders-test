@@ -212,8 +212,8 @@ const CHAIN_CONFIG = {
     chainId: "0xa4b1",
     chainName: "Arbitrum One",
     rpcUrl: "https://arb1.arbitrum.io/rpc",
-    contractAddress: "0x0a69744B3f791A33c37521ec68149828bc2c0ca5",
-    usdcAddress: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    contractAddress: "0x5972241F84B1D6100f6fBbA5DeB521Ee522eb402",
+    usdcAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
     nativeCurrency: {
       name: "Ether",
       symbol: "ETH",
