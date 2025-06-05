@@ -1,5 +1,10 @@
 "use client"
 
+declare global {
+  interface Window {
+    solana?: any;
+  }
+}
 import { API_URL } from "@/lib/config"
 import { useEffect, useState } from "react"
 import { ArrowLeft, Bookmark, Check, Info, MessageSquare, Pencil, Share2, ShieldCheck, Users } from "lucide-react"
@@ -9,12 +14,16 @@ import { useAccount } from "wagmi"
 import { useToast } from "@/hooks/use-toast"
 import { ethers } from "ethers"
 import { FaSpinner } from "react-icons/fa6"
+import * as solanaWeb3 from "@solana/web3.js";
+
 import axios from "axios"
 
 
 interface FundingSidebarProps {
   campaign: any // Using any for now as the full type is defined in the parent component
 }
+
+
 
 const usdcAbi = [
   {
@@ -43,146 +52,180 @@ const usdcAbi = [
 ];
 
 
-const InvestorUSDCDepositABI= [
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_usdcAddress",
-          "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_multisigWallet",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "nonpayable",
-      "type": "constructor"
+const InvestorUSDCDepositABI = [
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_usdcAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_multisigWallet",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "investor",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "Deposited",
+    "type": "event"
+  },
+  {
+    "inputs": [],
+    "name": "MINIMUM_DEPOSIT",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "admin",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "deposit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "deposits",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "investor",
+        "type": "address"
+      }
+    ],
+    "name": "getDeposit",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "multisigWallet",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "usdc",
+    "outputs": [
+      {
+        "internalType": "contract IERC20",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  }
+];
+
+const CHAIN_CONFIG = {
+  ethereum: {
+    chainId: "0x1",
+    chainName: "Ethereum Mainnet",
+    rpcUrl: "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID",
+    contractAddress: "0x0a69744B3f791A33c37521ec68149828bc2c0ca5",
+    usdcAddress: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    nativeCurrency: {
+      name: "Ether",
+      symbol: "ETH",
+      decimals: 18,
     },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "investor",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256"
-        }
-      ],
-      "name": "Deposited",
-      "type": "event"
+    blockExplorerUrl: "https://etherscan.io",
+  },
+
+  arbitrum: {
+    chainId: "0xa4b1",
+    chainName: "Arbitrum One",
+    rpcUrl: "https://arb1.arbitrum.io/rpc",
+    contractAddress: "0x0a69744B3f791A33c37521ec68149828bc2c0ca5",
+    usdcAddress: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    nativeCurrency: {
+      name: "Ether",
+      symbol: "ETH",
+      decimals: 18,
     },
-    {
-      "inputs": [],
-      "name": "MINIMUM_DEPOSIT",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "admin",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "amount",
-          "type": "uint256"
-        }
-      ],
-      "name": "deposit",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "name": "deposits",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "investor",
-          "type": "address"
-        }
-      ],
-      "name": "getDeposit",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "multisigWallet",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [],
-      "name": "usdc",
-      "outputs": [
-        {
-          "internalType": "contract IERC20",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    }
-  ];
+    blockExplorerUrl: "https://arbiscan.io",
+  },
+
+  // Solana is handled separately, no need to include here for EVM logic
+};
+
+
 
 const CONTRACT_ADDRESS = '0x0a69744B3f791A33c37521ec68149828bc2c0ca5';
 const USDC_ADDRESS = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'; // Must match constructor param
@@ -193,42 +236,43 @@ export function FundingSidebar({ campaign }: FundingSidebarProps) {
   const [investModalOpen, setInvestModalOpen] = useState(false)
   const [amount, setAmount] = useState("")
   const [agreedToTerms, setAgreedToTerms] = useState(true)
-  const {user, isLoading } = useUser()
+  const { user, isLoading } = useUser()
   const [onboardingStatus, setOnboardingStatus] = useState<boolean>(false)  // Check if user is the owner of the campaign
   const { address, isConnected } = useAccount();
   const isOwner = campaign.isOwner || false
-  const {toast} = useToast()
+  const { toast } = useToast()
   const [status, setStatus] = useState("")
   const [depositing, setDepositing] = useState(false)
+  const [selectedChain, setSelectedChain] = useState("ethereum");
 
-  const user_id = user?.sub?.substring(14) || "" 
+  const user_id = user?.sub?.substring(14) || ""
 
-useEffect(() => {
-  const getOnboardingStatus = async () => {
-          try {
-            if (!user || isLoading) return;
-            const userID = user.sub?.substring(14);
-      
-            const response = await fetch(
-              `${API_URL}/api/profile/get-onboarding-status`,
-              {
-                method: "GET",
-                headers: {
-                  "Content-Type": "application/json",
-                  user_id: userID || "",
-                },
-              }
-            );
-      
-            const data = await response.json();
-            setOnboardingStatus(data.status);
-          } catch (error) {
-            console.error("Error checking profile status:", error);
+  useEffect(() => {
+    const getOnboardingStatus = async () => {
+      try {
+        if (!user || isLoading) return;
+        const userID = user.sub?.substring(14);
+
+        const response = await fetch(
+          `${API_URL}/api/profile/get-onboarding-status`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              user_id: userID || "",
+            },
           }
-        };
-      
-        getOnboardingStatus();
-}, [])
+        );
+
+        const data = await response.json();
+        setOnboardingStatus(data.status);
+      } catch (error) {
+        console.error("Error checking profile status:", error);
+      }
+    };
+
+    getOnboardingStatus();
+  }, [])
 
 
   // Format currency
@@ -271,7 +315,7 @@ useEffect(() => {
   }
 
   const handleInvest = () => {
-    if (!user){
+    if (!user) {
       toast({
         title: "Login and Complete Profile",
         description: " To invest, please log in and finish setting up your profile (just takes 2 mins).",
@@ -301,126 +345,217 @@ useEffect(() => {
 
 
   const ETHEREUM_MAINNET_CHAIN_ID = '0x1'; // Hexadecimal for chainId 1
-const handleDeposit = async () => {
-  if (!window.ethereum) {
-    return alert('MetaMask not found');
+ const handleDeposit = async () => {
+  if (selectedChain === "solana") {
+    return handleSolanaDeposit(); // Solana handled separately
   }
 
-  const ETHEREUM_MAINNET_CHAIN_ID = "0x1"; // hex for chainId 1
+  const chainConfig = CHAIN_CONFIG[selectedChain as keyof typeof CHAIN_CONFIG];
+  if (!chainConfig) {
+    toast({
+      title: "❌ Unsupported Chain",
+      description: `${selectedChain} is not supported`,
+      variant: "destructive",
+    });
+    return;
+  }
+
+  const {
+    chainId,
+    chainName,
+    rpcUrl,
+    nativeCurrency,
+    blockExplorerUrl,
+    contractAddress,
+    usdcAddress,
+  } = chainConfig;
 
   try {
-    let currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
+    if (!window.ethereum) {
+      alert("MetaMask not found");
+      return;
+    }
 
-    if (currentChainId !== ETHEREUM_MAINNET_CHAIN_ID) {
+    let currentChainId = await window.ethereum.request({ method: "eth_chainId" });
+
+    // Switch chain if not already on it
+    if (currentChainId !== chainId) {
       try {
         await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: ETHEREUM_MAINNET_CHAIN_ID }],
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId }],
         });
+      } catch (switchError: any) {
+        // If chain not found, add it
+        if (switchError.code === 4902) {
+          try {
+            await window.ethereum.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                  chainId,
+                  chainName,
+                  rpcUrls: [rpcUrl],
+                  nativeCurrency,
+                   blockExplorerUrls: blockExplorerUrl ? [blockExplorerUrl] : [],
+                },
+              ],
+            });
 
-        // 🆕 Re-check after switching
-      currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
+            // Try switching again
+            await window.ethereum.request({
+              method: "wallet_switchEthereumChain",
+              params: [{ chainId }],
+            });
+          } catch (addError) {
+            console.error("Add chain failed", addError);
+            toast({
+              title: "⚠️ Add Network Failed",
+              description: `Please try manually adding ${selectedChain} in MetaMask.`,
+              variant: "destructive",
+            });
+            return;
+          }
+        } else {
+          console.error("Switch error", switchError);
+          toast({
+            title: "⚠️ Network Switch Failed",
+            description: `Could not switch to ${selectedChain}`,
+            variant: "destructive",
+          });
+          return;
+        }
+      }
 
-      if (currentChainId !== ETHEREUM_MAINNET_CHAIN_ID) {
+      // Confirm switch successful
+      currentChainId = await window.ethereum.request({ method: "eth_chainId" });
+      if (currentChainId !== chainId) {
         toast({
-          title: "⚠️ Still on Wrong Network",
-          description: "Please switch to Ethereum Mainnet in MetaMask manually.",
+          title: "⚠️ Wrong Network",
+          description: `Please switch to ${selectedChain} in your wallet`,
           variant: "destructive",
         });
         return;
       }
-
-      } catch (switchError: any) {
-        if (switchError.code === 4902) {
-          toast({
-            title: "⚠️ Unsupported Network",
-            description: "Ethereum Mainnet is not added to your MetaMask.",
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "⚠️ Network Switch Failed",
-            description: "Please switch to Ethereum Mainnet manually in MetaMask.",
-            variant: "destructive",
-          });
-        }
-        return; // Abort if switching fails
-      }
     }
 
+    // Proceed with USDC deposit
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
+    const contract = new ethers.Contract(contractAddress, InvestorUSDCDepositABI, signer);
+    const usdc = new ethers.Contract(usdcAddress, usdcAbi, signer);
+    const parsedAmount = ethers.parseUnits(amount, 6);
 
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, InvestorUSDCDepositABI, signer);
-    const usdc = new ethers.Contract(USDC_ADDRESS, usdcAbi, signer);
-
-    const parsedAmount = ethers.parseUnits(amount, 6); // USDC has 6 decimals
-
-    if (parsedAmount < ethers.parseUnits('5', 6)) {
+    if (parsedAmount < ethers.parseUnits("5", 6)) {
       toast({
-        title: "⚠️ Minimum Deposit",
-        description: "The minimum deposit amount is 100 USDC.",
+        title: "❌ Minimum Investment",
+        description: "Minimum of 5 USDC required",
         variant: "destructive",
       });
-      return; // Stop execution here
+      return;
     }
 
     setDepositing(true);
+    setStatus("Approving USDC...");
 
-    setStatus('Approving USDC...');
-    const approveTx = await usdc.approve(CONTRACT_ADDRESS, parsedAmount);
+    const approveTx = await usdc.approve(contractAddress, parsedAmount);
     await approveTx.wait();
 
-    setStatus('Depositing...');
+    setStatus("Depositing...");
+
     const tx = await contract.deposit(parsedAmount);
     await tx.wait();
 
-    setStatus('Deposit successful! Recording investment...');
+    setStatus("Recording investment...");
 
     const response = await axios.post(
-      'https://ofStaging.azurewebsites.net/api/startup/add-investment',
+      "https://ofStaging.azurewebsites.net/api/startup/add-investment",
       {
         campaign_id: campaign._id,
         amount: parseFloat(amount),
         walletAddress: address,
       },
       {
-        headers: {
-          user_id: user_id,
-        },
+        headers: { user_id },
       }
     );
 
     if (response.status !== 200) {
       toast({
-        title: "⚠️ Error",
-        description: `Failed to record investment: ${response.data.message || 'Unknown error'}`,
+        title: "❌ Failed to record investment",
+        description: response.data.message || "",
         variant: "destructive",
       });
       return;
     }
 
-    setStatus(`Investment recorded! ID: ${response.data._id}`);
     toast({
       title: "✅ Investment Successful",
-      description: `You have successfully invested ${amount} USDC in ${campaign.campaignName}.`,
+      description: `You have successfully invested ${amount} USDC on ${selectedChain}`,
     });
 
-  } catch (error) {
-    console.error(error);
-    setStatus('Error: ' + error);
+    setStatus("Success");
+  } catch (err) {
+    console.error("Deposit error:", err);
     toast({
-      title: "⚠️ Unexpected Error",
-      description: "Something went wrong while processing your investment.",
+      title: "❌ Error",
+      description: "Something went wrong during the transaction",
       variant: "destructive",
     });
+    setStatus("Error");
   } finally {
     setDepositing(false);
     setAmount("");
-    setAgreedToTerms(true);
     setInvestModalOpen(false);
   }
-}
+};
+
+
+
+
+
+  const handleSolanaDeposit = async () => {
+    try {
+      const provider = window.solana;
+      if (!provider || !provider.isPhantom) {
+        alert("Please install Phantom Wallet");
+        return;
+      }
+
+      const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta"));
+      const fromPubkey = provider.publicKey;
+      const toPubkey = new solanaWeb3.PublicKey(SOLANA_PROGRAM_ADDRESS);
+
+      const lamports = parseFloat(amount) * 1_000_000; // USDC has 6 decimals
+      const transaction = new solanaWeb3.Transaction().add(
+        solanaWeb3.SystemProgram.transfer({
+          fromPubkey,
+          toPubkey,
+          lamports,
+        })
+      );
+
+      const { blockhash } = await connection.getRecentBlockhash();
+      transaction.recentBlockhash = blockhash;
+      transaction.feePayer = fromPubkey;
+
+      const signed = await provider.signTransaction(transaction);
+      const txid = await connection.sendRawTransaction(signed.serialize());
+      await connection.confirmTransaction(txid);
+
+      await axios.post("https://ofStaging.azurewebsites.net/api/startup/add-investment", {
+        campaign_id: campaign._id,
+        amount: parseFloat(amount),
+        walletAddress: fromPubkey.toBase58(),
+        // chain: "solana",
+      }, { headers: { user_id } });
+
+      toast({ title: "✅ Investment Successful", description: `TxID: ${txid}` });
+    } catch (error) {
+      console.error(error);
+      toast({ title: "❌ Solana Error", description: error.message, variant: "destructive" });
+    }
+  };
 
 
 
@@ -463,12 +598,12 @@ const handleDeposit = async () => {
         </div>
       </div>
 
-        <Button 
-          onClick={() => handleInvest()} 
-          disabled={campaign.campaignStatus === "Completed" || campaign.campaignStatus === "Pending"}
-          className="w-full bg-gradient-to-r from-[#4361ff] to-[#7e5bf8] text-white py-4 rounded-md font-medium mb-3 shadow-sm hover:shadow-md transition-shadow">
-          Invest Now
-        </Button>
+      <Button
+        onClick={() => handleInvest()}
+        disabled={campaign.campaignStatus === "Completed" || campaign.campaignStatus === "Pending"}
+        className="w-full bg-gradient-to-r from-[#4361ff] to-[#7e5bf8] text-white py-4 rounded-md font-medium mb-3 shadow-sm hover:shadow-md transition-shadow">
+        Invest Now
+      </Button>
 
       {isOwner && (
         <Button className="w-full bg-[#10b981] hover:bg-[#10b981]/90 text-white py-4 rounded-md font-medium mb-3 shadow-sm hover:shadow-md transition-shadow flex items-center justify-center gap-2">
@@ -486,17 +621,17 @@ const handleDeposit = async () => {
           <Share2 size={16} />
           <span>{copied ? "Copied!" : "Share"}</span>
         </Button>
-       
 
-          <Button
-            asChild
-            variant="outline"
-            className="border border-[#1e293b] bg-transparent text-white py-2 px-4 rounded-md font-medium flex items-center justify-center gap-2 hover:bg-[#131e32] transition-colors">
-            <a href={campaign.socialLinks.telegram} target="_blank" rel="noopener noreferrer">
-              <MessageSquare size={16} />
-              <span>Contact</span>
-            </a>
-          </Button>
+
+        <Button
+          asChild
+          variant="outline"
+          className="border border-[#1e293b] bg-transparent text-white py-2 px-4 rounded-md font-medium flex items-center justify-center gap-2 hover:bg-[#131e32] transition-colors">
+          <a href={campaign.socialLinks.telegram} target="_blank" rel="noopener noreferrer">
+            <MessageSquare size={16} />
+            <span>Contact</span>
+          </a>
+        </Button>
       </div>
 
       {/* Project Verification */}
@@ -573,58 +708,68 @@ const handleDeposit = async () => {
             </button>
 
             <div className="flex-1 flex flex-col items-center justify-center px-4">
-            <div className="w-full max-w-[650px] flex flex-col items-center">
-              {/* Title */}
-              <h1 className="text-white text-center font-poppins text-3xl mb-[60px]">
-                Invest in <span className="text-[#0DF]">{campaign.campaignName}</span>
-              </h1>
+              <div className="w-full max-w-[650px] flex flex-col items-center">
+                {/* Title */}
+                <h1 className="text-white text-center font-poppins text-3xl mb-[60px]">
+                  Invest in <span className="text-[#0DF]">{campaign.campaignName}</span>
+                </h1>
 
-              {/* Amount Input */}
-              <div className="w-full flex items-center rounded-xl border border-[#222531] bg-[#191E25] mb-6">
-                <input
-                  type="number"
-                  placeholder="Enter Amount to Invest (min 100 USDC)"
-                  value={amount}
+                <select
+                  className="mb-6 w-full bg-[#191E25] text-white border border-[#222531] rounded-xl p-3"
+                  value={selectedChain}
+                  onChange={(e) => setSelectedChain(e.target.value)}
                   disabled={depositing}
-                  min="100"
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="flex-1 bg-transparent pl-4 py-4 pr-2 text-white placeholder-gray-400 outline-none font-poppins text-left"
-                />
-                <div className="flex items-center gap-2 bg-[#222531] px-5 py-4 rounded-r-xl">
-                  <div className="w-6 h-6 bg-[#0DF] rounded-full flex items-center justify-center">
-                    <span className="text-black text-xs font-bold font-poppins">$</span>
-                  </div>
-                  <span className="text-white font-poppins font-medium">USDC</span>
-                </div>
-              </div>
-
-              {/* Terms & Conditions */}
-              <div className="w-full flex items-center gap-3 mb-[100px] px-1">
-                <button
-                  onClick={() => setAgreedToTerms(!agreedToTerms)}
-                  disabled={depositing}
-                  className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors flex-shrink-0 ${
-                    agreedToTerms ? "bg-[#0DF] border-[#0DF]" : "border-gray-400 bg-transparent"
-                  }`}
                 >
-                  {agreedToTerms && <Check className="w-4 h-4 text-black" />}
-                </button>
-                <span className="text-white font-poppins font-normal text-left">
-                  I agree to the <a href="https://foundershub.notion.site/Legal-Terms-and-Conditions-207f8b9deb7980799a4ec9148380184a?source=copy_link" target="_blank" className="text-[#0DF] cursor-pointer hover:underline">Terms & Conditions</a>
-                </span>
-              </div>
+                  <option value="ethereum">Ethereum</option>
+                  <option value="arbitrum">Arbitrum</option>
+                  <option value="solana">Solana</option>
+                </select>
 
-              {/* Pay & Invest Button */}
-              <button
-                onClick={() => handleDeposit()}
+                {/* Amount Input */}
+                <div className="w-full flex items-center rounded-xl border border-[#222531] bg-[#191E25] mb-6">
+                  <input
+                    type="number"
+                    placeholder="Enter Amount to Invest (min 100 USDC)"
+                    value={amount}
+                    disabled={depositing}
+                    min="100"
+                    onChange={(e) => setAmount(e.target.value)}
+                    className="flex-1 bg-transparent pl-4 py-4 pr-2 text-white placeholder-gray-400 outline-none font-poppins text-left"
+                  />
+                  <div className="flex items-center gap-2 bg-[#222531] px-5 py-4 rounded-r-xl">
+                    <div className="w-6 h-6 bg-[#0DF] rounded-full flex items-center justify-center">
+                      <span className="text-black text-xs font-bold font-poppins">$</span>
+                    </div>
+                    <span className="text-white font-poppins font-medium">USDC</span>
+                  </div>
+                </div>
+
+                {/* Terms & Conditions */}
+                <div className="w-full flex items-center gap-3 mb-[100px] px-1">
+                  <button
+                    onClick={() => setAgreedToTerms(!agreedToTerms)}
+                    disabled={depositing}
+                    className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors flex-shrink-0 ${agreedToTerms ? "bg-[#0DF] border-[#0DF]" : "border-gray-400 bg-transparent"
+                      }`}
+                  >
+                    {agreedToTerms && <Check className="w-4 h-4 text-black" />}
+                  </button>
+                  <span className="text-white font-poppins font-normal text-left">
+                    I agree to the <a href="https://foundershub.notion.site/Legal-Terms-and-Conditions-207f8b9deb7980799a4ec9148380184a?source=copy_link" target="_blank" className="text-[#0DF] cursor-pointer hover:underline">Terms & Conditions</a>
+                  </span>
+                </div>
+
+                {/* Pay & Invest Button */}
+                <button
+                  onClick={() => handleDeposit()}
                   className="w-full flex items-center justify-center gap-2.5 px-4 py-2 rounded-xl bg-[#0DF] text-black font-poppins font-semibold text-lg hover:opacity-90 transition-opacity disabled:opacity-50"
                   disabled={!agreedToTerms || !amount}
                 >
-                Pay & Invest
-                {depositing ? <FaSpinner className="animate-spin" /> : <ArrowLeft className="w-5 h-5 rotate-180" />}
-              </button>
+                  Pay & Invest
+                  {depositing ? <FaSpinner className="animate-spin" /> : <ArrowLeft className="w-5 h-5 rotate-180" />}
+                </button>
+              </div>
             </div>
-          </div>
           </div>
         </div>
       )}
@@ -632,6 +777,6 @@ const handleDeposit = async () => {
     </div>
   )
 
-  
+
 
 }
