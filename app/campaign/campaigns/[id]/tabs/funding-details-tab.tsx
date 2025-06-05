@@ -75,7 +75,7 @@ export function FundingDetailsTab({ campaign }: FundingDetailsTabProps) {
               <h3 className="font-medium text-sm sm:text-base">Fundraising Target</h3>
             </div>
             <div className="pl-8 sm:pl-10">
-              <p className="text-lg sm:text-xl font-bold text-white">Maximum cap: {fundingDetails.maxCap} {fundingDetails.acceptedCurrencyType?.toUpperCase()}</p>
+              <p className="text-lg sm:text-xl font-bold text-white"> {fundingDetails.maxCap} {fundingDetails.acceptedCurrencyType?.toUpperCase()}</p>
               {/* <p className="text-gray-400 text-xs sm:text-sm mt-1">
                 Minimum investment: {fundingDetails.minInvestment}
               </p> */}

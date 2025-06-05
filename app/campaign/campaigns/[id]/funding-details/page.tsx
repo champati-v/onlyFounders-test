@@ -149,7 +149,7 @@ export default function FundingDetailsPage() {
             <div className="bg-[#0f1a2c] rounded-lg p-5">
               <h3 className="font-medium mb-2">Initial Market Cap</h3>
               <p className="text-xl font-bold text-white">{fundingData.initialMarketCap}</p>
-              <p className="text-gray-400 text-sm mt-1">At token generation event</p>
+              <p className="text-gray-400 text-sm mt-1">At Token Generation Event</p>
             </div>
           </div>
 
