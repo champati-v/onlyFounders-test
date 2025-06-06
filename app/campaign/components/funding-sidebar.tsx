@@ -197,7 +197,7 @@ const CHAIN_CONFIG = {
   ethereum: {
     chainId: "0x1",
     chainName: "Ethereum Mainnet",
-    rpcUrl: "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID",
+    rpcUrl: " https://lb.drpc.org/ogrpc?network=ethereum&dkey=Akl6MPCcvUmBvWxagjIuK2XnKhPlMLwR8I6PzoXPVSjK",
     contractAddress: "0x0a69744B3f791A33c37521ec68149828bc2c0ca5",
     usdcAddress: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     nativeCurrency: {
@@ -211,8 +211,8 @@ const CHAIN_CONFIG = {
   arbitrum: {
     chainId: "0xa4b1",
     chainName: "Arbitrum One",
-    rpcUrl: "https://arb1.arbitrum.io/rpc",
-    contractAddress: "0x5972241F84B1D6100f6fBbA5DeB521Ee522eb402",
+    rpcUrl: "https://lb.drpc.org/ogrpc?network=arbitrum&dkey=Akl6MPCcvUmBvWxagjIuK2WpTHZ7Qf0R8JrnxpZiEquA",
+    contractAddress: "0xB331aD2D32eE92B4BC063786B9c2406D7D4992AA",
     usdcAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
     nativeCurrency: {
       name: "Ether",
@@ -346,9 +346,9 @@ export function FundingSidebar({ campaign }: FundingSidebarProps) {
 
   const ETHEREUM_MAINNET_CHAIN_ID = '0x1'; // Hexadecimal for chainId 1
  const handleDeposit = async () => {
-  if (selectedChain === "solana") {
-    return handleSolanaDeposit(); // Solana handled separately
-  }
+  // if (selectedChain === "solana") {
+  //   return handleSolanaDeposit(); // Solana handled separately
+  // }
 
   const chainConfig = CHAIN_CONFIG[selectedChain as keyof typeof CHAIN_CONFIG];
   if (!chainConfig) {
@@ -469,7 +469,7 @@ export function FundingSidebar({ campaign }: FundingSidebarProps) {
     setStatus("Recording investment...");
 
     const response = await axios.post(
-      "https://ofStaging.azurewebsites.net/api/startup/add-investment",
+      `${API_URL}/api/startup/add-investment`,
       {
         campaign_id: campaign._id,
         amount: parseFloat(amount),
@@ -515,48 +515,48 @@ export function FundingSidebar({ campaign }: FundingSidebarProps) {
 
 
 
-  const handleSolanaDeposit = async () => {
-    try {
-      const provider = window.solana;
-      if (!provider || !provider.isPhantom) {
-        alert("Please install Phantom Wallet");
-        return;
-      }
+  // const handleSolanaDeposit = async () => {
+  //   try {
+  //     const provider = window.solana;
+  //     if (!provider || !provider.isPhantom) {
+  //       alert("Please install Phantom Wallet");
+  //       return;
+  //     }
 
-      const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta"));
-      const fromPubkey = provider.publicKey;
-      const toPubkey = new solanaWeb3.PublicKey(SOLANA_PROGRAM_ADDRESS);
+  //     const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta"));
+  //     const fromPubkey = provider.publicKey;
+  //     const toPubkey = new solanaWeb3.PublicKey(SOLANA_PROGRAM_ADDRESS);
 
-      const lamports = parseFloat(amount) * 1_000_000; // USDC has 6 decimals
-      const transaction = new solanaWeb3.Transaction().add(
-        solanaWeb3.SystemProgram.transfer({
-          fromPubkey,
-          toPubkey,
-          lamports,
-        })
-      );
+  //     const lamports = parseFloat(amount) * 1_000_000; // USDC has 6 decimals
+  //     const transaction = new solanaWeb3.Transaction().add(
+  //       solanaWeb3.SystemProgram.transfer({
+  //         fromPubkey,
+  //         toPubkey,
+  //         lamports,
+  //       })
+  //     );
 
-      const { blockhash } = await connection.getRecentBlockhash();
-      transaction.recentBlockhash = blockhash;
-      transaction.feePayer = fromPubkey;
+  //     const { blockhash } = await connection.getRecentBlockhash();
+  //     transaction.recentBlockhash = blockhash;
+  //     transaction.feePayer = fromPubkey;
 
-      const signed = await provider.signTransaction(transaction);
-      const txid = await connection.sendRawTransaction(signed.serialize());
-      await connection.confirmTransaction(txid);
+  //     const signed = await provider.signTransaction(transaction);
+  //     const txid = await connection.sendRawTransaction(signed.serialize());
+  //     await connection.confirmTransaction(txid);
 
-      await axios.post("https://ofStaging.azurewebsites.net/api/startup/add-investment", {
-        campaign_id: campaign._id,
-        amount: parseFloat(amount),
-        walletAddress: fromPubkey.toBase58(),
-        // chain: "solana",
-      }, { headers: { user_id } });
+  //     await axios.post("https://ofStaging.azurewebsites.net/api/startup/add-investment", {
+  //       campaign_id: campaign._id,
+  //       amount: parseFloat(amount),
+  //       walletAddress: fromPubkey.toBase58(),
+  //       // chain: "solana",
+  //     }, { headers: { user_id } });
 
-      toast({ title: "✅ Investment Successful", description: `TxID: ${txid}` });
-    } catch (error) {
-      console.error(error);
-      toast({ title: "❌ Solana Error", description: error.message, variant: "destructive" });
-    }
-  };
+  //     toast({ title: "✅ Investment Successful", description: `TxID: ${txid}` });
+  //   } catch (error) {
+  //     console.error(error);
+  //     toast({ title: "❌ Solana Error", description: error.message, variant: "destructive" });
+  //   }
+  // };
 
 
 
@@ -723,7 +723,7 @@ export function FundingSidebar({ campaign }: FundingSidebarProps) {
                 >
                   <option value="ethereum">Ethereum</option>
                   <option value="arbitrum">Arbitrum</option>
-                  <option value="solana">Solana</option>
+                  {/* <option value="solana">Solana</option> */}
                 </select>
 
                 {/* Amount Input */}
