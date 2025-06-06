@@ -474,6 +474,7 @@ export function FundingSidebar({ campaign }: FundingSidebarProps) {
         campaign_id: campaign._id,
         amount: parseFloat(amount),
         walletAddress: address,
+        chain:selectedChain,
       },
       {
         headers: { user_id },
